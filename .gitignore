@@ -1,0 +1,21 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+venv/
+env/
+ENV/
+
+# Streamlit
+.streamlit/config.toml
+
+# OS generated files
+.DS_Store
+
+#github
+.github/
+.github/agents  
+.github/workflows/

@@ -1,0 +1,16 @@
+# Required packages for the app and validation script
+fastapi
+uvicorn
+streamlit
+langchain
+langchain-core
+langchain-community
+langchain-openai
+openai
+pydantic
+pydantic-settings
+python-dotenv
+pytest
+pytest-cov
+langsmith
+requests

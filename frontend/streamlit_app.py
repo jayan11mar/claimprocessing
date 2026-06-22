@@ -71,21 +71,8 @@ def render_chat_bubble(role: str, text: str, metadata: Optional[Dict[str, Any]] 
         unsafe_allow_html=True,
     )
 
-    if role == "assistant" and (metadata or True):
-        with st.expander(f"Details ({index})"):
-            st.write(f"**Intent:** {metadata.get('intent', 'unknown') if metadata else 'unknown'}")
-            st.write(f"**Category:** {metadata.get('category', 'unknown') if metadata else 'unknown'}")
-            if metadata and metadata.get('confidence') is not None:
-                st.write(f"**Confidence:** {metadata.get('confidence', 0.0):.2%}")
-            if metadata:
-                if metadata.get('model'):
-                    st.write(f"**Model:** {metadata.get('model')}")
-                if metadata.get('temperature') is not None:
-                    st.write(f"**Temperature:** {metadata.get('temperature')}")
-            if metadata and metadata.get('reasoning'):
-                st.write(f"**Reasoning:** {metadata.get('reasoning')}")
-            if metadata and metadata.get('extra_metadata'):
-                st.write(f"**Metadata:** {metadata.get('extra_metadata')}")
+    # JSON context/details are now shown in the sidebar; do not display per-message metadata here.
+    return
 
 
 def get_backend_health(api_url: str) -> Optional[Dict[str, Any]]:
@@ -168,6 +155,29 @@ def main() -> None:
     else:
         st.sidebar.info("No trace ID yet. Send a message to generate a trace.")
 
+    # Response context panel: show JSON context for the latest response in the left panel
+    st.sidebar.divider()
+    st.sidebar.header("Latest Response Context")
+    if st.session_state.history:
+        last = st.session_state.history[-1]
+        last_response = last.get("response")
+        last_meta = last.get("metadata", {}) or {}
+        if last_response:
+            st.sidebar.write(f"**Answer:** {last_response.answer_text}")
+            with st.sidebar.expander("JSON Context", expanded=False):
+                ctx = {
+                    "intent": last_response.intent.value if hasattr(last_response, 'intent') else last_meta.get('intent'),
+                    "category": last_response.category if hasattr(last_response, 'category') else last_meta.get('category'),
+                    "confidence": last_response.confidence if hasattr(last_response, 'confidence') else last_meta.get('confidence'),
+                    "model": last_meta.get('model'),
+                    "temperature": last_meta.get('temperature'),
+                    "reasoning": last_response.reasoning if hasattr(last_response, 'reasoning') else last_meta.get('reasoning'),
+                    "extra_metadata": getattr(last_response, 'metadata', last_meta.get('extra_metadata')),
+                }
+                st.json(ctx)
+        else:
+            st.sidebar.write("No response yet.")
+
     history_validation = st.sidebar.empty()
     if st.sidebar.button("Validate saved history"):
         saved = get_saved_history(api_url, st.session_state.session_id)
@@ -195,7 +205,7 @@ def main() -> None:
         st.subheader("Conversation History")
         st.write(f"**Local turns:** {len(st.session_state.history)}")
 
-        for idx, item in enumerate(reversed(st.session_state.history)):
+        for idx, item in enumerate(st.session_state.history):
             user_msg = item["user"]
             response = item["response"]
             metadata = item.get("metadata", {})

@@ -37,10 +37,13 @@ def run_evaluation():
     for q in QUERIES:
         payload = {"session_id": session_id, "message": q}
         try:
-            r = requests.post(f"{API_URL}/chat", json=payload, timeout=20)
-            data = r.json()
-        except Exception as exc:
+            response = requests.post(f"{API_URL}/chat", json=payload, timeout=20)
+            response.raise_for_status()
+            data = response.json()
+        except requests.RequestException as exc:
             data = {"error": str(exc)}
+        except ValueError as exc:
+            data = {"error": f"Invalid JSON response: {exc}"}
 
         entry = {"query": q, "response": data}
         results.append(entry)

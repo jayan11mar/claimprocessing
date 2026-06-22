@@ -19,7 +19,7 @@ class JsonFormatter(logging.Formatter):
                         payload[k] = v
             elif record.args:
                 payload["args"] = record.args
-        except Exception:
+        except TypeError:
             payload["args"] = str(record.args)
 
         extra = {

@@ -1,4 +1,5 @@
 from datetime import datetime
+import sqlite3
 import time
 from typing import Any, Dict, List, Optional
 
@@ -95,7 +96,7 @@ def health() -> Dict[str, Any]:
         _ensure_components()
         _memory.get_history("health_check_session_id")
         db_status = "ok"
-    except Exception as exc:  # pragma: no cover - defensive
+    except sqlite3.Error as exc:  # pragma: no cover - defensive
         db_status = f"error: {exc}"
     settings = get_settings()
     return {

@@ -33,11 +33,14 @@ class FAQChain:
 
     def _build_messages(self, session_id: str, examples: List[dict], user_message: str) -> List[BaseMessage]:
         prompt = build_faq_prompt(examples)
+        example_lines = []
+        for example in examples:
+            example_lines.append(f"User: {example['user']}")
+            example_lines.append(f"Assistant: {example['assistant']}")
+
         prompt_value = prompt.format_prompt(
             json_instruction=get_json_format_instruction(),
-            example_block="\n\n".join(
-                [f"User: {example['user']}\nAssistant: {example['assistant']}" for example in examples]
-            ),
+            example_block="\n\n".join(example_lines),
             user_message=user_message,
         )
         prompt_messages = prompt_value.to_messages()
@@ -96,8 +99,8 @@ class FAQChain:
             examples = select_examples(user_message, k=3)
             messages = self._build_messages(session_id, [e.__dict__ for e in examples], user_message)
 
+            result = None
             try:
-                result = None
                 batch = [messages]
                 if hasattr(self.model, "generate"):
                     result = self.model.generate(messages=batch)
@@ -105,7 +108,16 @@ class FAQChain:
                     result = self.model.predict_messages(messages=batch)
                 else:
                     result = self.model(messages=batch)
-
+            except (AttributeError, TypeError, ValueError, RuntimeError) as exc:
+                logger.error("FAQChain model invocation failed: %s", exc, exc_info=True)
+                faq_response = FAQResponse(
+                    intent=FAQIntent.OTHER,
+                    category="error",
+                    confidence=0.0,
+                    answer_text="I’m sorry, I was unable to generate a structured response. Please try again later.",
+                    reasoning=str(exc),
+                )
+            else:
                 answer_text = None
                 if result is None:
                     raise RuntimeError("No response from model")
@@ -126,16 +138,17 @@ class FAQChain:
                     answer_text = str(result)
 
                 answer_text = answer_text.strip()
-                faq_response = self._parse_response(answer_text)
-            except Exception as exc:
-                logger.error("FAQChain failed: %s", exc, exc_info=True)
-                faq_response = FAQResponse(
-                    intent=FAQIntent.OTHER,
-                    category="error",
-                    confidence=0.0,
-                    answer_text="I’m sorry, I was unable to generate a structured response. Please try again later.",
-                    reasoning=str(exc),
-                )
+                try:
+                    faq_response = self._parse_response(answer_text)
+                except (ValueError, KeyError, TypeError) as exc:
+                    logger.error("FAQChain response parsing failed: %s", exc, exc_info=True)
+                    faq_response = FAQResponse(
+                        intent=FAQIntent.OTHER,
+                        category="error",
+                        confidence=0.0,
+                        answer_text="I’m sorry, I was unable to generate a structured response. Please try again later.",
+                        reasoning=str(exc),
+                    )
 
         if persist_history:
             self.memory.append_message(session_id, "user", user_message)

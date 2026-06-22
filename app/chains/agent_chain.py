@@ -1,15 +1,15 @@
 import logging
 import re
+import time
 from typing import Any, Dict, Optional
 
 from app.chains.faq_chain import FAQChain
+from app.langsmith_integration import record_span, start_trace
 from app.memory.sqlite_memory import SQLiteMemory
 from app.models.faq import FAQIntent, FAQResponse
 from app.tools.claims_intake import register_and_validate_claim
 from app.tools.fraud_detector import compute_fraud_score
 from app.tools.settlement_calculator import calculate_settlement
-from app.langsmith_integration import start_trace, record_span
-import time
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +20,21 @@ class AgentChain:
         self.memory = memory or SQLiteMemory()
         self.faq_chain = FAQChain(memory=self.memory)
         self.tools = [
-            {"name": "claims_intake", "func": register_and_validate_claim, "description": "Register a new claim and validate policy coverage details."},
-            {"name": "fraud_detector", "func": compute_fraud_score, "description": "Compute a fraud score for an existing claim based on policy and claim history."},
-            {"name": "settlement_calculator", "func": calculate_settlement, "description": "Calculate a settlement breakdown for a claim considering deductible, copay, and sub-limits."},
+            {
+                "name": "claims_intake",
+                "func": register_and_validate_claim,
+                "description": "Register a new claim and validate policy coverage details.",
+            },
+            {
+                "name": "fraud_detector",
+                "func": compute_fraud_score,
+                "description": "Compute a fraud score for an existing claim based on policy and claim history.",
+            },
+            {
+                "name": "settlement_calculator",
+                "func": calculate_settlement,
+                "description": "Calculate a settlement breakdown for a claim considering deductible, copay, and sub-limits.",
+            },
         ]
 
     def _extract_policy_number(self, text: str) -> str:
@@ -53,7 +65,7 @@ class AgentChain:
         return ""
 
     def _extract_supporting_documents(self, text: str) -> list[str]:
-        docs = []
+        documents = []
         patterns = [
             r"documents(?: required| needed| include)?[:]?\s*(.+)$",
             r"supporting documents(?: include)?[:]?\s*(.+)$",
@@ -61,23 +73,24 @@ class AgentChain:
         ]
         for pattern in patterns:
             match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
-            if match:
-                parts = re.split(r",|;| and | & ", match.group(1))
-                docs.extend([part.strip() for part in parts if part.strip()])
-        return docs
+            if not match:
+                continue
+            parts = re.split(r",|;| and | & ", match.group(1))
+            for part in parts:
+                item = part.strip()
+                if item:
+                    documents.append(item)
+        return documents
 
     def _extract_claim_id(self, text: str) -> str:
-        # Prefer explicit claim IDs like C1001, but also handle forms like ABC123
         match = re.search(r"\bC\d{3,}\b", text, re.IGNORECASE)
         if match:
             return match.group(0).upper()
 
-        # common phrasing: "claim ABC123" or "claim #ABC123"
         match = re.search(r"claim\s+#?([A-Z0-9]{3,})", text, re.IGNORECASE)
         if match:
             return match.group(1).upper()
 
-        # fallback: any token with letters then digits (e.g. ABC123)
         match = re.search(r"\b([A-Z]+\d{3,})\b", text, re.IGNORECASE)
         return match.group(1).upper() if match else ""
 
@@ -89,25 +102,32 @@ class AgentChain:
         ]
         for pattern in patterns:
             match = re.search(pattern, text, re.IGNORECASE)
-            if match:
-                try:
-                    return float(match.group(1).replace(",", ""))
-                except ValueError:
-                    continue
+            if not match:
+                continue
+            value = match.group(1).replace(",", "")
+            try:
+                return float(value)
+            except ValueError:
+                continue
         return 0.0
 
-    def _attach_metadata(self, base: FAQResponse, tool_name: str, tool_result: Any) -> FAQResponse:
-        metadata = {**base.metadata}
-        metadata["tool"] = tool_name
-        metadata["tool_output"] = tool_result.dict() if hasattr(tool_result, "dict") else tool_result
-        return FAQResponse(
-            intent=base.intent,
-            category=base.category,
-            confidence=base.confidence,
-            answer_text=base.answer_text,
-            reasoning=base.reasoning,
-            metadata=metadata,
-        )
+    def _parse_claim_amount(self, value: Any, text: str) -> float:
+        if value is None:
+            return self._extract_claim_amount(text)
+
+        if isinstance(value, str) and not value.strip():
+            raise ValueError("Claim amount must be provided as a number.")
+
+        try:
+            return float(value)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("Claim amount must be a numeric value.") from exc
+
+    def _record_tool_timing(self, tool_name: str, start: float, timings: Dict[str, Any], trace_id: Optional[str]) -> None:
+        elapsed = int((time.time() - start) * 1000)
+        timings["tools"].append({"tool": tool_name, "ms": elapsed})
+        if trace_id:
+            record_span(tool_name, {"ms": elapsed, "trace_id": trace_id})
 
     def _format_claim_answer(self, base: FAQResponse, result: Any) -> FAQResponse:
         answer_text = (
@@ -117,7 +137,8 @@ class AgentChain:
         )
         if result.validation_messages:
             answer_text += " " + " ".join(result.validation_messages)
-        response = FAQResponse(
+
+        return FAQResponse(
             intent=base.intent,
             category=base.category,
             confidence=base.confidence,
@@ -129,7 +150,6 @@ class AgentChain:
                 "tool_output": result.dict(),
             },
         )
-        return response
 
     def _format_fraud_answer(self, base: FAQResponse, result: Any) -> FAQResponse:
         answer_text = (
@@ -157,6 +177,7 @@ class AgentChain:
         )
         if result.notes:
             answer_text += " " + " ".join(result.notes)
+
         return FAQResponse(
             intent=base.intent,
             category=base.category,
@@ -170,6 +191,112 @@ class AgentChain:
             },
         )
 
+    def _handle_claim_registration(
+        self,
+        intent: FAQResponse,
+        message: str,
+        timings: Dict[str, Any],
+        trace_id: Optional[str],
+    ) -> FAQResponse:
+        policy_number = intent.metadata.get("policy_number") or self._extract_policy_number(message)
+        if not policy_number:
+            return FAQResponse(
+                intent=intent.intent,
+                category=intent.category,
+                confidence=intent.confidence,
+                answer_text="I need a valid policy number to register your claim. Please provide the policy ID or policy number.",
+                reasoning="Policy number missing from claim registration request.",
+                metadata={"tool": "claims_intake", "error": "policy_number_missing"},
+            )
+
+        try:
+            claim_amount = self._parse_claim_amount(intent.metadata.get("claim_amount"), message)
+        except ValueError as exc:
+            return FAQResponse(
+                intent=intent.intent,
+                category=intent.category,
+                confidence=intent.confidence,
+                answer_text=str(exc),
+                reasoning="Invalid claim amount provided.",
+                metadata={"tool": "claims_intake", "error": "invalid_claim_amount"},
+            )
+
+        details = intent.metadata.get("extra_info", {}) or {}
+        if "incident_date" not in details:
+            incident_date = self._extract_incident_date(message)
+            if incident_date:
+                details["incident_date"] = incident_date
+
+        if "supporting_documents" not in details:
+            documents = self._extract_supporting_documents(message)
+            if documents:
+                details["supporting_documents"] = documents
+
+        start = time.time()
+        claim = register_and_validate_claim(
+            policy_number=policy_number,
+            claim_amount=claim_amount,
+            extra_info=details,
+        )
+        self._record_tool_timing("claims_intake", start, timings, trace_id)
+        return self._format_claim_answer(intent, claim)
+
+    def _handle_fraud_check(
+        self,
+        intent: FAQResponse,
+        message: str,
+        timings: Dict[str, Any],
+        trace_id: Optional[str],
+    ) -> FAQResponse:
+        claim_id = intent.metadata.get("claim_id") or self._extract_claim_id(message)
+        if not claim_id:
+            return FAQResponse(
+                intent=intent.intent,
+                category=intent.category,
+                confidence=intent.confidence,
+                answer_text="Please provide a claim ID to review fraud indicators, for example C1001 or ABC123.",
+                reasoning="Claim identifier missing from fraud check request.",
+                metadata={"tool": "fraud_detector", "error": "claim_id_missing"},
+            )
+
+        start = time.time()
+        fraud = compute_fraud_score(claim_id)
+        self._record_tool_timing("fraud_detector", start, timings, trace_id)
+        return self._format_fraud_answer(intent, fraud)
+
+    def _handle_settlement_query(
+        self,
+        intent: FAQResponse,
+        message: str,
+        timings: Dict[str, Any],
+        trace_id: Optional[str],
+    ) -> FAQResponse:
+        claim_id = intent.metadata.get("claim_id") or self._extract_claim_id(message)
+        if not claim_id:
+            return FAQResponse(
+                intent=intent.intent,
+                category=intent.category,
+                confidence=intent.confidence,
+                answer_text="I need a claim ID to calculate settlement. Please provide C1001 or ABC123.",
+                reasoning="Claim identifier missing from settlement request.",
+                metadata={"tool": "settlement_calculator", "error": "claim_id_missing"},
+            )
+
+        try:
+            start = time.time()
+            settlement = calculate_settlement(claim_id)
+            self._record_tool_timing("settlement_calculator", start, timings, trace_id)
+            return self._format_settlement_answer(intent, settlement)
+        except ValueError as exc:
+            return FAQResponse(
+                intent=intent.intent,
+                category=intent.category,
+                confidence=intent.confidence,
+                answer_text=f"Unable to calculate settlement: {exc}",
+                reasoning=str(exc),
+                metadata={"tool": "settlement_calculator", "error": str(exc)},
+            )
+
     def invoke(self, session_id: str, user_message: str, context: dict = None) -> FAQResponse:
         context = context or {}
         timings = context.get("timings") if isinstance(context.get("timings"), dict) else {"llm_ms": 0, "tools": []}
@@ -178,126 +305,35 @@ class AgentChain:
         with start_trace(trace_name) as trace:
             trace_id = trace.get("trace_id") if isinstance(trace, dict) else None
 
-            t0 = time.time()
-            classification = self.faq_chain.invoke(session_id, user_message)
-            llm_ms = int((time.time() - t0) * 1000)
-            timings["llm_ms"] = llm_ms
+            start = time.time()
+            response = self.faq_chain.invoke(session_id, user_message)
+            timings["llm_ms"] = int((time.time() - start) * 1000)
 
             span_meta = {
                 "component": "faq_chain",
                 "session_id": session_id,
                 "user_message_snippet": (user_message[:200] + "...") if len(user_message) > 200 else user_message,
-                "llm_ms": llm_ms,
+                "llm_ms": timings["llm_ms"],
             }
             if trace_id:
                 span_meta["trace_id"] = trace_id
             record_span("faq_chain", span_meta)
 
-        if classification.intent == FAQIntent.CLAIM_REGISTRATION:
-            try:
-                policy_number = classification.metadata.get("policy_number") or self._extract_policy_number(user_message)
-                if not policy_number:
-                    final_response = FAQResponse(
-                        intent=classification.intent,
-                        category=classification.category,
-                        confidence=classification.confidence,
-                        answer_text="I need a valid policy number to register your claim. Please provide the policy ID or policy number.",
-                        reasoning="Policy number missing from claim registration request.",
-                        metadata={"tool": "claims_intake", "error": "policy_number_missing"},
-                    )
-                    return final_response
+        if response.intent == FAQIntent.CLAIM_REGISTRATION:
+            response = self._handle_claim_registration(response, user_message, timings, trace_id)
+        elif response.intent == FAQIntent.FRAUD_CHECK:
+            response = self._handle_fraud_check(response, user_message, timings, trace_id)
+        elif response.intent == FAQIntent.SETTLEMENT_QUERY:
+            response = self._handle_settlement_query(response, user_message, timings, trace_id)
 
-                claim_amount = float(classification.metadata.get("claim_amount") or self._extract_claim_amount(user_message))
-                extra_info = classification.metadata.get("extra_info", {}) or {}
-                if "incident_date" not in extra_info:
-                    incident_date = self._extract_incident_date(user_message)
-                    if incident_date:
-                        extra_info["incident_date"] = incident_date
-                if "supporting_documents" not in extra_info:
-                    docs = self._extract_supporting_documents(user_message)
-                    if docs:
-                        extra_info["supporting_documents"] = docs
-
-                t0 = time.time()
-                claim_result = register_and_validate_claim(
-                    policy_number=policy_number,
-                    claim_amount=claim_amount,
-                    extra_info=extra_info,
-                )
-                tool_ms = int((time.time() - t0) * 1000)
-                timings["tools"].append({"tool": "claims_intake", "ms": tool_ms})
-                if trace_id:
-                    record_span("claims_intake", {"ms": tool_ms, "trace_id": trace_id})
-                final_response = self._format_claim_answer(classification, claim_result)
-            except Exception as exc:
-                logger.error("claims_intake_error", exc_info=True)
-                final_response = FAQResponse(
-                    intent=classification.intent,
-                    category=classification.category,
-                    confidence=classification.confidence,
-                    answer_text="I attempted to register a claim, but there was an error processing the intake.",
-                    reasoning=str(exc),
-                    metadata={"tool": "claims_intake", "error": str(exc)},
-                )
-        elif classification.intent == FAQIntent.FRAUD_CHECK:
-            try:
-                claim_id = classification.metadata.get("claim_id") or self._extract_claim_id(user_message)
-                t0 = time.time()
-                fraud_result = compute_fraud_score(claim_id)
-                tool_ms = int((time.time() - t0) * 1000)
-                timings["tools"].append({"tool": "fraud_detector", "ms": tool_ms})
-                if trace_id:
-                    record_span("fraud_detector", {"ms": tool_ms, "trace_id": trace_id})
-                final_response = self._format_fraud_answer(classification, fraud_result)
-            except Exception as exc:
-                logger.error("fraud_detector_error", exc_info=True)
-                final_response = FAQResponse(
-                    intent=classification.intent,
-                    category=classification.category,
-                    confidence=classification.confidence,
-                    answer_text="I attempted to compute fraud signals, but an error occurred.",
-                    reasoning=str(exc),
-                    metadata={"tool": "fraud_detector", "error": str(exc)},
-                )
-        elif classification.intent == FAQIntent.SETTLEMENT_QUERY:
-            try:
-                claim_id = classification.metadata.get("claim_id") or self._extract_claim_id(user_message)
-                if not claim_id:
-                    raise ValueError("No claim identifier found in the request. Please provide a claim id like C1001 or ABC123.")
-
-                t0 = time.time()
-                settlement_result = calculate_settlement(claim_id)
-                tool_ms = int((time.time() - t0) * 1000)
-                timings["tools"].append({"tool": "settlement_calculator", "ms": tool_ms})
-                if trace_id:
-                    record_span("settlement_calculator", {"ms": tool_ms, "trace_id": trace_id})
-                final_response = self._format_settlement_answer(classification, settlement_result)
-            except Exception as exc:
-                logger.error("settlement_calculator_error", exc_info=True)
-                err_msg = str(exc)
-                user_msg = f"I attempted to calculate settlement for {claim_id}, but an error occurred: {err_msg}" if claim_id else f"I attempted to calculate settlement, but an error occurred: {err_msg}"
-                final_response = FAQResponse(
-                    intent=classification.intent,
-                    category=classification.category,
-                    confidence=classification.confidence,
-                    answer_text=user_msg,
-                    reasoning=err_msg,
-                    metadata={"tool": "settlement_calculator", "error": err_msg},
-                )
+        if isinstance(response.metadata, dict):
+            response.metadata["timings"] = timings
         else:
-            final_response = classification
-
-        try:
-            if isinstance(final_response.metadata, dict):
-                final_response.metadata["timings"] = timings
-            else:
-                final_response.metadata = {"timings": timings}
-        except Exception:
-            pass
+            response.metadata = {"timings": timings}
 
         self.memory.append_message(session_id, "user", user_message)
-        self.memory.append_message(session_id, "assistant", final_response.answer_text)
+        self.memory.append_message(session_id, "assistant", response.answer_text)
         if isinstance(context.get("timings"), dict):
             context["timings"].update(timings)
 
-        return final_response
+        return response

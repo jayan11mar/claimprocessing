@@ -77,37 +77,55 @@ def render_chat_bubble(role: str, text: str, metadata: Optional[Dict[str, Any]] 
 
 def get_backend_health(api_url: str) -> Optional[Dict[str, Any]]:
     try:
-        resp = requests.get(f"{api_url}/health", timeout=10)
-        resp.raise_for_status()
-        return resp.json()
-    except Exception:
+        response = requests.get(f"{api_url}/health", timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException:
+        return None
+    except ValueError:
         return None
 
 
 def get_saved_history(api_url: str, session_id: str) -> Optional[Dict[str, Any]]:
     try:
-        resp = requests.get(f"{api_url}/history/{session_id}", timeout=10)
-        resp.raise_for_status()
-        return resp.json()
-    except Exception:
+        response = requests.get(f"{api_url}/history/{session_id}", timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException:
+        return None
+    except ValueError:
         return None
 
 
 def call_backend(session_id: str, message: str, api_url: str) -> tuple[FAQResponse, Dict[str, Any]]:
     try:
-        resp = requests.post(f"{api_url}/chat", json={"session_id": session_id, "message": message}, timeout=60)
-        resp.raise_for_status()
-        payload = resp.json()
+        response = requests.post(
+            f"{api_url}/chat",
+            json={"session_id": session_id, "message": message},
+            timeout=60,
+        )
+        response.raise_for_status()
+        payload = response.json()
         structured = payload.get("structured", {})
         metadata = payload.get("chain_metadata", {}) or {}
         return FAQResponse.model_validate(structured), metadata
-    except Exception as exc:
+    except requests.RequestException as exc:
         return (
             FAQResponse(
                 intent=FAQIntent.OTHER,
                 category="error",
                 confidence=0.0,
                 answer_text=f"Error contacting backend: {exc}",
+            ),
+            {},
+        )
+    except ValueError as exc:
+        return (
+            FAQResponse(
+                intent=FAQIntent.OTHER,
+                category="error",
+                confidence=0.0,
+                answer_text=f"Invalid response from backend: {exc}",
             ),
             {},
         )
@@ -223,9 +241,13 @@ def main() -> None:
 
     if st.button("Reset Conversation"):
         try:
-            requests.post(f"{api_url}/reset", json={"session_id": st.session_state.session_id}, timeout=10)
-        except Exception:
-            pass
+            requests.post(
+                f"{api_url}/reset",
+                json={"session_id": st.session_state.session_id},
+                timeout=10,
+            )
+        except requests.RequestException:
+            st.warning("Could not reset the session on the backend.")
         st.session_state.history = []
         st.rerun()
 

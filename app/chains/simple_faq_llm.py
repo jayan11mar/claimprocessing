@@ -4,7 +4,7 @@ import json
 import logging
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import OpenAI, OpenAIError
 
 from app.prompts.faq_examples import get_faq_examples
 from app.prompts.loader import (
@@ -44,7 +44,7 @@ def _extract_json_from_text(text: str) -> Optional[Dict[str, Any]]:
         if idx != -1:
             maybe = text[idx:]
             return json.loads(maybe)
-    except Exception:
+    except json.JSONDecodeError:
         pass
     return None
 
@@ -73,7 +73,7 @@ def _parse_faq_response(text: str) -> Optional[FAQResponse]:
             metadata=json_obj.get("metadata", {}),
         )
         return response
-    except Exception as e:
+    except (TypeError, ValueError, KeyError) as e:
         logger.warning(f"Failed to parse FAQResponse: {e}")
         return None
 
@@ -119,7 +119,7 @@ def call_faq_llm(user_message: str, retry: bool = True) -> Optional[FAQResponse]
                 f'"answer_text": "...", "reasoning": "..."}}\n\n'
                 f"User question: {user_message}"
             )
-            resp2 = openai_client.chat.completions.create(
+            retry_response = openai_client.chat.completions.create(
                 model=settings.OPENAI_MODEL_NAME,
                 messages=[
                     {"role": "system", "content": get_system_template("main_faq_assistant")},
@@ -128,7 +128,7 @@ def call_faq_llm(user_message: str, retry: bool = True) -> Optional[FAQResponse]
                 temperature=0.1,
                 max_tokens=256,
             )
-            text2 = resp2.choices[0].message.content.strip()
+            text2 = retry_response.choices[0].message.content.strip()
             faq_response = _parse_faq_response(text2)
             if faq_response:
                 return faq_response
@@ -141,12 +141,21 @@ def call_faq_llm(user_message: str, retry: bool = True) -> Optional[FAQResponse]
             answer_text=text,
             reasoning="Could not parse structured response from LLM",
         )
-    except Exception as e:
+    except OpenAIError as e:
         logger.error(f"LLM call failed: {e}")
         return FAQResponse(
             intent=FAQIntent.OTHER,
             category="general",
             confidence=0.0,
             answer_text=f"Error querying the FAQ system: {str(e)}",
+            reasoning=f"OpenAIError: {type(e).__name__}",
+        )
+    except (ValueError, TypeError) as e:
+        logger.error(f"LLM response parsing failed: {e}")
+        return FAQResponse(
+            intent=FAQIntent.OTHER,
+            category="general",
+            confidence=0.0,
+            answer_text=f"Error processing the FAQ response: {str(e)}",
             reasoning=f"Exception: {type(e).__name__}",
         )

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from math import sqrt
 from typing import Dict, List, Optional
 
-from openai import OpenAI
+from openai import OpenAI, OpenAIError
 
 from app.config import get_settings
 from app.prompts.faq_examples import get_faq_examples
@@ -28,15 +28,17 @@ def _cosine_similarity(left: List[float], right: List[float]) -> float:
 
 def _build_examples() -> List[Example]:
     raw_examples = get_faq_examples()
-    return [
-        Example(
-            user=item["user"],
-            assistant=item["assistant"],
-            intent=item.get("intent", "OTHER"),
-            category=item.get("category", "general"),
+    examples: List[Example] = []
+    for item in raw_examples:
+        examples.append(
+            Example(
+                user=item["user"],
+                assistant=item["assistant"],
+                intent=item.get("intent", "OTHER"),
+                category=item.get("category", "general"),
+            )
         )
-        for item in raw_examples
-    ]
+    return examples
 
 
 def _embed_texts(texts: List[str]) -> List[List[float]]:
@@ -61,15 +63,16 @@ def select_examples(query: str, k: int = 3) -> List[Example]:
             example.embedding = embedding
 
         query_embedding = _embed_texts([query])[0]
-        scored = [
-            (example, _cosine_similarity(example.embedding or [0.0], query_embedding))
-            for example in examples
-        ]
+        scored = []
+        for example in examples:
+            similarity = _cosine_similarity(example.embedding or [0.0], query_embedding)
+            scored.append((example, similarity))
+
         scored.sort(key=lambda pair: pair[1], reverse=True)
         selected = [example for example, _score in scored[:k]]
         if selected:
             return selected
-    except Exception:
+    except (OpenAIError, TypeError, ValueError, IndexError, AttributeError):
         pass
 
     return examples[:k]

@@ -23,9 +23,11 @@ def build_faq_prompt(examples: List[Dict[str, str]]) -> ChatPromptTemplate:
     system_prompt = SystemMessagePromptTemplate.from_template(
         get_system_template("main_faq_assistant")
     )
-    example_block = "\n\n".join(
-        [f"User: {example['user']}\nAssistant: {example['assistant']}" for example in examples]
-    )
+    example_lines = []
+    for example in examples:
+        example_lines.append(f"User: {example['user']}")
+        example_lines.append(f"Assistant: {example['assistant']}")
+    example_block = "\n\n".join(example_lines)
     human_template = HumanMessagePromptTemplate.from_template(
         "{json_instruction}\n\n{example_block}\n\nUser: {user_message}\nAssistant:"
     )

@@ -20,6 +20,10 @@ logger = get_logger("app.api.server")
 app = FastAPI(title="Claims Assistant API", version="0.1.0")
 _START_TIME = time.time()
 
+# Expose this module as `server` in builtins so tests can reference `server` directly
+import sys as _sys, builtins as _builtins
+_builtins.server = _sys.modules[__name__]
+
 
 @app.middleware("http")
 async def add_correlation_and_timing(request: Request, call_next):

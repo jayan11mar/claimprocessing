@@ -19,3 +19,4 @@ ENV/
 .github/
 .github/agents  
 .github/workflows/
+.coverage

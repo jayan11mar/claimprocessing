@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""
-Validate that SQLiteMemory persists multi-turn conversations (>=10 turns).
-
-Run: python3 scripts/validate_sqlite_context.py
-"""
 import os
 import sys
 import uuid

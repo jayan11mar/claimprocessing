@@ -2,7 +2,6 @@ from typing import List, Dict
 
 
 def get_faq_examples() -> List[Dict[str, str]]:
-    """Return few-shot examples for the FAQ prompt builder."""
     return [
         {
             "user": "Process a new claim for policy #HI-445021. Hospital bill is ₹3,40,000.",

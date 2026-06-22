@@ -1,4 +1,3 @@
-"""Simple evaluation harness: send 20 queries to /chat and save responses."""
 import json
 import time
 from uuid import uuid4

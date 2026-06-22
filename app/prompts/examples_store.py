@@ -53,7 +53,6 @@ def _embed_texts(texts: List[str]) -> List[List[float]]:
 
 
 def select_examples(query: str, k: int = 3) -> List[Example]:
-    """Select the top-k examples semantically most similar to the query."""
     examples = _build_examples()
     try:
         user_texts = [example.user for example in examples]

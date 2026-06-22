@@ -64,26 +64,6 @@ python scripts/evaluate.py
 
 The system is built as a modular FastAPI + Streamlit application with LangChain orchestration, custom domain tools, SQLite memory, Pydantic validation, JSON logging, and optional LangSmith tracing.
 
-```
-User Browser / Streamlit
-          |
-          v
-    Streamlit client
-          |
-          v
-     FastAPI backend
-      /    |    \
-     v     v     v
-   Memory  Agent  LangSmith
-   (SQLite) Chain  Tracing
-      |      |
-      v      v
-   Tools    LLM
- (claims,    +
- fraud,    prompt
- settlement) templates
-```
-
 ## Documentation
 
 - `docs/evaluation_report.md`: evaluation summary of the 20 queries.

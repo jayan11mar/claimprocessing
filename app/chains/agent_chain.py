@@ -51,6 +51,20 @@ class AgentChain:
                 return policy_number
         return ""
 
+    def _extract_policy_number_from_history(self, session_id: str) -> str:
+        """Extract the most recent policy number from conversation history."""
+        if not self.memory:
+            return ""
+        
+        history = self.memory.get_history(session_id)
+        # Search from most recent to oldest
+        for message in reversed(history):
+            content = message.content if hasattr(message, "content") else str(message)
+            policy_number = self._extract_policy_number(content)
+            if policy_number:
+                return policy_number
+        return ""
+
     def _extract_incident_date(self, text: str) -> str:
         patterns = [
             r"(?:incident|loss|admission|treatment) date\s*(?:is|was|:)\s*([0-9]{4}-[0-9]{2}-[0-9]{2})",
@@ -197,8 +211,13 @@ class AgentChain:
         message: str,
         timings: Dict[str, Any],
         trace_id: Optional[str],
+        session_id: Optional[str] = None,
     ) -> FAQResponse:
-        policy_number = intent.metadata.get("policy_number") or self._extract_policy_number(message)
+        policy_number = (
+            intent.metadata.get("policy_number")
+            or self._extract_policy_number(message)
+            or self._extract_policy_number_from_history(session_id or "")
+        )
         if not policy_number:
             return FAQResponse(
                 intent=intent.intent,
@@ -219,6 +238,16 @@ class AgentChain:
                 answer_text=str(exc),
                 reasoning="Invalid claim amount provided.",
                 metadata={"tool": "claims_intake", "error": "invalid_claim_amount"},
+            )
+
+        if claim_amount <= 0:
+            return FAQResponse(
+                intent=intent.intent,
+                category=intent.category,
+                confidence=intent.confidence,
+                answer_text="I need the claim amount to process your claim. Please provide the amount you're claiming (e.g., '$5000' or 'claim amount is 5000').",
+                reasoning="Claim amount missing or invalid.",
+                metadata={"tool": "claims_intake", "error": "claim_amount_missing"},
             )
 
         details = intent.metadata.get("extra_info", {}) or {}
@@ -320,7 +349,7 @@ class AgentChain:
             record_span("faq_chain", span_meta)
 
         if response.intent == FAQIntent.CLAIM_REGISTRATION:
-            response = self._handle_claim_registration(response, user_message, timings, trace_id)
+            response = self._handle_claim_registration(response, user_message, timings, trace_id, session_id)
         elif response.intent == FAQIntent.FRAUD_CHECK:
             response = self._handle_fraud_check(response, user_message, timings, trace_id)
         elif response.intent == FAQIntent.SETTLEMENT_QUERY:

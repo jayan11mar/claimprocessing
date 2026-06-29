@@ -125,6 +125,7 @@ def test_register_claim_before_policy_start_adds_coverage_gap_warning():
 
 def test_agent_chain_requires_policy_number_for_claim_registration():
     agent = AgentChain()
+    agent.memory.clear_history("session1")
     agent.faq_chain.invoke = lambda sid, msg, **kwargs: FAQResponse(
         intent=FAQIntent.CLAIM_REGISTRATION,
         category="claims",
@@ -140,6 +141,25 @@ def test_agent_chain_requires_policy_number_for_claim_registration():
     assert "policy number" in response.answer_text.lower()
     assert response.metadata["tool"] == "claims_intake"
     assert response.metadata["error"] == "policy_number_missing"
+
+
+def test_agent_chain_requires_claim_amount_for_registration():
+    agent = AgentChain()
+    agent.faq_chain.invoke = lambda sid, msg, **kwargs: FAQResponse(
+        intent=FAQIntent.CLAIM_REGISTRATION,
+        category="claims",
+        confidence=0.9,
+        answer_text="",
+        reasoning="",
+        metadata={"policy_number": "P123456"},
+    )
+
+    response = agent.invoke("session1", "Register a claim under policy P123456", context={})
+
+    assert response.intent == FAQIntent.CLAIM_REGISTRATION
+    assert "claim amount" in response.answer_text.lower()
+    assert response.metadata["tool"] == "claims_intake"
+    assert response.metadata["error"] == "claim_amount_missing"
 
 
 def test_extract_policy_number_from_policy_phrase():
@@ -178,3 +198,31 @@ def test_register_claim_below_deductible_is_not_payable():
     )
     assert res.is_eligible is False or res.approved_amount == 0.0
     assert any("not payable" in msg.lower() for msg in res.validation_messages)
+
+
+def test_agent_chain_uses_policy_number_from_history_for_claim_registration():
+    from app.memory.sqlite_memory import SQLiteMemory
+
+    agent = AgentChain(memory=SQLiteMemory())
+    session_id = "test-multiturn-session"
+
+    # Simulate first turn: user provides policy number and claim amount
+    agent.memory.append_message(session_id, "user", "Register a claim for policy P123456 with amount 1000")
+    agent.memory.append_message(session_id, "assistant", "Sure, I can help with that.")
+
+    # Mock FAQChain to return CLAIM_REGISTRATION intent without policy_number in metadata
+    agent.faq_chain.invoke = lambda sid, msg, **kwargs: FAQResponse(
+        intent=FAQIntent.CLAIM_REGISTRATION,
+        category="claims",
+        confidence=0.9,
+        answer_text="",
+        reasoning="",
+        metadata={},
+    )
+
+    # Second turn: user only provides claim amount, no policy number
+    response = agent.invoke(session_id, "claim amount is 1000$", context={})
+
+    assert response.intent == FAQIntent.CLAIM_REGISTRATION
+    assert response.metadata.get("error") != "policy_number_missing"
+    assert "Claim ID" in response.answer_text or "claim" in response.answer_text.lower()

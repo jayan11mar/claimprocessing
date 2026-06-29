@@ -9,6 +9,7 @@ from app.memory.sqlite_memory import SQLiteMemory
 from app.models.faq import FAQIntent, FAQResponse
 from app.tools.claims_intake import register_and_validate_claim
 from app.tools.fraud_detector import compute_fraud_score
+from app.tools.policy_checker import check_policy_status
 from app.tools.settlement_calculator import calculate_settlement
 
 logger = logging.getLogger(__name__)
@@ -29,6 +30,11 @@ class AgentChain:
                 "name": "fraud_detector",
                 "func": compute_fraud_score,
                 "description": "Compute a fraud score for an existing claim based on policy and claim history.",
+            },
+            {
+                "name": "policy_checker",
+                "func": check_policy_status,
+                "description": "Check the status of a policy (active, lapsed, cancelled) and whether claims can be filed.",
             },
             {
                 "name": "settlement_calculator",
@@ -205,6 +211,21 @@ class AgentChain:
             },
         )
 
+    def _format_policy_status_answer(self, base: FAQResponse, result: Any) -> FAQResponse:
+        answer_text = result.message
+        return FAQResponse(
+            intent=base.intent,
+            category=base.category,
+            confidence=base.confidence,
+            answer_text=answer_text,
+            reasoning=base.reasoning,
+            metadata={
+                **base.metadata,
+                "tool": "policy_checker",
+                "tool_output": result.to_dict(),
+            },
+        )
+
     def _handle_claim_registration(
         self,
         intent: FAQResponse,
@@ -326,6 +347,33 @@ class AgentChain:
                 metadata={"tool": "settlement_calculator", "error": str(exc)},
             )
 
+    def _handle_policy_status(
+        self,
+        intent: FAQResponse,
+        message: str,
+        timings: Dict[str, Any],
+        trace_id: Optional[str],
+    ) -> FAQResponse:
+        policy_number = (
+            intent.metadata.get("policy_number")
+            or self._extract_policy_number(message)
+            or self._extract_policy_number_from_history(getattr(self.memory, "session_id", ""))
+        )
+        if not policy_number:
+            return FAQResponse(
+                intent=intent.intent,
+                category=intent.category,
+                confidence=intent.confidence,
+                answer_text="I need a policy number to check its status. Please provide the policy ID or policy number.",
+                reasoning="Policy number missing from status check request.",
+                metadata={"tool": "policy_checker", "error": "policy_number_missing"},
+            )
+
+        start = time.time()
+        result = check_policy_status(policy_number)
+        self._record_tool_timing("policy_checker", start, timings, trace_id)
+        return self._format_policy_status_answer(intent, result)
+
     def invoke(self, session_id: str, user_message: str, context: dict = None) -> FAQResponse:
         context = context or {}
         timings = context.get("timings") if isinstance(context.get("timings"), dict) else {"llm_ms": 0, "tools": []}
@@ -350,6 +398,8 @@ class AgentChain:
 
         if response.intent == FAQIntent.CLAIM_REGISTRATION:
             response = self._handle_claim_registration(response, user_message, timings, trace_id, session_id)
+        elif response.intent == FAQIntent.POLICY_STATUS:
+            response = self._handle_policy_status(response, user_message, timings, trace_id)
         elif response.intent == FAQIntent.FRAUD_CHECK:
             response = self._handle_fraud_check(response, user_message, timings, trace_id)
         elif response.intent == FAQIntent.SETTLEMENT_QUERY:

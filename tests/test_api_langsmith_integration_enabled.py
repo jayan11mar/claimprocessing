@@ -41,7 +41,7 @@ def test_chat_sets_langsmith_trace_id_when_sdk_enabled(monkeypatch):
     from app.models.faq import FAQResponse, FAQIntent
 
     agent = AgentChain(memory=FakeMemory())
-    agent.faq_chain.invoke = lambda sid, msg: FAQResponse(
+    agent.faq_chain.invoke = lambda sid, msg, persist_history=True: FAQResponse(
         intent=FAQIntent.OTHER,
         category="test",
         confidence=0.5,

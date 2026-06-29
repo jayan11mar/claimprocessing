@@ -45,7 +45,7 @@ def _parse_supporting_documents(value: Optional[Union[str, List[str]]]) -> List[
 
 def register_and_validate_claim(
     policy_number: str,
-    claim_amount: float,
+    claim_amount: Optional[float] = None,
     extra_info: Optional[Dict[str, Union[str, List[str]]]] = None,
 ) -> ClaimValidationResult:
     extra_info = extra_info or {}
@@ -77,6 +77,16 @@ def register_and_validate_claim(
     if policy.status != PolicyStatus.ACTIVE:
         validation_messages.append(f"Policy status is {policy.status}. Claim cannot be processed.")
         is_eligible = False
+
+    if claim_amount is None:
+        return ClaimValidationResult(
+            claim_id="",
+            policy_number=policy_number,
+            is_eligible=False,
+            approved_amount=0.0,
+            validation_messages=["Claim amount is required to process the claim."],
+            metadata={"error": "claim_amount_missing"},
+        )
 
     if claim_amount <= 0:
         validation_messages.append("Claim amount must be greater than zero.")

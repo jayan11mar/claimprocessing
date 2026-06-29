@@ -30,6 +30,13 @@ def test_register_claim_non_positive_amount():
     assert any("greater than zero" in m for m in res.validation_messages)
 
 
+def test_register_claim_missing_amount_returns_error():
+    res = register_and_validate_claim(policy_number="P123456", claim_amount=None)
+    assert res.is_eligible is False
+    assert res.metadata["error"] == "claim_amount_missing"
+    assert any("required" in msg.lower() for msg in res.validation_messages)
+
+
 def test_register_claim_with_incident_date_and_documents():
     res = register_and_validate_claim(
         policy_number="P123456",

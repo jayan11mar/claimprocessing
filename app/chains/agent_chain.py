@@ -306,7 +306,7 @@ class AgentChain:
             trace_id = trace.get("trace_id") if isinstance(trace, dict) else None
 
             start = time.time()
-            response = self.faq_chain.invoke(session_id, user_message)
+            response = self.faq_chain.invoke(session_id, user_message, persist_history=False)
             timings["llm_ms"] = int((time.time() - start) * 1000)
 
             span_meta = {

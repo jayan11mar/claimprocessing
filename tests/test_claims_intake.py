@@ -118,7 +118,7 @@ def test_register_claim_before_policy_start_adds_coverage_gap_warning():
 
 def test_agent_chain_requires_policy_number_for_claim_registration():
     agent = AgentChain()
-    agent.faq_chain.invoke = lambda sid, msg: FAQResponse(
+    agent.faq_chain.invoke = lambda sid, msg, **kwargs: FAQResponse(
         intent=FAQIntent.CLAIM_REGISTRATION,
         category="claims",
         confidence=0.9,

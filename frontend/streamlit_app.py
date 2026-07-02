@@ -11,6 +11,7 @@ import streamlit as st
 from typing import Any, Dict, Optional
 
 import requests
+from app.chains.faq_chain import FAQChain
 from app.models.faq import FAQResponse, FAQIntent
 
 
@@ -97,43 +98,15 @@ def get_saved_history(api_url: str, session_id: str) -> Optional[Dict[str, Any]]
         return None
 
 
-def call_backend(session_id: str, message: str, api_url: str) -> tuple[FAQResponse, Dict[str, Any]]:
-    try:
-        response = requests.post(
-            f"{api_url}/chat",
-            json={"session_id": session_id, "message": message},
-            timeout=60,
-        )
-        response.raise_for_status()
-        payload = response.json()
-        structured = payload.get("structured", {})
-        metadata = payload.get("chain_metadata", {}) or {}
-        return FAQResponse.model_validate(structured), metadata
-    except requests.RequestException as exc:
-        return (
-            FAQResponse(
-                intent=FAQIntent.OTHER,
-                category="error",
-                confidence=0.0,
-                answer_text=f"Error contacting backend: {exc}",
-            ),
-            {},
-        )
-    except ValueError as exc:
-        return (
-            FAQResponse(
-                intent=FAQIntent.OTHER,
-                category="error",
-                confidence=0.0,
-                answer_text=f"Invalid response from backend: {exc}",
-            ),
-            {},
-        )
+def call_faq_chain(session_id: str, message: str) -> FAQResponse:
+    """Call the FAQChain directly (bypassing the API) for direct Python integration."""
+    chain = FAQChain()
+    return chain.invoke(session_id, message, persist_history=True)
 
 
 def main() -> None:
-    st.set_page_config(page_title="Claims Assistant", page_icon="🛡️",layout="wide",
-    initial_sidebar_state="expanded",)
+    st.set_page_config(page_title="Claims Assistant", page_icon="🛡️", layout="wide",
+                       initial_sidebar_state="expanded")
     st.title("Claims processing & Settlement Automation Assistant")
     inject_chat_style()
 
@@ -146,7 +119,7 @@ def main() -> None:
 
     if "history" not in st.session_state:
         st.session_state.history = []
-    
+
     if "latest_langsmith_trace_id" not in st.session_state:
         st.session_state.latest_langsmith_trace_id = None
 
@@ -163,7 +136,7 @@ def main() -> None:
         st.sidebar.write(f"**Uptime:** {health.get('uptime_seconds', '?')}s")
     else:
         st.sidebar.warning("Backend health unavailable.")
-    
+
     st.sidebar.divider()
     st.sidebar.header("LangSmith Tracing")
     if st.session_state.latest_langsmith_trace_id:
@@ -213,10 +186,9 @@ def main() -> None:
         query = st.text_input("Ask a question about claims, coverage, or settlement")
 
     if query:
-        response, metadata = call_backend(st.session_state.session_id, query, api_url)
-        st.session_state.history.append({"user": query, "response": response, "metadata": metadata})
-        if metadata.get("langsmith_trace_id"):
-            st.session_state.latest_langsmith_trace_id = metadata.get("langsmith_trace_id")
+        # Use direct FAQChain call instead of backend API
+        response = call_faq_chain(st.session_state.session_id, query)
+        st.session_state.history.append({"user": query, "response": response, "metadata": {}})
 
     if st.session_state.history:
         st.markdown("---")

@@ -78,3 +78,70 @@ class SQLiteMemory:
                 (session_id,),
             )
             conn.commit()
+
+    def trim_history(self, session_id: str, max_turns: int = 10) -> None:
+        """Trim conversation history to keep only the most recent `max_turns` user+assistant pairs."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute(
+                "SELECT COUNT(*) FROM chat_history WHERE session_id = ?",
+                (session_id,),
+            )
+            count = cursor.fetchone()[0]
+            # Each turn = 2 messages (user + assistant)
+            keep = max_turns * 2
+            if count > keep:
+                conn.execute(
+                    """DELETE FROM chat_history
+                       WHERE session_id = ? AND id IN (
+                           SELECT id FROM chat_history
+                           WHERE session_id = ?
+                           ORDER BY id ASC
+                           LIMIT ?
+                       )""",
+                    (session_id, session_id, count - keep),
+                )
+                conn.commit()
+
+    def get_message_count(self, session_id: str) -> int:
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute(
+                "SELECT COUNT(*) FROM chat_history WHERE session_id = ?",
+                (session_id,),
+            )
+            return cursor.fetchone()[0]
+
+
+# ---------------------------------------------------------------------------
+# Standalone module-level functions (LangChain-friendly interface)
+# ---------------------------------------------------------------------------
+
+def get_history(session_id: str) -> List[BaseMessage]:
+    """Retrieve conversation history for a session as a list of BaseMessage objects."""
+    memory = _get_memory_instance()
+    return memory.get_history(session_id)
+
+
+def append_message(session_id: str, role: str, content: str) -> None:
+    """Append a single message to the conversation history for a session."""
+    memory = _get_memory_instance()
+    memory.append_message(session_id, role, content)
+    memory.trim_history(session_id, max_turns=10)
+
+
+def clear_history(session_id: str) -> None:
+    """Clear all history for a session."""
+    memory = _get_memory_instance()
+    memory.clear_history(session_id)
+
+
+def get_message_count(session_id: str) -> int:
+    """Return the number of stored messages for a session."""
+    memory = _get_memory_instance()
+    return memory.get_message_count(session_id)
+
+
+def _get_memory_instance() -> SQLiteMemory:
+    """Return a singleton-like SQLiteMemory instance for module-level access."""
+    if not hasattr(_get_memory_instance, "_instance"):
+        _get_memory_instance._instance = SQLiteMemory()
+    return _get_memory_instance._instance

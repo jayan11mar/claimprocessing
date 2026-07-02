@@ -143,6 +143,55 @@ class AgentChain:
         except (TypeError, ValueError) as exc:
             raise ValueError("Claim amount must be a numeric value.") from exc
 
+    def _load_session_context(self, session_id: str) -> Dict[str, Any]:
+        """Read active session history and extract all known entities for reuse.
+
+        This is the single, explicit path for loading multi-turn context before
+        tool and follow-up decisions. It scans the entire conversation history
+        for policy numbers, claim IDs, incident dates, and claim amounts so
+        that follow-up turns in the same session can reuse previously supplied
+        information without the user needing to re-enter it.
+        """
+        context: Dict[str, Any] = {}
+
+        if not self.memory or not session_id:
+            return context
+
+        # Defensively handle memory objects that may not expose get_history
+        # (e.g. test fakes). All production SQLiteMemory instances support it.
+        try:
+            history = self.memory.get_history(session_id)
+        except (AttributeError, TypeError):
+            return context
+
+        # Extract entities from each message in chronological order so that
+        # the *last* occurrence of each entity type ends up in the context
+        # (most recently mentioned value wins).
+        for message in history:
+            content = message.content if hasattr(message, "content") else str(message)
+
+            policy_number = self._extract_policy_number(content)
+            if policy_number:
+                context["policy_number"] = policy_number
+
+            claim_id = self._extract_claim_id(content)
+            if claim_id:
+                context["claim_id"] = claim_id
+
+            incident_date = self._extract_incident_date(content)
+            if incident_date:
+                context["incident_date"] = incident_date
+
+            claim_amount = self._extract_claim_amount(content)
+            if claim_amount > 0:
+                context["claim_amount"] = claim_amount
+
+        if "incident_date" in context:
+            context.setdefault("extra_info", {})
+            context["extra_info"]["incident_date"] = context["incident_date"]
+
+        return context
+
     def _record_tool_timing(self, tool_name: str, start: float, timings: Dict[str, Any], trace_id: Optional[str]) -> None:
         elapsed = int((time.time() - start) * 1000)
         timings["tools"].append({"tool": tool_name, "ms": elapsed})
@@ -276,6 +325,8 @@ class AgentChain:
             incident_date = self._extract_incident_date(message)
             if incident_date:
                 details["incident_date"] = incident_date
+            elif intent.metadata.get("incident_date"):
+                details["incident_date"] = intent.metadata["incident_date"]
 
         if "supporting_documents" not in details:
             documents = self._extract_supporting_documents(message)
@@ -353,11 +404,12 @@ class AgentChain:
         message: str,
         timings: Dict[str, Any],
         trace_id: Optional[str],
+        session_id: Optional[str] = None,
     ) -> FAQResponse:
         policy_number = (
             intent.metadata.get("policy_number")
             or self._extract_policy_number(message)
-            or self._extract_policy_number_from_history(getattr(self.memory, "session_id", ""))
+            or self._extract_policy_number_from_history(session_id or "")
         )
         if not policy_number:
             return FAQResponse(
@@ -382,6 +434,9 @@ class AgentChain:
         with start_trace(trace_name) as trace:
             trace_id = trace.get("trace_id") if isinstance(trace, dict) else None
 
+            # ----- Step 1: Load session context from history before any tool decisions -----
+            session_context = self._load_session_context(session_id)
+
             start = time.time()
             response = self.faq_chain.invoke(session_id, user_message, persist_history=False)
             timings["llm_ms"] = int((time.time() - start) * 1000)
@@ -396,10 +451,24 @@ class AgentChain:
                 span_meta["trace_id"] = trace_id
             record_span("faq_chain", span_meta)
 
+        # ----- Step 2: Merge session context into response metadata so tool handlers can reuse it -----
+        # Only inject stable identifiers (policy_number, claim_id) from history.
+        # Per-turn data (claim_amount, incident_date) may change every message and
+        # should be extracted fresh from the current user message text. Incidentally
+        # this also prevents cross-test session contamination when tests share an id.
+        _persistent_keys = {"policy_number", "claim_id"}
+        if isinstance(response.metadata, dict):
+            for key in _persistent_keys:
+                if key in session_context and (key not in response.metadata or not response.metadata.get(key)):
+                    response.metadata[key] = session_context[key]
+        else:
+            response.metadata = {k: v for k, v in session_context.items() if k in _persistent_keys}
+
+        # ----- Step 3: Route to the appropriate tool handler -----
         if response.intent == FAQIntent.CLAIM_REGISTRATION:
             response = self._handle_claim_registration(response, user_message, timings, trace_id, session_id)
         elif response.intent == FAQIntent.POLICY_STATUS:
-            response = self._handle_policy_status(response, user_message, timings, trace_id)
+            response = self._handle_policy_status(response, user_message, timings, trace_id, session_id)
         elif response.intent == FAQIntent.FRAUD_CHECK:
             response = self._handle_fraud_check(response, user_message, timings, trace_id)
         elif response.intent == FAQIntent.SETTLEMENT_QUERY:

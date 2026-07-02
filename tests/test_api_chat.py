@@ -105,31 +105,46 @@ def test_chat_latency_target_for_tool_augmented_query(monkeypatch):
     assert chain_meta["is_tool_augmented"] is True
 
 
-def test_chat_latency_target_for_simple_query(monkeypatch):
-    class SimpleAgentChain(FakeAgentChain):
+def test_chat_and_reset_flow(monkeypatch):
+    class StatefulAgentChain(FakeAgentChain):
+        def __init__(self, memory):
+            self.memory = memory
+
         def invoke(self, session_id, message, context=None):
-            timings = {"llm_ms": 50, "tools": []}
             if isinstance(context, dict) and isinstance(context.get("timings"), dict):
-                context["timings"].update(timings)
+                context["timings"].update({"llm_ms": 110, "tools": []})
+
+            self.memory.append_message(session_id, "user", message)
+            self.memory.append_message(session_id, "assistant", f"Mocked answer for {message}")
             return FAQResponse(
-                intent=FAQIntent.POLICY_STATUS,
-                category="claims",
-                confidence=0.9,
-                answer_text="Simple answer",
-                reasoning="mocked",
-                metadata={"timings": timings},
+                intent=FAQIntent.OTHER,
+                category="integration",
+                confidence=0.8,
+                answer_text=f"Mocked answer for {message}",
+                reasoning="integration test",
+                metadata={"timings": {"llm_ms": 110, "tools": []}},
             )
 
-    server._memory = FakeMemory()
-    server._agent_chain = SimpleAgentChain()
+    memory = FakeMemory()
+    server._memory = memory
+    server._agent_chain = StatefulAgentChain(memory)
 
     client = TestClient(server.app)
-    payload = {"session_id": "simple-session", "message": "What is the policy status?"}
+    payload = {"session_id": "integration-session", "message": "Hello backend"}
+
     resp = client.post("/chat", json=payload)
     assert resp.status_code == 200
-
     body = resp.json()
-    chain_meta = body["chain_metadata"]
-    assert chain_meta["latency_target_ms"] == 3000
-    assert chain_meta["latency_within_target"] is True
-    assert chain_meta["is_tool_augmented"] is False
+    assert body["answer_text"] == "Mocked answer for Hello backend"
+    assert body["structured"]["category"] == "integration"
+    assert body["chain_metadata"]["latency_target_ms"] == 3000
+
+    assert memory.store["integration-session"] == [
+        ("user", "Hello backend"),
+        ("assistant", "Mocked answer for Hello backend"),
+    ]
+
+    reset_resp = client.post("/reset", json={"session_id": "integration-session"})
+    assert reset_resp.status_code == 200
+    assert reset_resp.json()["status"] == "ok"
+    assert memory.store.get("integration-session") is None

@@ -29,6 +29,55 @@ class SQLiteMemory:
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS policies (
+                    policy_number TEXT PRIMARY KEY,
+                    policy_holder_id TEXT,
+                    status TEXT NOT NULL,
+                    sum_insured REAL NOT NULL,
+                    deductible REAL NOT NULL,
+                    copay_percent REAL NOT NULL,
+                    sub_limits TEXT,
+                    depreciation_schedule TEXT,
+                    start_date TEXT,
+                    end_date TEXT,
+                    product_code TEXT,
+                    coverage_type TEXT,
+                    underwriting_class TEXT,
+                    risk_category TEXT,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS claims (
+                    claim_id TEXT PRIMARY KEY,
+                    policy_number TEXT NOT NULL,
+                    policy_holder_id TEXT,
+                    claim_amount REAL NOT NULL,
+                    incident_date TEXT,
+                    admission_date TEXT,
+                    discharge_date TEXT,
+                    diagnosis_code TEXT,
+                    hospital_name TEXT,
+                    supporting_documents TEXT,
+                    extra_info TEXT,
+                    status TEXT,
+                    loss_type TEXT,
+                    reported_date TEXT,
+                    closed_date TEXT,
+                    approved_amount REAL,
+                    fraud_score REAL,
+                    settlement_status TEXT,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    FOREIGN KEY(policy_number) REFERENCES policies(policy_number)
+                )
+                """
+            )
             conn.commit()
 
     def append_message(self, session_id: str, role: str, content: str) -> None:

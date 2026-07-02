@@ -12,7 +12,7 @@ from app.logging.json_logger import get_logger
 from app.chains.agent_chain import AgentChain
 from app.langsmith_integration import get_langsmith_trace_id
 from app.memory.sqlite_memory import SQLiteMemory
-from app.models.faq import FAQResponse
+from app.models.faq import FAQIntent, FAQResponse
 
 
 logger = get_logger("app.api.server")
@@ -92,6 +92,40 @@ def _ensure_components() -> None:
         _agent_chain = AgentChain(memory=_memory)
 
 
+def _fallback_response(user_message: str, error_info: Optional[str] = None) -> FAQResponse:
+    return FAQResponse(
+        intent=FAQIntent.OTHER,
+        category="fallback",
+        confidence=0.0,
+        answer_text=(
+            "Sorry, I couldn't process that request right now. "
+            "Please try again with a simpler question or rephrase your request."
+        ),
+        reasoning="Fallback response after failed execution.",
+        metadata={"fallback": True, "error_info": error_info, "original_input": user_message},
+    )
+
+
+def _invoke_with_retry(session_id: str, user_message: str, context: dict) -> FAQResponse:
+    try:
+        response = _agent_chain.invoke(session_id, user_message, context=context)
+        if response.category == "error":
+            logger.warning("chat_parse_error_retry", {"session_id": session_id, "category": response.category, "reasoning": response.reasoning})
+            response = _agent_chain.invoke(session_id, user_message, context=context)
+        if response.category == "error":
+            return _fallback_response(user_message, error_info=response.reasoning or "parse_error")
+        return response
+    except Exception as exc:
+        logger.exception("chat_invoke_exception", {"session_id": session_id, "error": str(exc)})
+        try:
+            response = _agent_chain.invoke(session_id, user_message, context=context)
+            if response.category != "error":
+                return response
+        except Exception as exc2:
+            logger.exception("chat_retry_exception", {"session_id": session_id, "error": str(exc2)})
+        return _fallback_response(user_message, error_info=str(exc))
+
+
 @app.get("/health")
 def health() -> Dict[str, Any]:
     uptime = time.time() - _START_TIME
@@ -126,7 +160,7 @@ def chat(request: Request, req: ChatRequest) -> ChatResponse:
     try:
         _ensure_components()
         context = {"correlation_id": correlation_id, "timings": request.state.timings}
-        faq_response = _agent_chain.invoke(req.session_id, req.message, context=context)
+        faq_response = _invoke_with_retry(req.session_id, req.message, context=context)
 
         latency_ms = int((time.time() - start) * 1000)
 
@@ -181,8 +215,8 @@ def chat(request: Request, req: ChatRequest) -> ChatResponse:
     except Exception as exc:
         logger.error("chat_error", {"error": str(exc), **log_meta})
         fallback = FAQResponse(
-            intent="OTHER",
-            category="error",
+            intent=FAQIntent.OTHER,
+            category="fallback",
             confidence=0.0,
             answer_text="Sorry, I encountered an error while processing your request. Please try again later.",
             reasoning=str(exc),

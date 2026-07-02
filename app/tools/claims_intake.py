@@ -3,6 +3,9 @@ from typing import Dict, List, Optional, Union
 from uuid import uuid4
 
 from app.models.domain import Claim, ClaimValidationResult, PolicyStatus, get_policy, save_claim
+from app.tools.fraud_detector import compute_fraud_score
+
+FRAUD_SCORE_THRESHOLD = 0.7
 
 
 def _parse_incident_date(value: Union[str, date, None]) -> Optional[date]:
@@ -143,13 +146,44 @@ def register_and_validate_claim(
         claim_id=claim_id,
         policy_number=policy.policy_number,
         claim_amount=claim_amount,
+        approved_amount=round(max(0.0, approved_amount), 2),
+        policy_holder_id=str(extra_info.get("policy_holder_id")) if extra_info.get("policy_holder_id") else None,
+        diagnosis_code=str(extra_info.get("diagnosis_code")) if extra_info.get("diagnosis_code") else None,
+        hospital_name=str(extra_info.get("hospital_name")) if extra_info.get("hospital_name") else None,
         incident_date=incident_date,
         supporting_documents=supporting_documents,
         extra_info={
             **{k: str(v) for k, v in extra_info.items() if k != "supporting_documents"},
             "sub_limit_category": str(category) if category else "",
         },
+        status="PENDING_REVIEW",
     )
+
+    fraud_evaluation = compute_fraud_score(claim=claim)
+    if fraud_evaluation.score >= FRAUD_SCORE_THRESHOLD:
+        validation_messages.append(
+            "Claim registration is blocked because fraud risk validation exceeded the acceptable threshold."
+        )
+        metadata = {
+            "policy_status": policy.status.value,
+            "sum_insured": str(policy.sum_insured),
+            "deductible": str(policy.deductible),
+            "fraud_score": fraud_evaluation.score,
+            "fraud_signals": fraud_evaluation.signals,
+            "fraud_details": fraud_evaluation.details,
+            "fraud_validation": "failed",
+        }
+        return ClaimValidationResult(
+            claim_id="",
+            policy_number=policy.policy_number,
+            is_eligible=False,
+            approved_amount=0.0,
+            validation_messages=validation_messages,
+            metadata={k: v for k, v in metadata.items() if v is not None},
+        )
+
+    claim.fraud_score = fraud_evaluation.score
+    claim.status = "CREATED"
     save_claim(claim)
 
     metadata = {
@@ -158,6 +192,8 @@ def register_and_validate_claim(
         "deductible": str(policy.deductible),
         "incident_date": incident_date.isoformat() if incident_date else None,
         "supporting_documents": supporting_documents,
+        "fraud_score": fraud_evaluation.score,
+        "fraud_signals": fraud_evaluation.signals,
     }
     return ClaimValidationResult(
         claim_id=claim_id,

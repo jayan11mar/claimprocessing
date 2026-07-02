@@ -14,17 +14,23 @@ from app.models.domain import (
 logger = get_logger(__name__)
 
 
-def compute_fraud_score(claim_id: str) -> FraudScoreResult:
+def compute_fraud_score(claim_id: Optional[str] = None, claim: Optional[Claim] = None) -> FraudScoreResult:
     start_time = datetime.utcnow()
+    if claim is None:
+        if claim_id is None:
+            raise ValueError("Either claim_id or claim must be provided to compute fraud score.")
+        claim = get_claim(claim_id)
+    else:
+        claim_id = claim.claim_id
+
     logger.info(
         "fraud_detector_start",
         {"claim_id": claim_id, "started_at": start_time.isoformat() + "Z"},
     )
 
-    claim = get_claim(claim_id)
     if claim is None:
         result = FraudScoreResult(
-            claim_id=claim_id,
+            claim_id=claim_id or "",
             score=0.0,
             signals=["Claim not found."],
             details={"error": "claim_not_found"},

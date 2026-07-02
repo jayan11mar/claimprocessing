@@ -11,8 +11,6 @@ import streamlit as st
 from typing import Any, Dict, Optional
 
 import requests
-from app.chains.faq_chain import FAQChain
-from app.models.faq import FAQResponse, FAQIntent
 
 
 def inject_chat_style() -> None:
@@ -98,10 +96,18 @@ def get_saved_history(api_url: str, session_id: str) -> Optional[Dict[str, Any]]
         return None
 
 
-def call_faq_chain(session_id: str, message: str) -> FAQResponse:
-    """Call the FAQChain directly (bypassing the API) for direct Python integration."""
-    chain = FAQChain()
-    return chain.invoke(session_id, message, persist_history=True)
+def call_chat_api(session_id: str, message: str, api_url: str) -> Dict[str, Any]:
+    payload = {
+        "session_id": session_id,
+        "message": message,
+    }
+    response = requests.post(
+        f"{api_url}/chat",
+        json=payload,
+        timeout=30,
+    )
+    response.raise_for_status()
+    return response.json()
 
 
 def main() -> None:
@@ -151,19 +157,21 @@ def main() -> None:
     st.sidebar.header("Latest Response Context")
     if st.session_state.history:
         last = st.session_state.history[-1]
-        last_response = last.get("response")
-        last_meta = last.get("metadata", {}) or {}
-        if last_response:
-            st.sidebar.write(f"**Answer:** {last_response.answer_text}")
+        answer_text = last.get("answer_text", "")
+        structured = last.get("structured", {}) or {}
+        chain_metadata = last.get("chain_metadata", {}) or {}
+        if answer_text:
+            st.sidebar.write(f"**Answer:** {answer_text}")
             with st.sidebar.expander("JSON Context", expanded=False):
                 ctx = {
-                    "intent": last_response.intent.value if hasattr(last_response, 'intent') else last_meta.get('intent'),
-                    "category": last_response.category if hasattr(last_response, 'category') else last_meta.get('category'),
-                    "confidence": last_response.confidence if hasattr(last_response, 'confidence') else last_meta.get('confidence'),
-                    "model": last_meta.get('model'),
-                    "temperature": last_meta.get('temperature'),
-                    "reasoning": last_response.reasoning if hasattr(last_response, 'reasoning') else last_meta.get('reasoning'),
-                    "extra_metadata": getattr(last_response, 'metadata', last_meta.get('extra_metadata')),
+                    "intent": structured.get("intent"),
+                    "category": structured.get("category"),
+                    "confidence": structured.get("confidence"),
+                    "model": chain_metadata.get("model"),
+                    "temperature": chain_metadata.get("temperature"),
+                    "reasoning": structured.get("reasoning"),
+                    "langsmith_trace_id": chain_metadata.get("langsmith_trace_id"),
+                    "extra_metadata": structured.get("metadata"),
                 }
                 st.json(ctx)
         else:
@@ -186,9 +194,29 @@ def main() -> None:
         query = st.text_input("Ask a question about claims, coverage, or settlement")
 
     if query:
-        # Use direct FAQChain call instead of backend API
-        response = call_faq_chain(st.session_state.session_id, query)
-        st.session_state.history.append({"user": query, "response": response, "metadata": {}})
+        try:
+            resp = call_chat_api(st.session_state.session_id, query, api_url)
+            structured = resp.get("structured", {})
+            chain_metadata = resp.get("chain_metadata", {})
+            st.session_state.latest_langsmith_trace_id = chain_metadata.get("langsmith_trace_id")
+            st.session_state.history.append(
+                {
+                    "user": query,
+                    "answer_text": resp.get("answer_text", ""),
+                    "structured": structured,
+                    "chain_metadata": chain_metadata,
+                }
+            )
+        except requests.RequestException as exc:
+            st.warning(f"Unable to reach backend: {exc}")
+            st.session_state.history.append(
+                {
+                    "user": query,
+                    "answer_text": "Sorry, the backend is not available. Please check the backend URL and try again.",
+                    "structured": {},
+                    "chain_metadata": {"error": str(exc)},
+                }
+            )
 
     if st.session_state.history:
         st.markdown("---")
@@ -197,19 +225,17 @@ def main() -> None:
 
         for idx, item in enumerate(st.session_state.history):
             user_msg = item["user"]
-            response = item["response"]
-            metadata = item.get("metadata", {})
+            answer_text = item["answer_text"]
+            structured = item.get("structured", {})
+            chain_metadata = item.get("chain_metadata", {})
 
             render_chat_bubble("user", user_msg)
-            render_chat_bubble("assistant", response.answer_text, {
-                "intent": response.intent.value,
-                "category": response.category,
-                "confidence": response.confidence,
-                "model": metadata.get("model"),
-                "temperature": metadata.get("temperature"),
-                "reasoning": response.reasoning,
-                "extra_metadata": response.metadata,
-            }, idx)
+            render_chat_bubble("assistant", answer_text, None, idx)
+            with st.expander("Response metadata", expanded=False):
+                st.write("**Structured response**")
+                st.json(structured)
+                st.write("**Chain metadata**")
+                st.json(chain_metadata)
 
     if st.button("Reset Conversation"):
         try:

@@ -70,7 +70,51 @@ class FAQChain:
             metadata=json_obj.get("metadata", {}),
         )
 
+    def _handle_simple_acknowledgment(self, user_message: str) -> Optional[FAQResponse]:
+        """Handle simple acknowledgments and greetings without calling the LLM."""
+        message_lower = user_message.lower().strip()
+        simple_responses = {
+            # Greetings
+            "hi": "Hello! How can I assist you with your insurance claim today?",
+            "hello": "Hello! How can I assist you with your insurance claim today?",
+            "hey": "Hi there! How can I help you with your insurance needs?",
+            "good morning": "Good morning! How can I assist you today?",
+            "good afternoon": "Good afternoon! How can I help you?",
+            "good evening": "Good evening! How can I assist you?",
+            # Acknowledgments
+            "ok": "You're welcome! Let me know if you need anything else.",
+            "okay": "You're welcome! Let me know if you need anything else.",
+            "thanks": "You're welcome! Is there anything else I can help you with?",
+            "thank you": "You're welcome! Is there anything else I can help you with?",
+            "thank": "You're welcome! Is there anything else I can help you with?",
+            "great": "Glad to hear that! Let me know if you need further assistance.",
+            "good": "Great! Feel free to ask if you have any other questions.",
+            "yes": "Perfect! How can I assist you further?",
+            "no": "No problem! Let me know if you need help with anything else.",
+            "sure": "Great! What else can I help you with?",
+            "alright": "Okay! Let me know if you need anything else.",
+        }
+        
+        if message_lower in simple_responses:
+            return FAQResponse(
+                intent=FAQIntent.OTHER,
+                category="greeting" if message_lower in {"hi", "hello", "hey", "good morning", "good afternoon", "good evening"} else "acknowledgment",
+                confidence=1.0,
+                answer_text=simple_responses[message_lower],
+                reasoning="Simple greeting or acknowledgment detected",
+                metadata={"simple_acknowledgment": True},
+            )
+        return None
+
     def invoke(self, session_id: str, user_message: str, persist_history: bool = True) -> FAQResponse:
+        # Handle simple acknowledgments without calling the LLM
+        simple_response = self._handle_simple_acknowledgment(user_message)
+        if simple_response:
+            if persist_history:
+                self.memory.append_message(session_id, "user", user_message)
+                self.memory.append_message(session_id, "assistant", simple_response.answer_text)
+            return simple_response
+
         guardrail_result = run_all_guardrails(user_message)
         if guardrail_result["triggered"]:
             failure = guardrail_result["failures"][0]

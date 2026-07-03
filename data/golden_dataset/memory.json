@@ -1,0 +1,35 @@
+[
+  {
+    "id": "memory-1",
+    "name": "Session history persistence",
+    "description": "Validate that session history is stored and retrieved in chronological order.",
+    "input": {
+      "session_id": "session-memory-1",
+      "history": [
+        {"role": "user", "content": "What is the status of my pending claim?"},
+        {"role": "assistant", "content": "Your claim is currently under review by our claims team."}
+      ]
+    },
+    "expected": {
+      "record_count": 2,
+      "last_message": {"role": "assistant", "content": "Your claim is currently under review by our claims team."}
+    }
+  },
+  {
+    "id": "memory-2",
+    "name": "Follow-up context regression",
+    "description": "Validate multi-turn context can be recorded and retrieved for follow-up queries.",
+    "input": {
+      "session_id": "session-memory-2",
+      "history": [
+        {"role": "user", "content": "I filed a claim for a hospital stay."},
+        {"role": "assistant", "content": "I have recorded your claim details and will estimate eligibility."},
+        {"role": "user", "content": "Does that include the deductible and copay?"}
+      ]
+    },
+    "expected": {
+      "record_count": 3,
+      "last_message": {"role": "user", "content": "Does that include the deductible and copay?"}
+    }
+  }
+]

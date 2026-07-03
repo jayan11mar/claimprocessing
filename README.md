@@ -51,6 +51,14 @@ Use the repository root on `PYTHONPATH` so imports from `app/` resolve correctly
 PYTHONPATH=. pytest -q
 ```
 
+### Recommended phase-update validation
+
+After each project phase update, run the integration suite to verify core tool chaining flows:
+
+```bash
+PYTHONPATH=. pytest tests/test_policy_status_integration.py -q
+```
+
 ## Evaluate end-to-end behavior
 
 An evaluation harness is included at `scripts/evaluate.py`.
@@ -58,6 +66,24 @@ It sends 20 sample queries covering FAQ, tool usage, and multi-turn conversation
 
 ```bash
 python scripts/evaluate.py
+```
+
+## Golden dataset regression validation
+
+The project includes a golden dataset seed structure in `data/golden_dataset/` and a validation harness at `scripts/validate_golden_dataset.py`.
+The golden dataset categories are:
+
+- `faq.json`: FAQ intent, category, confidence, and answer formatting validation
+- `claims.json`: claim intake workflows and tool decision validation
+- `fraud.json`: fraud score logic and signal validation
+- `settlement.json`: settlement breakdown validation
+- `memory.json`: multi-turn memory persistence and retrieval validation
+- `guardrails.json`: PII, off-topic, and prompt injection guardrail validation
+
+Run the regression validation script with:
+
+```bash
+python scripts/validate_golden_dataset.py
 ```
 
 ## Architecture

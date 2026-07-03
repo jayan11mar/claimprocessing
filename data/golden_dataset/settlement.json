@@ -1,0 +1,36 @@
+[
+  {
+    "id": "settlement-1",
+    "name": "Standard hospital claim settlement",
+    "description": "Validate settlement output for claim C1001 with deductible, depreciation, and copay.",
+    "input": {
+      "claim_id": "C1001"
+    },
+    "expected": {
+      "gross_amount": 1200.0,
+      "deductible": 500.0,
+      "depreciation_amount": 70.0,
+      "copay_amount": 63.0,
+      "approved_amount": 567.0,
+      "notes_contains": [
+        "Applied deductible",
+        "Computed copay"
+      ]
+    }
+  },
+  {
+    "id": "settlement-2",
+    "name": "Surgery claim settlement",
+    "description": "Validate settlement output for a high-value surgery claim with depreciation.",
+    "input": {
+      "claim_id": "C2001"
+    },
+    "expected": {
+      "gross_amount": 120000.0,
+      "deductible": 10000.0,
+      "depreciation_amount": 16500.0,
+      "copay_amount": 18700.0,
+      "approved_amount": 74800.0
+    }
+  }
+]

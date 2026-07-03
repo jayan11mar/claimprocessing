@@ -1,0 +1,40 @@
+[
+  {
+    "id": "claims-1",
+    "name": "Valid claim registration",
+    "description": "Validate claim intake workflow for an eligible policy with supporting documents.",
+    "input": {
+      "policy_number": "P123456",
+      "claim_amount": 1200.0,
+      "extra_info": {
+        "incident_date": "2024-03-10",
+        "sub_limit_category": "hospital",
+        "supporting_documents": ["hospital bill", "diagnostic report"],
+        "policy_holder_id": "H1001"
+      }
+    },
+    "expected": {
+      "is_eligible": true,
+      "approved_amount": 700.0,
+      "approved_amount_tolerance": 0.01,
+      "metadata_keys": ["fraud_score", "policy_status"]
+    }
+  },
+  {
+    "id": "claims-2",
+    "name": "Missing policy number",
+    "description": "Validate negative claim intake path when the policy number is not found.",
+    "input": {
+      "policy_number": "INVALID123",
+      "claim_amount": 1500.0,
+      "extra_info": {}
+    },
+    "expected": {
+      "is_eligible": false,
+      "approved_amount": 0.0,
+      "metadata_contains": {
+        "error": "policy_not_found"
+      }
+    }
+  }
+]

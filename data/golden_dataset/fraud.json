@@ -1,0 +1,32 @@
+[
+  {
+    "id": "fraud-1",
+    "name": "Low-risk claim fraud score",
+    "description": "Validate fraud scoring for a single low-risk claim.",
+    "input": {
+      "claim_id": "C1001"
+    },
+    "expected": {
+      "score": 0.1,
+      "score_tolerance": 0.01,
+      "signals": []
+    }
+  },
+  {
+    "id": "fraud-2",
+    "name": "Duplicate amount scam signal",
+    "description": "Validate fraud scoring logic when duplicate amounts and hospital history are present.",
+    "input": {
+      "claim_id": "C2001"
+    },
+    "expected": {
+      "score": 0.65,
+      "score_tolerance": 0.01,
+      "signals": [
+        "Duplicate claim amounts detected",
+        "Similar claim amount found for the same policyholder across policies",
+        "Same hospital filed multiple same-amount claims for this policyholder"
+      ]
+    }
+  }
+]

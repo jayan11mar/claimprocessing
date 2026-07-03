@@ -1,0 +1,32 @@
+[
+  {
+    "id": "faq-1",
+    "name": "Claim status inquiry",
+    "description": "Validate FAQ intent and structured response format for a policy status question.",
+    "input": {
+      "text": "How can I check the status of my insurance claim?"
+    },
+    "expected": {
+      "intent": "POLICY_STATUS",
+      "category": "policy",
+      "confidence_min": 0.5,
+      "answer_non_empty": true,
+      "answer_contains": "claim"
+    }
+  },
+  {
+    "id": "faq-2",
+    "name": "Claim registration guidance",
+    "description": "Validate FAQ intent classification for a new claim workflow question.",
+    "input": {
+      "text": "What documents do I need to file a new medical claim?"
+    },
+    "expected": {
+      "intent": "CLAIM_REGISTRATION",
+      "category": "claims",
+      "confidence_min": 0.5,
+      "answer_non_empty": true,
+      "answer_contains": "documents"
+    }
+  }
+]

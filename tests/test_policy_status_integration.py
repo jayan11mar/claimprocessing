@@ -69,3 +69,48 @@ def test_agent_chain_extracts_policy_number_from_message():
     assert response.intent == FAQIntent.POLICY_STATUS
     assert "LAPSED" in response.answer_text
     assert response.metadata["tool"] == "policy_checker"
+
+
+def test_agent_chain_handles_fraud_check_query():
+    """Test that the agent chain properly handles fraud check requests."""
+    agent = AgentChain(memory=SQLiteMemory())
+    session_id = "test-fraud-check-session"
+
+    # Mock FAQChain to return FRAUD_CHECK intent with a known claim ID.
+    agent.faq_chain.invoke = lambda sid, msg, persist_history=True: FAQResponse(
+        intent=FAQIntent.FRAUD_CHECK,
+        category="fraud",
+        confidence=0.9,
+        answer_text="",
+        reasoning="",
+        metadata={"claim_id": "C1001"},
+    )
+
+    response = agent.invoke(session_id, "Please run a fraud check for claim C1001.", context={})
+
+    assert response.intent == FAQIntent.FRAUD_CHECK
+    assert "Fraud score for claim C1001" in response.answer_text
+    assert response.metadata["tool"] == "fraud_detector"
+    assert response.metadata["tool_output"]["claim_id"] == "C1001"
+
+
+def test_agent_chain_requires_claim_id_for_fraud_check():
+    """Test that the agent chain asks for a claim ID when fraud check metadata is missing."""
+    agent = AgentChain(memory=SQLiteMemory())
+    session_id = "test-fraud-check-no-claim-id"
+
+    agent.faq_chain.invoke = lambda sid, msg, persist_history=True: FAQResponse(
+        intent=FAQIntent.FRAUD_CHECK,
+        category="fraud",
+        confidence=0.9,
+        answer_text="",
+        reasoning="",
+        metadata={},
+    )
+
+    response = agent.invoke(session_id, "Please check the fraud score.", context={})
+
+    assert response.intent == FAQIntent.FRAUD_CHECK
+    assert "claim id" in response.answer_text.lower()
+    assert response.metadata["tool"] == "fraud_detector"
+    assert response.metadata["error"] == "claim_id_missing"

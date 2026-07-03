@@ -90,7 +90,8 @@ def check_claim_status(claim_id: str) -> ClaimStatusResult:
 
     status = claim.status or "PENDING_REVIEW"
     fraud_score_str = f"{claim.fraud_score:.2f}" if claim.fraud_score is not None else "Not computed"
-    approved_str = f"${claim.approved_amount:.2f}" if claim.approved_amount is not None else "Not yet calculated"
+    # approved_amount is not stored on Claim, use settlement_status to determine
+    approved_str = "Not yet calculated"
 
     message = (
         f"Claim {claim.claim_id}: Status = {status}. "
@@ -108,7 +109,7 @@ def check_claim_status(claim_id: str) -> ClaimStatusResult:
         policy_number=claim.policy_number,
         status=status,
         claim_amount=claim.claim_amount,
-        approved_amount=claim.approved_amount,
+        approved_amount=None,
         fraud_score=claim.fraud_score,
         settlement_status=claim.settlement_status,
         incident_date=claim.incident_date.isoformat() if claim.incident_date else None,

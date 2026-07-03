@@ -86,6 +86,7 @@ def check_policy_status(policy_number: str) -> PolicyCheckResult:
         "status": status.value,
         "sum_insured": str(policy.sum_insured),
         "deductible": str(policy.deductible),
+        "copay_percent": str(policy.copay_percent),
         "start_date": policy.start_date.isoformat(),
         "end_date": policy.end_date.isoformat(),
     }

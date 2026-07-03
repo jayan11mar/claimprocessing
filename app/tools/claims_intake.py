@@ -146,10 +146,6 @@ def register_and_validate_claim(
         claim_id=claim_id,
         policy_number=policy.policy_number,
         claim_amount=claim_amount,
-        approved_amount=round(max(0.0, approved_amount), 2),
-        policy_holder_id=str(extra_info.get("policy_holder_id")) if extra_info.get("policy_holder_id") else None,
-        diagnosis_code=str(extra_info.get("diagnosis_code")) if extra_info.get("diagnosis_code") else None,
-        hospital_name=str(extra_info.get("hospital_name")) if extra_info.get("hospital_name") else None,
         incident_date=incident_date,
         supporting_documents=supporting_documents,
         extra_info={

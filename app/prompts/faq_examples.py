@@ -18,7 +18,7 @@ def get_faq_examples() -> List[Dict[str, str]]:
         {
             "user": "What’s the status of my father’s claim?",
             "assistant": "Claim #CLM-71123 for policy #HI-330098 is currently in ‘Document Verification’ stage. We’re awaiting the original discharge summary. Once received, estimated processing time is 3–5 business days.",
-            "intent": "POLICY_STATUS",
+            "intent": "CLAIM_STATUS",
             "category": "claims",
         },
         {

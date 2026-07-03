@@ -2,13 +2,13 @@
   {
     "id": "faq-1",
     "name": "Claim status inquiry",
-    "description": "Validate FAQ intent and structured response format for a policy status question.",
+    "description": "Validate FAQ intent and structured response format for a claim status question.",
     "input": {
       "text": "How can I check the status of my insurance claim?"
     },
     "expected": {
-      "intent": "POLICY_STATUS",
-      "category": "policy",
+      "intent": "CLAIM_STATUS",
+      "category": "claims",
       "confidence_min": 0.5,
       "answer_non_empty": true,
       "answer_contains": "claim"

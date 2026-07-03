@@ -94,6 +94,60 @@ The system is built as a modular FastAPI + Streamlit application with LangChain 
 
 - `docs/evaluation_report.md`: evaluation summary of the 20 queries.
 
+## Database Schema
+
+The `claims.db` SQLite database contains the following tables:
+
+### policies
+Stores insurance policy information:
+- `policy_number` (TEXT, PRIMARY KEY)
+- `policy_holder_id` (TEXT)
+- `status` (TEXT, NOT NULL)
+- `sum_insured` (REAL, NOT NULL)
+- `deductible` (REAL, NOT NULL)
+- `copay_percent` (REAL, NOT NULL)
+- `sub_limits` (TEXT)
+- `depreciation_schedule` (TEXT)
+- `start_date` (TEXT)
+- `end_date` (TEXT)
+- `product_code` (TEXT)
+- `coverage_type` (TEXT)
+- `underwriting_class` (TEXT)
+- `risk_category` (TEXT)
+- `created_at` (TEXT, NOT NULL)
+- `updated_at` (TEXT, NOT NULL)
+
+### claims
+Stores claim records with foreign key to policies:
+- `claim_id` (TEXT, PRIMARY KEY)
+- `policy_number` (TEXT, NOT NULL, FOREIGN KEY to policies)
+- `policy_holder_id` (TEXT)
+- `claim_amount` (REAL, NOT NULL)
+- `incident_date` (TEXT)
+- `admission_date` (TEXT)
+- `discharge_date` (TEXT)
+- `diagnosis_code` (TEXT)
+- `hospital_name` (TEXT)
+- `supporting_documents` (TEXT)
+- `extra_info` (TEXT)
+- `status` (TEXT)
+- `loss_type` (TEXT)
+- `reported_date` (TEXT)
+- `closed_date` (TEXT)
+- `approved_amount` (REAL)
+- `fraud_score` (REAL)
+- `settlement_status` (TEXT)
+- `created_at` (TEXT, NOT NULL)
+- `updated_at` (TEXT, NOT NULL)
+
+### chat_history
+Stores chat conversation data:
+- `id` (INTEGER, PRIMARY KEY AUTOINCREMENT)
+- `session_id` (TEXT, NOT NULL)
+- `role` (TEXT, NOT NULL)
+- `content` (TEXT, NOT NULL)
+- `created_at` (TEXT, NOT NULL)
+
 ## Project layout
 
 - `app/`: application modules
@@ -101,4 +155,3 @@ The system is built as a modular FastAPI + Streamlit application with LangChain 
 - `scripts/evaluate.py`: evaluation harness
 - `docs/evaluation_report.md`: evaluation report
 - `.env.example`: environment variable template
-- `requirements.txt`: dependencies

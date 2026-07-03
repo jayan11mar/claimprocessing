@@ -7,6 +7,7 @@ from app.chains.faq_chain import FAQChain
 from app.langsmith_integration import record_span, start_trace
 from app.memory.sqlite_memory import SQLiteMemory
 from app.models.faq import FAQIntent, FAQResponse
+from app.tools.claim_status_checker import check_claim_status
 from app.tools.claims_intake import register_and_validate_claim
 from app.tools.fraud_detector import compute_fraud_score
 from app.tools.policy_checker import check_policy_status
@@ -40,6 +41,11 @@ class AgentChain:
                 "name": "settlement_calculator",
                 "func": calculate_settlement,
                 "description": "Calculate a settlement breakdown for a claim considering deductible, copay, and sub-limits.",
+            },
+            {
+                "name": "claim_status_checker",
+                "func": check_claim_status,
+                "description": "Look up the status and details of an existing claim from the claims database by claim ID.",
             },
         ]
 
@@ -111,14 +117,16 @@ class AgentChain:
         if match:
             return match.group(1).upper()
 
-        match = re.search(r"\b([A-Z]+\d{3,})\b", text, re.IGNORECASE)
+        # Fallback: match uppercase-letter-prefixed IDs but EXCLUDE policy number format (P + digits)
+        match = re.search(r"\b(?!P\d{5,}\b)([A-Z]+\d{3,})\b", text, re.IGNORECASE)
         return match.group(1).upper() if match else ""
 
     def _extract_claim_amount(self, text: str) -> float:
         patterns = [
-            r"claim amount(?: is| of)? \$?([0-9,]+(?:\.[0-9]{1,2})?)",
+            r"claim amount(?: is| of)? \$?([0-9,]+(?:\.[0-9]{1,2})?)\$?",
             r"₹\s*([0-9,]+(?:\.[0-9]{1,2})?)",
             r"\$([0-9,]+(?:\.[0-9]{1,2})?)",
+            r"([0-9,]+(?:\.[0-9]{1,2})?)\s*\$",
         ]
         for pattern in patterns:
             match = re.search(pattern, text, re.IGNORECASE)
@@ -199,11 +207,18 @@ class AgentChain:
             record_span(tool_name, {"ms": elapsed, "trace_id": trace_id})
 
     def _format_claim_answer(self, base: FAQResponse, result: Any) -> FAQResponse:
-        answer_text = (
-            f"Claim registration completed. Claim ID: {result.claim_id}. "
-            f"Eligible: {result.is_eligible}. "
-            f"Estimated payable amount after deductible: ${result.approved_amount:.2f}."
-        )
+        if not result.is_eligible:
+            answer_text = (
+                f"Claim registration failed. Policy number: {result.policy_number}. "
+                f"Eligible: {result.is_eligible}. "
+                f"Estimated payable amount after deductible: ${result.approved_amount:.2f}."
+            )
+        else:
+            answer_text = (
+                f"Claim registration completed. Claim ID: {result.claim_id}. "
+                f"Eligible: {result.is_eligible}. "
+                f"Estimated payable amount after deductible: ${result.approved_amount:.2f}."
+            )
         if result.validation_messages:
             answer_text += " " + " ".join(result.validation_messages)
 
@@ -275,6 +290,21 @@ class AgentChain:
             },
         )
 
+    def _format_claim_status_answer(self, base: FAQResponse, result: Any) -> FAQResponse:
+        answer_text = result.message
+        return FAQResponse(
+            intent=base.intent,
+            category=base.category,
+            confidence=base.confidence,
+            answer_text=answer_text,
+            reasoning=base.reasoning,
+            metadata={
+                **base.metadata,
+                "tool": "claim_status_checker",
+                "tool_output": result.to_dict(),
+            },
+        )
+
     def _handle_claim_registration(
         self,
         intent: FAQResponse,
@@ -284,8 +314,8 @@ class AgentChain:
         session_id: Optional[str] = None,
     ) -> FAQResponse:
         policy_number = (
-            intent.metadata.get("policy_number")
-            or self._extract_policy_number(message)
+            self._extract_policy_number(message)
+            or intent.metadata.get("policy_number")
             or self._extract_policy_number_from_history(session_id or "")
         )
         if not policy_number:
@@ -349,7 +379,9 @@ class AgentChain:
         timings: Dict[str, Any],
         trace_id: Optional[str],
     ) -> FAQResponse:
-        claim_id = intent.metadata.get("claim_id") or self._extract_claim_id(message)
+        # Prefer regex extraction from the raw message text over LLM metadata,
+        # because the LLM may hallucinate claim_id values.
+        claim_id = self._extract_claim_id(message) or intent.metadata.get("claim_id")
         if not claim_id:
             return FAQResponse(
                 intent=intent.intent,
@@ -372,7 +404,9 @@ class AgentChain:
         timings: Dict[str, Any],
         trace_id: Optional[str],
     ) -> FAQResponse:
-        claim_id = intent.metadata.get("claim_id") or self._extract_claim_id(message)
+        # Prefer regex extraction from the raw message text over LLM metadata,
+        # because the LLM may hallucinate claim_id values.
+        claim_id = self._extract_claim_id(message) or intent.metadata.get("claim_id")
         if not claim_id:
             return FAQResponse(
                 intent=intent.intent,
@@ -407,8 +441,8 @@ class AgentChain:
         session_id: Optional[str] = None,
     ) -> FAQResponse:
         policy_number = (
-            intent.metadata.get("policy_number")
-            or self._extract_policy_number(message)
+            self._extract_policy_number(message)
+            or intent.metadata.get("policy_number")
             or self._extract_policy_number_from_history(session_id or "")
         )
         if not policy_number:
@@ -425,6 +459,32 @@ class AgentChain:
         result = check_policy_status(policy_number)
         self._record_tool_timing("policy_checker", start, timings, trace_id)
         return self._format_policy_status_answer(intent, result)
+
+    def _handle_claim_status(
+        self,
+        intent: FAQResponse,
+        message: str,
+        timings: Dict[str, Any],
+        trace_id: Optional[str],
+    ) -> FAQResponse:
+        # Prefer regex extraction from the raw message text over LLM metadata,
+        # because the LLM may hallucinate claim_id values (e.g. "REGISTRATION")
+        # that do not match the actual claim ID pattern.
+        claim_id = self._extract_claim_id(message) or intent.metadata.get("claim_id")
+        if not claim_id:
+            return FAQResponse(
+                intent=intent.intent,
+                category=intent.category,
+                confidence=intent.confidence,
+                answer_text="I need a claim ID to check its status. Please provide the claim ID (e.g., C1001).",
+                reasoning="Claim identifier missing from claim status request.",
+                metadata={"tool": "claim_status_checker", "error": "claim_id_missing"},
+            )
+
+        start = time.time()
+        result = check_claim_status(claim_id)
+        self._record_tool_timing("claim_status_checker", start, timings, trace_id)
+        return self._format_claim_status_answer(intent, result)
 
     def invoke(self, session_id: str, user_message: str, context: dict = None) -> FAQResponse:
         context = context or {}
@@ -469,6 +529,8 @@ class AgentChain:
             response = self._handle_claim_registration(response, user_message, timings, trace_id, session_id)
         elif response.intent == FAQIntent.POLICY_STATUS:
             response = self._handle_policy_status(response, user_message, timings, trace_id, session_id)
+        elif response.intent == FAQIntent.CLAIM_STATUS:
+            response = self._handle_claim_status(response, user_message, timings, trace_id)
         elif response.intent == FAQIntent.FRAUD_CHECK:
             response = self._handle_fraud_check(response, user_message, timings, trace_id)
         elif response.intent == FAQIntent.SETTLEMENT_QUERY:

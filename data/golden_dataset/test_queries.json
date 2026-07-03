@@ -1,0 +1,365 @@
+[
+  {
+    "id": "query-1",
+    "intent": "CLAIM_REGISTRATION",
+    "category": "claims",
+    "query": "Register a new claim for policy P123456 with claim amount $5,000. The incident date was 2024-06-15 and I have the hospital bill and diagnostic report as supporting documents.",
+    "expected_tool": "claims_intake",
+    "expected_policy": "P123456",
+    "expected_claim_amount": 5000.0
+  },
+  {
+    "id": "query-2",
+    "intent": "CLAIM_REGISTRATION",
+    "category": "claims",
+    "query": "I need to file a claim for policy P789012. The claim amount is $25,000 for surgery on 2024-07-20. Supporting documents include discharge summary and itemized bill.",
+    "expected_tool": "claims_intake",
+    "expected_policy": "P789012",
+    "expected_claim_amount": 25000.0
+  },
+  {
+    "id": "query-3",
+    "intent": "CLAIM_REGISTRATION",
+    "category": "claims",
+    "query": "Register a claim for $3,000 with incident date 2024-05-10.",
+    "expected_tool": "claims_intake",
+    "expected_error": "policy_number_missing"
+  },
+  {
+    "id": "query-4",
+    "intent": "CLAIM_REGISTRATION",
+    "category": "claims",
+    "query": "Process a new claim for policy HI-550012. Hospital bill is ₹3,40,000.",
+    "expected_tool": "claims_intake",
+    "expected_error": "policy_not_found"
+  },
+  {
+    "id": "query-5",
+    "intent": "CLAIM_REGISTRATION",
+    "category": "claims",
+    "query": "Register a claim for policy P654321 for $1,500. The incident date was 2024-03-15.",
+    "expected_tool": "claims_intake",
+    "expected_policy": "P654321",
+    "expected_is_eligible": false
+  },
+  {
+    "id": "query-6",
+    "intent": "CLAIM_REGISTRATION",
+    "category": "claims",
+    "query": "I want to register a claim for policy P123456 for $15,000. The treatment was on 2024-08-01.",
+    "expected_tool": "claims_intake",
+    "expected_policy": "P123456",
+    "expected_claim_amount": 15000.0,
+    "expected_validation_message": "capped"
+  },
+  {
+    "id": "query-7",
+    "intent": "CLAIM_REGISTRATION",
+    "category": "claims",
+    "query": "Register a claim for policy P123456 for $300. Incident date was 2024-04-01.",
+    "expected_tool": "claims_intake",
+    "expected_policy": "P123456",
+    "expected_claim_amount": 300.0,
+    "expected_approved_amount": 0.0
+  },
+  {
+    "id": "query-8",
+    "intent": "POLICY_STATUS",
+    "category": "policy",
+    "query": "Check the status of policy P123456.",
+    "expected_tool": "policy_checker",
+    "expected_policy": "P123456",
+    "expected_is_active": true
+  },
+  {
+    "id": "query-9",
+    "intent": "POLICY_STATUS",
+    "category": "policy",
+    "query": "What is the status of policy P654321?",
+    "expected_tool": "policy_checker",
+    "expected_policy": "P654321",
+    "expected_is_active": false
+  },
+  {
+    "id": "query-10",
+    "intent": "POLICY_STATUS",
+    "category": "policy",
+    "query": "Check if surgery X is covered under policy P789012.",
+    "expected_tool": "policy_checker",
+    "expected_policy": "P789012",
+    "expected_is_active": true
+  },
+  {
+    "id": "query-11",
+    "intent": "POLICY_STATUS",
+    "category": "policy",
+    "query": "Check the status of policy HI-445021.",
+    "expected_tool": "policy_checker",
+    "expected_error": "policy_not_found"
+  },
+  {
+    "id": "query-12",
+    "intent": "POLICY_STATUS",
+    "category": "policy",
+    "query": "Is policy P123456 still active? Can I file a claim?",
+    "expected_tool": "policy_checker",
+    "expected_policy": "P123456",
+    "expected_is_active": true
+  },
+  {
+    "id": "query-13",
+    "intent": "POLICY_STATUS",
+    "category": "network",
+    "query": "Check if the hospital is in the network list for policy P123456.",
+    "expected_tool": "policy_checker",
+    "expected_policy": "P123456"
+  },
+  {
+    "id": "query-14",
+    "intent": "POLICY_STATUS",
+    "category": "policy",
+    "query": "What is the co-pay percentage for this plan P123456?",
+    "expected_tool": "policy_checker",
+    "expected_policy": "P123456"
+  },
+  {
+    "id": "query-15",
+    "intent": "CLAIM_STATUS",
+    "category": "claims",
+    "query": "What is the status of claim C1001?",
+    "expected_tool": "claim_status_checker",
+    "expected_claim": "C1001"
+  },
+  {
+    "id": "query-16",
+    "intent": "CLAIM_STATUS",
+    "category": "claims",
+    "query": "What is the status of claim CLM-90210?",
+    "expected_tool": "claim_status_checker",
+    "expected_error": "claim_not_found"
+  },
+  {
+    "id": "query-17",
+    "intent": "CLAIM_STATUS",
+    "category": "claims",
+    "query": "Escalate claim C2001 — it's been pending 20 days.",
+    "expected_tool": "claim_status_checker",
+    "expected_claim": "C2001"
+  },
+  {
+    "id": "query-18",
+    "intent": "CLAIM_STATUS",
+    "category": "claims",
+    "query": "Can you check the status of claim C2002?",
+    "expected_tool": "claim_status_checker",
+    "expected_claim": "C2002"
+  },
+  {
+    "id": "query-19",
+    "intent": "CLAIM_STATUS",
+    "category": "claims",
+    "query": "What's the status of my claim?",
+    "expected_tool": "claim_status_checker",
+    "expected_error": "claim_id_missing"
+  },
+  {
+    "id": "query-20",
+    "intent": "FRAUD_CHECK",
+    "category": "fraud",
+    "query": "What is the fraud score for claim C1001?",
+    "expected_tool": "fraud_detector",
+    "expected_claim": "C1001",
+    "expected_score_max": 0.2
+  },
+  {
+    "id": "query-21",
+    "intent": "FRAUD_CHECK",
+    "category": "fraud",
+    "query": "What is the fraud score for claim C2001?",
+    "expected_tool": "fraud_detector",
+    "expected_claim": "C2001",
+    "expected_score_min": 0.5
+  },
+  {
+    "id": "query-22",
+    "intent": "FRAUD_CHECK",
+    "category": "fraud",
+    "query": "Flag duplicate claims across family floater policies.",
+    "expected_tool": "fraud_detector"
+  },
+  {
+    "id": "query-23",
+    "intent": "FRAUD_CHECK",
+    "category": "fraud",
+    "query": "What is the fraud score for claim CLM-90210?",
+    "expected_tool": "fraud_detector",
+    "expected_error": "claim_not_found"
+  },
+  {
+    "id": "query-24",
+    "intent": "FRAUD_CHECK",
+    "category": "fraud",
+    "query": "This claim looks suspicious — can you check?",
+    "expected_tool": "fraud_detector"
+  },
+  {
+    "id": "query-25",
+    "intent": "SETTLEMENT_QUERY",
+    "category": "settlement",
+    "query": "Calculate settlement for claim C1001.",
+    "expected_tool": "settlement_calculator",
+    "expected_claim": "C1001",
+    "expected_approved_amount": 567.0
+  },
+  {
+    "id": "query-26",
+    "intent": "SETTLEMENT_QUERY",
+    "category": "settlement",
+    "query": "Generate a settlement breakdown for claim C2001.",
+    "expected_tool": "settlement_calculator",
+    "expected_claim": "C2001",
+    "expected_approved_amount": 74800.0
+  },
+  {
+    "id": "query-27",
+    "intent": "SETTLEMENT_QUERY",
+    "category": "settlement",
+    "query": "Calculate settlement for a claim of ₹5,60,000 with 10K deductible.",
+    "expected_tool": "settlement_calculator",
+    "expected_claim_amount": 560000.0
+  },
+  {
+    "id": "query-28",
+    "intent": "SETTLEMENT_QUERY",
+    "category": "settlement",
+    "query": "Generate a settlement breakdown for claim CLM-88712.",
+    "expected_tool": "settlement_calculator",
+    "expected_error": "claim_not_found"
+  },
+  {
+    "id": "query-29",
+    "intent": "SETTLEMENT_QUERY",
+    "category": "settlement",
+    "query": "What is the approved amount for my claim?",
+    "expected_tool": "settlement_calculator",
+    "expected_error": "claim_id_missing"
+  },
+  {
+    "id": "query-30",
+    "intent": "DOCUMENTS_REQUIRED",
+    "category": "documents",
+    "query": "What documents are needed for a motor accident claim?",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-31",
+    "intent": "DOCUMENTS_REQUIRED",
+    "category": "documents",
+    "query": "What documents are required for a health insurance claim?",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-32",
+    "intent": "DOCUMENTS_REQUIRED",
+    "category": "documents",
+    "query": "What supporting documents do I need for a surgery claim?",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-33",
+    "intent": "DOCUMENTS_REQUIRED",
+    "category": "documents",
+    "query": "Documents needed for dental treatment claim?",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-34",
+    "intent": "OTHER",
+    "category": "coverage",
+    "query": "Is pre-hospitalization covered for this policy?",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-35",
+    "intent": "OTHER",
+    "category": "claims",
+    "query": "Why was my claim partially rejected?",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-36",
+    "intent": "OTHER",
+    "category": "timing",
+    "query": "What is the average processing time for this claim type?",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-37",
+    "intent": "OTHER",
+    "category": "policy",
+    "query": "Compare claimed amount vs. policy sub-limits.",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-38",
+    "intent": "OTHER",
+    "category": "policy",
+    "query": "What exclusions apply to this policy?",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-39",
+    "intent": "OTHER",
+    "category": "history",
+    "query": "Show me the claim history for policyholder ID H1001.",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-40",
+    "intent": "OTHER",
+    "category": "claims",
+    "query": "Draft a claim rejection letter with reasons.",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-41",
+    "intent": "OTHER",
+    "category": "validation",
+    "query": "Validate the diagnosis code against the treatment billed.",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-42",
+    "intent": "OTHER",
+    "category": "claims",
+    "query": "How many claims has this policyholder filed in 2 years?",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-43",
+    "intent": "OTHER",
+    "category": "claims",
+    "query": "Summarize all pending claims in my review queue.",
+    "expected_tool": "faq_chain"
+  },
+  {
+    "id": "query-44",
+    "intent": "CLAIM_REGISTRATION",
+    "category": "claims",
+    "query": "Register a claim for policy P123456 for $1,000. The incident date was 2024-05-20.",
+    "expected_tool": "claims_intake",
+    "expected_policy": "P123456",
+    "expected_claim_amount": 1000.0,
+    "expected_approved_amount": 450.0
+  },
+  {
+    "id": "query-45",
+    "intent": "POLICY_STATUS",
+    "category": "policy",
+    "query": "Check the status of policy P789012.",
+    "expected_tool": "policy_checker",
+    "expected_policy": "P789012",
+    "expected_is_active": true,
+    "expected_copay_percent": 20.0
+  }
+]

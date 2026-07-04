@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from typing import Any, Dict
 
@@ -7,18 +8,21 @@ _TEMPLATES_CACHE: Dict[str, Any] = {}
 
 def load_templates() -> Dict[str, Any]:
     global _TEMPLATES_CACHE
-    
+
     if _TEMPLATES_CACHE:
         return _TEMPLATES_CACHE
-    
-    templates_path = Path(__file__).parent / "templates.json"
-    
+
+    templates_path = Path(os.path.dirname(__file__)) / "templates.json"
+
     if not templates_path.exists():
         raise FileNotFoundError(f"Templates file not found at {templates_path}")
-    
+
     with open(templates_path, "r") as f:
-        _TEMPLATES_CACHE = json.load(f)
-    
+        loaded_templates = json.load(f)
+
+    _TEMPLATES_CACHE.clear()
+    _TEMPLATES_CACHE.update(loaded_templates)
+
     return _TEMPLATES_CACHE
 
 

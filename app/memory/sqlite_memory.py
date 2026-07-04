@@ -194,3 +194,9 @@ def _get_memory_instance() -> SQLiteMemory:
     if not hasattr(_get_memory_instance, "_instance"):
         _get_memory_instance._instance = SQLiteMemory()
     return _get_memory_instance._instance
+
+
+def reset_memory_singleton() -> None:
+    """Clear the cached singleton so next call creates a fresh instance."""
+    if hasattr(_get_memory_instance, "_instance"):
+        del _get_memory_instance._instance

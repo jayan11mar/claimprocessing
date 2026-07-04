@@ -276,7 +276,28 @@ class AgentChain:
         )
 
     def _format_policy_status_answer(self, base: FAQResponse, result: Any) -> FAQResponse:
+        """Format the policy status response, including key policy details
+        (copay, deductible, sum insured) so that the answer directly addresses
+        specific questions like "What is the co-pay percentage?" rather than
+        only returning the generic status message.
+        """
         answer_text = result.message
+        # Enrich the answer text with policy details from the tool output
+        # so that specific questions (copay, deductible, sum insured) are answered directly.
+        if result.details:
+            copay = result.details.get("copay_percent")
+            deductible = result.details.get("deductible")
+            sum_insured = result.details.get("sum_insured")
+            if copay is not None or deductible is not None or sum_insured is not None:
+                details_parts = []
+                if copay is not None:
+                    details_parts.append(f"Co-pay: {copay}%")
+                if deductible is not None:
+                    details_parts.append(f"Deductible: ${deductible}")
+                if sum_insured is not None:
+                    details_parts.append(f"Sum insured: ${sum_insured}")
+                answer_text += " " + " | ".join(details_parts) + "."
+
         return FAQResponse(
             intent=base.intent,
             category=base.category,

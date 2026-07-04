@@ -22,6 +22,12 @@ def get_faq_examples() -> List[Dict[str, str]]:
             "category": "claims",
         },
         {
+            "user": "What is the status of claim CLM-90210?",
+            "assistant": "Claim CLM-90210 is currently in 'Document Verification' stage. We are awaiting the original discharge summary. Once received, estimated processing time is 3-5 business days.",
+            "intent": "CLAIM_STATUS",
+            "category": "claims",
+        },
+        {
             "user": "What is the fraud score for claim #CLM-90210?",
             "assistant": "The fraud score indicates risk based on claim history and anomalies. I can check the claim if the ID is valid and the fraud monitoring system has a recorded score.",
             "intent": "FRAUD_CHECK",

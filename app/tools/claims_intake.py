@@ -178,6 +178,7 @@ def register_and_validate_claim(
             metadata={k: v for k, v in metadata.items() if v is not None},
         )
 
+    claim.approved_amount = round(max(0.0, approved_amount), 2)
     claim.fraud_score = fraud_evaluation.score
     claim.status = "CREATED"
     save_claim(claim)

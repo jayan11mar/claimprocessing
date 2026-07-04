@@ -38,6 +38,7 @@ class Claim(BaseModel):
     supporting_documents: List[str] = Field(default_factory=list)
     extra_info: Dict[str, str] = Field(default_factory=dict)
     status: Optional[str] = None
+    approved_amount: Optional[float] = None
     fraud_score: Optional[float] = None
     settlement_status: Optional[str] = None
 
@@ -143,6 +144,10 @@ _DEMO_CLAIMS: Dict[str, Claim] = {
     ),
 }
 
+# Deep copies of the original seed data for test isolation
+_DEMO_POLICIES_ORIG: Dict[str, Policy] = {k: v.copy() for k, v in _DEMO_POLICIES.items()}
+_DEMO_CLAIMS_ORIG: Dict[str, Claim] = {k: v.copy() for k, v in _DEMO_CLAIMS.items()}
+
 
 def create_claim_id() -> str:
     return f"C{uuid4().hex[:8].upper()}"
@@ -173,3 +178,11 @@ def get_claims_for_policy_holder(policy_holder_id: str) -> List[Claim]:
         claim for claim in _DEMO_CLAIMS.values()
         if claim.policy_holder_id == policy_holder_id
     ]
+
+
+def reset_demo_data() -> None:
+    """Reset in-memory demo data to original state to prevent test contamination."""
+    global _DEMO_POLICIES, _DEMO_CLAIMS
+    import copy
+    _DEMO_POLICIES = copy.deepcopy(_DEMO_POLICIES_ORIG)
+    _DEMO_CLAIMS = copy.deepcopy(_DEMO_CLAIMS_ORIG)

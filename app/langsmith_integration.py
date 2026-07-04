@@ -102,12 +102,20 @@ def record_span(name: str, metadata: dict):
     if not _enabled or _client is None:
         return None
 
-    if hasattr(_client, "log_event"):
+    try:
+        log_event = getattr(_client, "log_event")
+    except AttributeError:
+        log_event = None
+
+    if log_event is not None:
         try:
-            _client.log_event({"span": name, "meta": metadata})
-        except (AttributeError, TypeError, ValueError, RuntimeError) as exc:
+            log_event({"span": name, "meta": metadata})
+            return None
+        except AttributeError:
+            pass
+        except (TypeError, ValueError, RuntimeError) as exc:
             logger.warning("langsmith_log_event_failed", {"error": str(exc)})
-        return None
+            return None
 
     for fn in ("add_span", "record_span", "log_span"):
         if not hasattr(_client, fn):

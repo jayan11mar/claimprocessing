@@ -97,7 +97,12 @@ def test_agent_chain_handles_fraud_check_query():
 def test_agent_chain_requires_claim_id_for_fraud_check():
     """Test that the agent chain asks for a claim ID when fraud check metadata is missing."""
     agent = AgentChain(memory=SQLiteMemory())
-    session_id = "test-fraud-check-no-claim-id"
+    # Use a unique session ID to prevent cross-test contamination from
+    # _load_session_context injecting a claim_id found in history.
+    session_id = "test-fraud-check-no-claim-id-unique"
+
+    # Also clear any leftover history for this session
+    agent.memory.clear_history(session_id)
 
     agent.faq_chain.invoke = lambda sid, msg, persist_history=True: FAQResponse(
         intent=FAQIntent.FRAUD_CHECK,

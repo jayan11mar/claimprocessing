@@ -20,15 +20,42 @@ logger = logging.getLogger(__name__)
 
 
 def _extract_json_from_text(text: str) -> Optional[dict]:
-    """Extract the last JSON object from a text response."""
-    try:
-        idx = text.rfind("{")
-        if idx == -1:
-            return None
-        payload = text[idx:]
-        return json.loads(payload)
-    except json.JSONDecodeError:
+    """Extract the last valid JSON object from a text response."""
+    if not text:
         return None
+
+    candidates = []
+    stack = []
+    in_string = False
+    escaped = False
+
+    for index, char in enumerate(text):
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+
+        if char == '"':
+            in_string = True
+        elif char == "{":
+            stack.append(index)
+        elif char == "}":
+            if not stack:
+                continue
+            start_index = stack.pop()
+            candidate = text[start_index:index + 1]
+            try:
+                parsed = json.loads(candidate)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(parsed, dict):
+                candidates.append(parsed)
+
+    return candidates[-1] if candidates else None
 
 
 def _format_history_for_prompt(history: List[BaseMessage]) -> str:
@@ -258,23 +285,7 @@ class FAQChain:
         Returns:
             A structured FAQResponse.
         """
-        # Step 1: Simple acknowledgments
-        simple_response = self._handle_simple_acknowledgment(user_message)
-        if simple_response:
-            if persist_history:
-                append_message(session_id, "user", user_message)
-                append_message(session_id, "assistant", simple_response.answer_text)
-            return simple_response
-
-        # Step 2: Guardrails
-        guardrail_response = self._run_guardrails(user_message)
-        if guardrail_response:
-            if persist_history:
-                append_message(session_id, "user", user_message)
-                append_message(session_id, "assistant", guardrail_response.answer_text)
-            return guardrail_response
-
-        # Step 3: Handle missing API key
+        # Step 1: Handle missing API key
         if self.model is None:
             placeholder_text = (
                 "(No API key configured) The LangChain FAQ assistant is not available until OPENAI_API_KEY is set. "
@@ -291,6 +302,22 @@ class FAQChain:
                 append_message(session_id, "user", user_message)
                 append_message(session_id, "assistant", faq_response.answer_text)
             return faq_response
+
+        # Step 2: Simple acknowledgments
+        simple_response = self._handle_simple_acknowledgment(user_message)
+        if simple_response:
+            if persist_history:
+                append_message(session_id, "user", user_message)
+                append_message(session_id, "assistant", simple_response.answer_text)
+            return simple_response
+
+        # Step 3: Guardrails
+        guardrail_response = self._run_guardrails(user_message)
+        if guardrail_response:
+            if persist_history:
+                append_message(session_id, "user", user_message)
+                append_message(session_id, "assistant", guardrail_response.answer_text)
+            return guardrail_response
 
         # Step 4: Select semantic few-shot examples
         examples = select_examples(user_message, k=3)

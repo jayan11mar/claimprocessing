@@ -5,11 +5,16 @@ from datetime import datetime
 
 class JsonFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
+        try:
+            message = record.getMessage()
+        except TypeError:
+            message = str(record.msg)
+
         payload = {
             "timestamp": datetime.utcfromtimestamp(record.created).isoformat() + "Z",
             "timestamp_ms": int(record.created * 1000),
             "level": record.levelname,
-            "message": record.getMessage(),
+            "message": message,
         }
 
         try:

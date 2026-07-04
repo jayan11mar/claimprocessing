@@ -1,4 +1,4 @@
-# Gen AI Capstone Plan – Claims Processing & Settlement Automation Assistant
+# Gen AI Capstone Plan - Claims Processing & Settlement Automation Assistant
 
 > **Usage with GitHub Copilot**  
 > Implement this project **phase-by-phase**. For each phase:
@@ -57,10 +57,10 @@ This plan covers **both Week 2 and Week 4 deliverables**:
 
 This review reflects the current implementation state and the feedback gap around multi-turn context handling.
 
-- Phase 0–2: scaffolding, FAQ workflow, guardrails, and prompt library are in place and largely runnable.
+- Phase 0-2: scaffolding, FAQ workflow, guardrails, and prompt library are in place and largely runnable.
 - Phase 3: LangChain, SQLite memory, and the initial agent flow are present; the storage layer works, but the same-session context handoff should be hardened without altering already working logic.
 - Phase 4: FastAPI chat/reset/health endpoints are implemented and remain the integration surface for the app.
-- Phases 5–7: tool orchestration and evaluation are present, but they should remain intact while adding targeted validation around memory continuity.
+- Phases 5-7: tool orchestration and evaluation are present, but they should remain intact while adding targeted validation around memory continuity.
 
 Planned update: add a non-breaking phase focused on multi-turn context reliability and explicit validation so each phase remains independently runnable and reviewable.
 
@@ -128,7 +128,7 @@ Proposed layout:
 
 ---
 
-## Phase 0 – Repo scaffolding and environment
+## Phase 0 - Repo scaffolding and environment
 
 **Goal**  
 Create a clean, reproducible project skeleton suitable for incremental Copilot-driven development.
@@ -157,7 +157,7 @@ Create a clean, reproducible project skeleton suitable for incremental Copilot-d
 - [ ] Implement basic JSON logging setup in `app/logging/json_logger.py`:
   - [ ] Function `get_logger(name: str)` that returns a logger emitting JSON lines (`timestamp`, `level`, `message`, plus extra dict).
 - [ ] Create placeholder files for all modules (empty classes/functions) so imports will resolve in later phases.
-- [ ] Add a minimal `frontend/streamlit_app.py` that renders a placeholder page (“Claims Assistant – WIP”).
+- [ ] Add a minimal `frontend/streamlit_app.py` that renders a placeholder page (“Claims Assistant - WIP”).
 - [ ] Add a minimal `README.md` describing setup steps (install, env, run placeholder Streamlit).
 
 **Acceptance criteria**
@@ -168,7 +168,7 @@ Create a clean, reproducible project skeleton suitable for incremental Copilot-d
 
 ---
 
-## Phase 1 – Week 2 baseline FAQ chatbot (Streamlit + direct LLM)
+## Phase 1 - Week 2 baseline FAQ chatbot (Streamlit + direct LLM)
 
 **Goal**  
 Deliver an initial Insurance FAQ chatbot (Week 2 scope) using direct OpenAI calls from Streamlit, focusing on prompt engineering, few-shot examples, and basic JSON-shaped responses (no LangChain yet).
@@ -180,7 +180,7 @@ Deliver an initial Insurance FAQ chatbot (Week 2 scope) using direct OpenAI call
     - New claim processing.
     - Suspicious claim / fraud signals.
     - Claim status update.
-  - [ ] Add 2–3 more examples for policy coverage and documentation FAQs.
+  - [ ] Add 2-3 more examples for policy coverage and documentation FAQs.
 - [ ] Implement a simple prompt builder in `app/chains/simple_faq_llm.py`:
   - [ ] System prompt: role = Insurance FAQ assistant for claims, policy, and settlement questions.
   - [ ] Ingest few-shot examples from `faq_examples.py` into a text prompt.
@@ -203,7 +203,7 @@ Deliver an initial Insurance FAQ chatbot (Week 2 scope) using direct OpenAI call
 
 ---
 
-## Phase 2 – Guardrails, Pydantic parsing, and prompt template library (Week 2 hardening)
+## Phase 2 - Guardrails, Pydantic parsing, and prompt template library (Week 2 hardening)
 
 **Goal**  
 Upgrade the FAQ chatbot with Pydantic-validated outputs, a prompt template library, and input guardrails (PII, off-topic, injection) so Week 2 deliverables are fully met.
@@ -224,9 +224,9 @@ Upgrade the FAQ chatbot with Pydantic-validated outputs, a prompt template libra
   - [ ] Guardrail templates (off-topic, unsafe content, PII warning).
   - [ ] A small loader `app/prompts/loader.py` with `load_templates()`.
 - [ ] Implement guardrails in `app/tools/guardrails.py`:
-  - [ ] `detect_pii(text) -> dict` – simple regex for emails, phone numbers, IDs.
-  - [ ] `is_off_topic(text) -> dict` – keyword-based off-topic detection.
-  - [ ] `detect_prompt_injection(text) -> dict` – look for “ignore previous instructions”, etc.
+  - [ ] `detect_pii(text) -> dict` - simple regex for emails, phone numbers, IDs.
+  - [ ] `is_off_topic(text) -> dict` - keyword-based off-topic detection.
+  - [ ] `detect_prompt_injection(text) -> dict` - look for “ignore previous instructions”, etc.
   - [ ] Return a structured result `{ "triggered": bool, "rule": str, "details": str }`.
 - [ ] Integrate guardrails into `frontend/streamlit_app.py`:
   - [ ] Before calling `call_faq_llm`, run all guardrails.
@@ -244,7 +244,7 @@ Upgrade the FAQ chatbot with Pydantic-validated outputs, a prompt template libra
 
 ---
 
-## Phase 3 – Introduce LangChain, SQLite memory, semantic example selection (Week 4 start)
+## Phase 3 - Introduce LangChain, SQLite memory, semantic example selection (Week 4 start)
 
 **Goal**  
 Refactor the FAQ chatbot into a LangChain-based chain with SQLite-backed conversational memory and semantic few-shot selection while preserving Week 2 behavior.
@@ -278,7 +278,7 @@ Refactor the FAQ chatbot into a LangChain-based chain with SQLite-backed convers
 
 ---
 
-## Phase 3A – Multi-turn memory reliability hardening (non-breaking)
+## Phase 3A - Multi-turn memory reliability hardening (non-breaking)
 
 **Goal**  
 Improve multi-turn context reliability for same-session conversations without changing the currently working FAQ, tool, or API flows.
@@ -301,7 +301,7 @@ Improve multi-turn context reliability for same-session conversations without ch
 
 ---
 
-## Phase 4 – FastAPI backend with /chat, /reset, /health and Streamlit as client (Week 4 core)
+## Phase 4 - FastAPI backend with /chat, /reset, /health and Streamlit as client (Week 4 core)
 
 **Goal**  
 Create a FastAPI backend exposing `/chat`, `/reset`, `/health`, and refactor Streamlit to call these endpoints. Add structured JSON logging and basic retry/fallback behavior.
@@ -335,7 +335,7 @@ Create a FastAPI backend exposing `/chat`, `/reset`, `/health`, and refactor Str
 
 ---
 
-## Phase 5 – Domain tools: Claims Intake, Fraud Detector, Settlement Calculator (Week 4 tools)
+## Phase 5 - Domain tools: Claims Intake, Fraud Detector, Settlement Calculator (Week 4 tools)
 
 **Goal**  
 Implement the three custom domain tools and integrate them as LangChain tools within the chat flow.
@@ -349,19 +349,19 @@ Implement the three custom domain tools and integrate them as LangChain tools wi
   - [ ] `SettlementBreakdown` with `gross_amount`, `deductible`, `copay_amount`, `approved_amount`, `notes: List[str]`.
 - [ ] Create a small in-memory or SQLite-backed data store for demo policies/claims:
   - [ ] Utility functions to fetch policies/claims by ID.
-- [ ] Tool 1 – Claims Intake & Validation Engine (`app/tools/claims_intake.py`):
+- [ ] Tool 1 - Claims Intake & Validation Engine (`app/tools/claims_intake.py`):
   - [ ] Function `register_and_validate_claim(policy_number: str, claim_amount: float, extra_info: dict) -> ClaimValidationResult`.
   - [ ] Responsibilities:
     - Create a new claim ID.
     - Check basic policy status and constraints.
     - Produce flags for obvious coverage gaps/exclusions (generic rules only).
-- [ ] Tool 2 – Fraud Signal Detector (`app/tools/fraud_detector.py`):
+- [ ] Tool 2 - Fraud Signal Detector (`app/tools/fraud_detector.py`):
   - [ ] Function `compute_fraud_score(claim_id: str) -> FraudScoreResult`.
   - [ ] Use simple fraud indicators:
     - Time between policy start and claim.
     - Count of recent claims.
     - Duplicate claim amounts.
-- [ ] Tool 3 – Settlement Calculator (`app/tools/settlement_calculator.py`):
+- [ ] Tool 3 - Settlement Calculator (`app/tools/settlement_calculator.py`):
   - [ ] Function `calculate_settlement(claim_id: str) -> SettlementBreakdown`.
   - [ ] Apply generic rules using policy fields: deductible, copay, simple depreciation factor, sub-limits.
 - [ ] Integrate tools into LangChain as `StructuredTool` or `@tool` wrappers.
@@ -378,7 +378,7 @@ Implement the three custom domain tools and integrate them as LangChain tools wi
 
 ---
 
-## Phase 6 – Observability, LangSmith, error handling, and tests (Week 4 hardening)
+## Phase 6 - Observability, LangSmith, error handling, and tests (Week 4 hardening)
 
 **Goal**  
 Add robust error handling, LangSmith tracing, latency tracking, and unit tests with ≥80% coverage for the custom tools.
@@ -410,7 +410,7 @@ Add robust error handling, LangSmith tracing, latency tracking, and unit tests w
 
 ---
 
-## Phase 7 – Evaluation, Week 2 & Week 4 validation, and documentation
+## Phase 7 - Evaluation, Week 2 & Week 4 validation, and documentation
 
 **Goal**  
 Validate the system against the 20 specified test queries, and finalize documentation showing that both Week 2 and Week 4 requirements are met.
@@ -425,7 +425,7 @@ Validate the system against the 20 specified test queries, and finalize document
   - [ ] Tool usage questions.
   - [ ] Multi-turn scenarios leveraging memory.
 - [ ] Create `docs/evaluation_report.md`:
-  - [ ] For each query: input, expected behavior (1–2 lines), actual behavior (summary), and notes on accuracy, formatting, and guardrail effectiveness.
+  - [ ] For each query: input, expected behavior (1-2 lines), actual behavior (summary), and notes on accuracy, formatting, and guardrail effectiveness.
   - [ ] Explicitly mark which queries exercised which tools.
 - [ ] Update `README.md` with:
   - [ ] High-level architecture description and simple diagram (optional ASCII).
@@ -440,7 +440,7 @@ Validate the system against the 20 specified test queries, and finalize document
 - [ ] README and docs clearly explain how this project satisfies both Week 2 and Week 4 requirements.
 - [ ] Repo is ready for review as a capstone project.
 
-## Phase 7A – Golden dataset and regression validation for future RAG extension
+## Phase 7A - Golden dataset and regression validation for future RAG extension
 
 **Goal**  
 Prepare the project for a future RAG extension by creating a phase-specific golden dataset and regression validation process for each phase and tool.
@@ -473,7 +473,7 @@ Prepare the project for a future RAG extension by creating a phase-specific gold
 - [ ] The phase/tool regression dataset covers FAQ, claim intake, fraud, settlement, and multi-turn memory.
 - [ ] Future RAG extension decisions can leverage the dataset and regression results as a clear baseline.
 
-## Phase 8 – SQLite schema for policy and claim domain data
+## Phase 8 - SQLite schema for policy and claim domain data
 
 **Goal**  
 Create a persistent SQL schema for demo policy and claim records while keeping the current in-memory domain store intact.
@@ -492,7 +492,7 @@ Create a persistent SQL schema for demo policy and claim records while keeping t
 - [ ] The schema includes optional enrichments such as `status`, `approved_amount`, `fraud_score`, and `settlement_status`.
 - [ ] The SQLite database file contains `chat_history`, `policies`, and `claims` after app initialization.
 
-## Phase 9 – Migrate domain data to SQLite and enforce fraud-gated claims
+## Phase 9 - Migrate domain data to SQLite and enforce fraud-gated claims
 
 **Goal**  
 Move policy and claim storage from in-memory dictionaries to SQL tables, and require fraud validation before claim persistence.
@@ -524,7 +524,7 @@ Move policy and claim storage from in-memory dictionaries to SQL tables, and req
 
 ---
 
-## Week 6 extension – RAG layer for Claims Processing
+## Week 6 extension - RAG layer for Claims Processing
 
 > These phases extend the existing Week 2/Week 4 claims assistant with a production-grade RAG layer,
 > aligning with the Week 6 requirements document and the trainer's banking RAG reference project.
@@ -572,7 +572,7 @@ project-root/
 
 ---
 
-## Phase 10 – RAG foundations: manifest‑driven loaders, chunking, embeddings, basic retriever
+## Phase 10 - RAG foundations: manifest‑driven loaders, chunking, embeddings, basic retriever
 
 **Goal**  
 Stand up an end‑to‑end retrieval pipeline over the claims knowledge base so the agent has a
@@ -692,7 +692,7 @@ embeddings, and a basic dense retriever.
       Week‑6 requirements for clause/exclusion/regulatory lookups.
 ---
 
-## Phase 11 – Vector backends and metadata schema selection
+## Phase 11 - Vector backends and metadata schema selection
 
 **Goal**  
 Abstract the storage layer so you can choose FAISS, Chroma, or Pinecone per environment, and define
@@ -729,7 +729,7 @@ prior memos).
 
 ---
 
-## Phase 12 – Advanced RAG: hybrid retrieval and QA chain
+## Phase 12 - Advanced RAG: hybrid retrieval and QA chain
 
 **Goal**  
 Raise retrieval quality by combining sparse (BM25) and dense signals, applying query transforms, and
@@ -755,7 +755,7 @@ building an answer + citations QA chain that the claims agent can call.
 
 **How to run this phase independently**
 
-- [ ] After Phase 10–11 ingestion, run: `python -m app.rag.qa_demo`.
+- [ ] After Phase 10-11 ingestion, run: `python -m app.rag.qa_demo`.
 - [ ] Test queries drawn from Week 6 per-project RAG test table (coverage lookup, exclusion,
       regulatory reference, sub-limit, past cases, network, comparative, hard/ambiguous, refusal,
       cite-required rejection letter).
@@ -769,7 +769,7 @@ building an answer + citations QA chain that the claims agent can call.
 
 ---
 
-## Phase 13 – RAG evaluation harness and acceptance thresholds
+## Phase 13 - RAG evaluation harness and acceptance thresholds
 
 **Goal**  
 Make the RAG pipeline measurable and align it with Week 6 acceptance thresholds for claims.
@@ -790,7 +790,7 @@ Make the RAG pipeline measurable and align it with Week 6 acceptance thresholds 
         (e.g., app uses `OPENAI_MODEL_NAME=gpt-4o-mini`, judge uses `JUDGE_MODEL_NAME=gpt-4o`
         or an Anthropic Claude model).
   - [ ] LLM-as-judge scoring for correctness, completeness, citation quality, and clarity
-        (1–5 scale).
+        (1-5 scale).
   - [ ] Ensure eval code never falls back to the main app model if judge configuration is
         present; using the same model is allowed only as a temporary fallback.
 - [ ] Implement `eval/run_eval.py` CLI:
@@ -814,7 +814,7 @@ Make the RAG pipeline measurable and align it with Week 6 acceptance thresholds 
 
 ---
 
-## Phase 14 – Agent integration, new endpoints, and tool routing
+## Phase 14 - Agent integration, new endpoints, and tool routing
 
 **Goal**  
 Expose the RAG retrieval tool to the existing claims agent, add Week 6 endpoints, and ensure the
@@ -854,7 +854,7 @@ agent can route between deterministic tools and RAG based on intent.
 
 ---
 
-## Phase 15 – Week 6 acceptance criteria validation and sign-off
+## Phase 15 - Week 6 acceptance criteria validation and sign-off
 
 **Goal**  
 Systematically validate all Week 6 requirements and acceptance thresholds for the Claims Processing

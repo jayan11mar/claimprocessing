@@ -1,0 +1,92 @@
+sources:
+  # 1) Health policy wordings (3 products)
+  - id: health_policy_hdfcergo
+    path: policies/health_hdfcergo_wording.pdf
+    doc_type: policy_wording
+    insurance_type: health
+    product_code: HDFCH-1
+    product_name: "HDFC ERGO - Health Plan"
+    plan_tier: base
+    jurisdiction: "India"
+
+  - id: health_policy_kotak
+    path: policies/health_kotakmahindra_wording.pdf
+    doc_type: policy_wording
+    insurance_type: health
+    product_code: KOTAKH-1
+    product_name: "Kotak Mahindra - Health Plan"
+    plan_tier: base
+    jurisdiction: "India"
+
+  - id: health_policy_sbi
+    path: policies/health_sbihealth_wording.pdf
+    doc_type: policy_wording
+    insurance_type: health
+    product_code: SBIH-1
+    product_name: "SBI - Health Insurance"
+    plan_tier: base
+    jurisdiction: "India"
+
+  # 2) Motor policy wordings (2 products)
+  - id: motor_policy_sbi_private
+    path: policies/motor_sbi_private_wording.pdf
+    doc_type: policy_wording
+    insurance_type: motor
+    product_code: SBIM-PC
+    product_name: "SBI - Private Car Comprehensive"
+    plan_tier: base
+    jurisdiction: "India"
+
+  - id: motor_policy_sbi
+    path: policies/motor_sbi_wording.pdf
+    doc_type: policy_wording
+    insurance_type: motor
+    product_code: SBIM-1
+    product_name: "SBI - Motor Policy"
+    plan_tier: base
+    jurisdiction: "India"
+
+  # 3) IRDAI regulations
+  - id: irda_health_reg_2016
+    path: regulations/irDAI_health_regulations_2016.pdf
+    doc_type: regulation
+    insurance_type: health
+    product_code: IRDA-HI-2016
+    product_name: "IRDAI Health Insurance Regulations 2016"
+    jurisdiction: "India"
+
+  # 4) Hospital network agreements
+  - id: network_agreement_docx
+    path: network/hospital_network_agreement_bopartitemodel.docx
+    doc_type: network
+    insurance_type: health
+    product_code: NET-AG-A
+    product_name: "Hospital Network Agreement - Bipartite Model"
+    jurisdiction: "India"
+
+  - id: network_agreement_pdf
+    path: network/hospital_network_agreement.pdf
+    doc_type: network
+    insurance_type: health
+    product_code: NET-AG-B
+    product_name: "Hospital Network Agreement - Template B"
+    jurisdiction: "India"
+
+  # 5) Exclusions
+  - id: health_exclusions_summary
+    path: exclusions/health_exclusions_summary.pdf
+    doc_type: exclusion_summary
+    insurance_type: health
+    product_code: EXC-SUMMARY
+    product_name: "Health Exclusions Summary"
+    jurisdiction: "India"
+
+  # 6) Adjudication memos
+  - id: prior_adjudication_memos
+    path: aprior_adjudication_memos.csv
+    doc_type: memo
+    insurance_type: health
+    product_code: IH-2     # align with the policy this memo refers to
+    claim_type: hospitalization
+    jurisdiction: "India"
+  

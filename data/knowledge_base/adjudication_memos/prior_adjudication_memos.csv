@@ -1,0 +1,52 @@
+﻿memo_id,claim_id,member_id,provider_id,cal_year,cal_quarter,health_plan_name,health_plan_region,health_plan_vendor,claim_type,received_date,adjudication_date,claims_adjudication_days,claim_status,denial_reason_code,denial_reason_description,total_amount_billed,total_amount_allowed,total_amount_paid,total_claims_paid,total_claims_denied,average_days_required_for_adjudication,remarks
+MEMO001,CLM2025001,MBR70000,PRV3000,2025,Q1,Apollo Health,South,OptiClaim,Inpatient,01-01-25,01-06-25,5,Approved,,,5139,5139,5139,1,0,5,Chunk-ready memo 1; closed for RAG indexing.
+MEMO002,CLM2025002,MBR70001,PRV3001,2025,Q1,Kaveri Care,West,MediProcess,Outpatient,01-04-25,01-14-25,10,Denied,D002,Non-covered service,19549,10499,0,0,1,10,Chunk-ready memo 2; escalated for RAG indexing.
+MEMO003,CLM2025003,MBR70002,PRV3002,2025,Q1,Sunrise Secure,North,Triad Adjudication,Pharmacy,01-07-25,01-13-25,6,Partially Paid,,,51765,24834,24834,1,0,6,Chunk-ready memo 3; closed for RAG indexing.
+MEMO004,CLM2025004,MBR70003,PRV3003,2025,Q1,Tamil Wellness,East,BluePeak TPA,Diagnostic,01-10-25,01-14-25,4,Pending Review,D004,Duplicate claim,42198,28594,0,0,0,4,Chunk-ready memo 4; escalated for RAG indexing.
+MEMO005,CLM2025005,MBR70004,PRV3004,2025,Q1,Nexa Health,Pan-India,CuraAdmin,Emergency,01-13-25,01-16-25,3,Reconsidered,,,5452,2291,2291,1,0,3,Chunk-ready memo 5; closed for RAG indexing.
+MEMO006,CLM2025006,MBR70005,PRV3005,2025,Q1,Apollo Health,South,OptiClaim,Inpatient,01-16-25,01-24-25,8,Approved,,,18747,18747,18747,1,0,8,Chunk-ready memo 6; closed for RAG indexing.
+MEMO007,CLM2025007,MBR70006,PRV3006,2025,Q1,Kaveri Care,West,MediProcess,Outpatient,01-19-25,02-06-25,18,Denied,D001,Missing pre-authorization,42953,15902,0,0,1,18,Chunk-ready memo 7; escalated for RAG indexing.
+MEMO008,CLM2025008,MBR70007,PRV3007,2025,Q1,Sunrise Secure,North,Triad Adjudication,Pharmacy,01-22-25,01-30-25,8,Partially Paid,,,50425,45141,45141,1,0,8,Chunk-ready memo 8; closed for RAG indexing.
+MEMO009,CLM2025009,MBR70008,PRV3008,2025,Q1,Tamil Wellness,East,BluePeak TPA,Diagnostic,01-25-25,02-03-25,9,Pending Review,D003,Incomplete documentation,32939,30837,0,0,0,9,Chunk-ready memo 9; escalated for RAG indexing.
+MEMO010,CLM2025010,MBR70009,PRV3009,2025,Q1,Nexa Health,Pan-India,CuraAdmin,Emergency,01-28-25,02-07-25,10,Reconsidered,,,56546,20216,20216,1,0,10,Chunk-ready memo 10; closed for RAG indexing.
+MEMO011,CLM2025011,MBR70010,PRV3010,2025,Q1,Apollo Health,South,OptiClaim,Inpatient,45688,45695,7,Approved,,,49253,49253,49253,1,0,7,Chunk-ready memo 11; closed for RAG indexing.
+MEMO012,CLM2025012,MBR70011,PRV3011,2025,Q1,Kaveri Care,West,MediProcess,Outpatient,45691,45706,15,Denied,,,25798,18134,0,0,1,15,Chunk-ready memo 12; escalated for RAG indexing.
+MEMO013,CLM2025013,MBR70012,PRV3000,2025,Q1,Sunrise Secure,North,Triad Adjudication,Pharmacy,45694,45700,6,Partially Paid,,,17610,11677,11677,1,0,6,Chunk-ready memo 13; closed for RAG indexing.
+MEMO014,CLM2025014,MBR70013,PRV3001,2025,Q2,Tamil Wellness,East,BluePeak TPA,Diagnostic,45697,45702,5,Pending Review,D002,Non-covered service,9578,6464,0,0,0,5,Chunk-ready memo 14; escalated for RAG indexing.
+MEMO015,CLM2025015,MBR70014,PRV3002,2025,Q2,Nexa Health,Pan-India,CuraAdmin,Emergency,45700,45705,5,Reconsidered,,,27026,20729,20729,1,0,5,Chunk-ready memo 15; closed for RAG indexing.
+MEMO016,CLM2025016,MBR70015,PRV3003,2025,Q2,Apollo Health,South,OptiClaim,Inpatient,45703,45713,10,Approved,,,56395,56395,56395,1,0,10,Chunk-ready memo 16; closed for RAG indexing.
+MEMO017,CLM2025017,MBR70016,PRV3004,2025,Q2,Kaveri Care,West,MediProcess,Outpatient,45706,45709,3,Denied,D005,Policy waiting period not met,51323,48071,0,0,1,3,Chunk-ready memo 17; escalated for RAG indexing.
+MEMO018,CLM2025018,MBR70017,PRV3005,2025,Q2,Sunrise Secure,North,Triad Adjudication,Pharmacy,45709,45714,5,Partially Paid,,,63943,47187,47187,1,0,5,Chunk-ready memo 18; closed for RAG indexing.
+MEMO019,CLM2025019,MBR70018,PRV3006,2025,Q2,Tamil Wellness,East,BluePeak TPA,Diagnostic,45712,45716,4,Pending Review,D001,Missing pre-authorization,39678,23493,0,0,0,4,Chunk-ready memo 19; escalated for RAG indexing.
+MEMO020,CLM2025020,MBR70019,PRV3007,2025,Q2,Nexa Health,Pan-India,CuraAdmin,Emergency,45715,45728,13,Reconsidered,,,41337,20767,20767,1,0,13,Chunk-ready memo 20; closed for RAG indexing.
+MEMO021,CLM2025021,MBR70020,PRV3008,2025,Q2,Apollo Health,South,OptiClaim,Inpatient,45718,45722,4,Approved,,,6503,6503,6503,1,0,4,Chunk-ready memo 21; closed for RAG indexing.
+MEMO022,CLM2025022,MBR70021,PRV3009,2025,Q2,Kaveri Care,West,MediProcess,Outpatient,45721,45730,9,Denied,D004,Duplicate claim,54163,37922,0,0,1,9,Chunk-ready memo 22; escalated for RAG indexing.
+MEMO023,CLM2025023,MBR70022,PRV3010,2025,Q2,Sunrise Secure,North,Triad Adjudication,Pharmacy,45724,45728,4,Partially Paid,,,59554,36099,36099,1,0,4,Chunk-ready memo 23; closed for RAG indexing.
+MEMO024,CLM2025024,MBR70023,PRV3011,2025,Q2,Tamil Wellness,East,BluePeak TPA,Diagnostic,45727,45732,5,Pending Review,,,28411,19051,0,0,0,5,Chunk-ready memo 24; escalated for RAG indexing.
+MEMO025,CLM2025025,MBR70024,PRV3000,2025,Q2,Nexa Health,Pan-India,CuraAdmin,Emergency,45730,45746,16,Reconsidered,,,45160,43137,43137,1,0,16,Chunk-ready memo 25; closed for RAG indexing.
+MEMO026,CLM2025026,MBR70025,PRV3001,2025,Q2,Apollo Health,South,OptiClaim,Inpatient,45733,45746,13,Approved,,,14159,14159,14159,1,0,13,Chunk-ready memo 26; closed for RAG indexing.
+MEMO027,CLM2025027,MBR70026,PRV3002,2025,Q3,Kaveri Care,West,MediProcess,Outpatient,45736,45749,13,Denied,D003,Incomplete documentation,26783,16239,0,0,1,13,Chunk-ready memo 27; escalated for RAG indexing.
+MEMO028,CLM2025028,MBR70027,PRV3003,2025,Q3,Sunrise Secure,North,Triad Adjudication,Pharmacy,45739,45749,10,Partially Paid,,,49494,48014,48014,1,0,10,Chunk-ready memo 28; closed for RAG indexing.
+MEMO029,CLM2025029,MBR70028,PRV3004,2025,Q3,Tamil Wellness,East,BluePeak TPA,Diagnostic,45742,45746,4,Pending Review,D005,Policy waiting period not met,43420,36002,0,0,0,4,Chunk-ready memo 29; escalated for RAG indexing.
+MEMO030,CLM2025030,MBR70029,PRV3005,2025,Q3,Nexa Health,Pan-India,CuraAdmin,Emergency,45745,45752,7,Reconsidered,,,38505,37368,37368,1,0,7,Chunk-ready memo 30; closed for RAG indexing.
+MEMO031,CLM2025031,MBR70030,PRV3006,2025,Q3,Apollo Health,South,OptiClaim,Inpatient,45748,45757,9,Approved,,,14208,14208,14208,1,0,9,Chunk-ready memo 31; closed for RAG indexing.
+MEMO032,CLM2025032,MBR70031,PRV3007,2025,Q3,Kaveri Care,West,MediProcess,Outpatient,45751,45767,16,Denied,D002,Non-covered service,28367,18773,0,0,1,16,Chunk-ready memo 32; escalated for RAG indexing.
+MEMO033,CLM2025033,MBR70032,PRV3008,2025,Q3,Sunrise Secure,North,Triad Adjudication,Pharmacy,45754,45763,9,Partially Paid,,,48366,27554,27554,1,0,9,Chunk-ready memo 33; closed for RAG indexing.
+MEMO034,CLM2025034,MBR70033,PRV3009,2025,Q3,Tamil Wellness,East,BluePeak TPA,Diagnostic,45757,45760,3,Pending Review,D004,Duplicate claim,18510,7003,0,0,0,3,Chunk-ready memo 34; escalated for RAG indexing.
+MEMO035,CLM2025035,MBR70034,PRV3010,2025,Q3,Nexa Health,Pan-India,CuraAdmin,Emergency,45760,45772,12,Reconsidered,,,29790,19199,19199,1,0,12,Chunk-ready memo 35; closed for RAG indexing.
+MEMO036,CLM2025036,MBR70035,PRV3011,2025,Q3,Apollo Health,South,OptiClaim,Inpatient,45763,45767,4,Approved,,,17326,17326,17326,1,0,4,Chunk-ready memo 36; closed for RAG indexing.
+MEMO037,CLM2025037,MBR70036,PRV3000,2026,Q3,Kaveri Care,West,MediProcess,Outpatient,45766,45778,12,Denied,D001,Missing pre-authorization,17434,16839,0,0,1,12,Chunk-ready memo 37; escalated for RAG indexing.
+MEMO038,CLM2025038,MBR70037,PRV3001,2026,Q3,Sunrise Secure,North,Triad Adjudication,Pharmacy,45769,45786,17,Partially Paid,,,29428,25334,25334,1,0,17,Chunk-ready memo 38; closed for RAG indexing.
+MEMO039,CLM2025039,MBR70038,PRV3002,2026,Q3,Tamil Wellness,East,BluePeak TPA,Diagnostic,45772,45778,6,Pending Review,D003,Incomplete documentation,20859,9587,0,0,0,6,Chunk-ready memo 39; escalated for RAG indexing.
+MEMO040,CLM2025040,MBR70039,PRV3003,2026,Q4,Nexa Health,Pan-India,CuraAdmin,Emergency,45775,45784,9,Reconsidered,,,52323,35532,35532,1,0,9,Chunk-ready memo 40; closed for RAG indexing.
+MEMO041,CLM2025041,MBR70040,PRV3004,2026,Q4,Apollo Health,South,OptiClaim,Inpatient,45778,45793,15,Approved,,,62339,62339,62339,1,0,15,Chunk-ready memo 41; closed for RAG indexing.
+MEMO042,CLM2025042,MBR70041,PRV3005,2026,Q4,Kaveri Care,West,MediProcess,Outpatient,45781,45795,14,Denied,,,27223,16714,0,0,1,14,Chunk-ready memo 42; escalated for RAG indexing.
+MEMO043,CLM2025043,MBR70042,PRV3006,2026,Q4,Sunrise Secure,North,Triad Adjudication,Pharmacy,45784,45790,6,Partially Paid,,,36892,29083,29083,1,0,6,Chunk-ready memo 43; closed for RAG indexing.
+MEMO044,CLM2025044,MBR70043,PRV3007,2026,Q4,Tamil Wellness,East,BluePeak TPA,Diagnostic,45787,45791,4,Pending Review,D002,Non-covered service,53030,21647,0,0,0,4,Chunk-ready memo 44; escalated for RAG indexing.
+MEMO045,CLM2025045,MBR70044,PRV3008,2026,Q4,Nexa Health,Pan-India,CuraAdmin,Emergency,45790,45795,5,Reconsidered,,,13516,7351,7351,1,0,5,Chunk-ready memo 45; closed for RAG indexing.
+MEMO046,CLM2025046,MBR70045,PRV3009,2026,Q4,Apollo Health,South,OptiClaim,Inpatient,45793,45808,15,Approved,,,42586,42586,42586,1,0,15,Chunk-ready memo 46; closed for RAG indexing.
+MEMO047,CLM2025047,MBR70046,PRV3010,2026,Q4,Kaveri Care,West,MediProcess,Outpatient,45796,45800,4,Denied,D005,Policy waiting period not met,28716,22554,0,0,1,4,Chunk-ready memo 47; escalated for RAG indexing.
+MEMO048,CLM2025048,MBR70047,PRV3011,2026,Q4,Sunrise Secure,North,Triad Adjudication,Pharmacy,45799,45815,16,Partially Paid,,,38176,21599,21599,1,0,16,Chunk-ready memo 48; closed for RAG indexing.
+MEMO049,CLM2025049,MBR70048,PRV3000,2026,Q4,Tamil Wellness,East,BluePeak TPA,Diagnostic,45802,45804,2,Pending Review,D001,Missing pre-authorization,48083,40445,0,0,0,2,Chunk-ready memo 49; escalated for RAG indexing.
+MEMO050,CLM2025050,MBR70049,PRV3001,2026,Q4,Nexa Health,Pan-India,CuraAdmin,Emergency,45805,45810,5,Reconsidered,,,48176,45853,45853,1,0,5,Chunk-ready memo 50; closed for RAG indexing.
+

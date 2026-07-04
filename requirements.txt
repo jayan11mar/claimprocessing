@@ -2,15 +2,43 @@
 fastapi
 uvicorn
 streamlit
+requests
+
 langchain
 langchain-core
 langchain-community
 langchain-openai
 openai
+langsmith
+
 pydantic
 pydantic-settings
 python-dotenv
+
 pytest
 pytest-cov
-langsmith
-requests
+
+# Week 6 RAG / vector / hybrid search
+chromadb
+langchain-chroma
+faiss-cpu
+rank-bm25
+sentence-transformers
+
+# Document ingestion (PDF, DOCX, HTML, etc.)
+pypdf
+python-docx
+docx2txt
+beautifulsoup4
+lxml
+fpdf2
+
+# Optional: Redis-backed memory/cache (Phase 3B)
+upstash-redis
+# or: redis
+
+# Optional: evaluation stack
+ragas
+trulens
+cohere  # if you use Cohere rerank
+pinecone-client  # if you use Pinecone

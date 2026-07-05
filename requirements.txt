@@ -8,6 +8,7 @@ langchain
 langchain-core
 langchain-community
 langchain-openai
+langchain-text-splitters
 openai
 langsmith
 
@@ -36,10 +37,10 @@ fpdf2
 
 # Optional: Redis-backed memory/cache (Phase 3B)
 upstash-redis
-# or: redis
+# redis
 
 # Optional: evaluation stack
 ragas
 trulens
-cohere  # if you use Cohere rerank
-pinecone-client  # if you use Pinecone
+cohere
+pinecone

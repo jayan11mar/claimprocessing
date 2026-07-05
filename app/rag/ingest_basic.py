@@ -79,7 +79,8 @@ def main(
 
         # ── Step 4: Upsert into vector store ──
         print("Step 4/4: Upserting into vector store...")
-        store = get_vector_store(backend=vector_backend)
+        dimension = len(embeddings[0]) if embeddings else 1536
+        store = get_vector_store(backend=vector_backend, dimension=dimension)
         store.add(all_chunks, embeddings)
         store.persist()
         print(f"  → {store.chunk_count} chunk(s) stored in {vector_backend} backend")

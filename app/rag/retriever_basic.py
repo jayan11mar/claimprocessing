@@ -76,8 +76,11 @@ def build_basic_retriever(
     texts = [chunk.text for chunk in all_chunks]
     embeddings = embed_fn(texts)
 
+    # Get embedding dimension from the first embedding
+    dimension = len(embeddings[0]) if embeddings else 1536
+
     # Get vector store
-    store = get_vector_store(backend=vector_backend)
+    store = get_vector_store(backend=vector_backend, dimension=dimension)
 
     # Upsert chunks
     store.add(all_chunks, embeddings)
@@ -162,8 +165,11 @@ def get_retriever_with_stats(
     texts = [chunk.text for chunk in all_chunks]
     embeddings = embed_fn(texts)
 
+    # Get embedding dimension from the first embedding
+    dimension = len(embeddings[0]) if embeddings else 1536
+
     # Get vector store
-    store = get_vector_store(backend=vector_backend)
+    store = get_vector_store(backend=vector_backend, dimension=dimension)
 
     # Upsert chunks
     store.add(all_chunks, embeddings)

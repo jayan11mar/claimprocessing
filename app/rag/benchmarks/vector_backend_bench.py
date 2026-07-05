@@ -13,12 +13,21 @@ from app.rag.chunkers import Chunk
 from app.rag.vectorstores import get_vector_store
 
 
-def _embedding_for_text(text: str) -> List[float]:
-    """Create a deterministic embedding for benchmark purposes."""
-    vector = [0.0] * 4
+def _embedding_for_text(text: str, dimension: int = 1536) -> List[float]:
+    """Create a deterministic embedding for benchmark purposes.
+    
+    Args:
+        text: The text to embed.
+        dimension: The embedding dimension. Defaults to 1536 to match
+                   text-embedding-3-small and the default Pinecone index dimension.
+    
+    Returns:
+        A deterministic embedding vector of the specified dimension.
+    """
+    vector = [0.0] * dimension
     tokens = [token.lower() for token in text.replace("/", " ").split() if token]
     for index, token in enumerate(tokens):
-        vector[index % 4] += (sum(ord(char) for char in token) % 17) / 17.0
+        vector[index % dimension] += (sum(ord(char) for char in token) % 17) / 17.0
     return [round(value, 6) for value in vector]
 
 
@@ -103,6 +112,8 @@ def benchmark_backend(backend: str) -> Dict[str, Any]:
     temp_dir = tempfile.mkdtemp(prefix=f"{backend}_bench_", dir="/tmp")
     try:
         kwargs: Dict[str, Any] = {}
+        # Use 1536 dimension to match text-embedding-3-small and default Pinecone index
+        dimension = 1536
         if backend == "faiss":
             kwargs["index_path"] = os.path.join(temp_dir, "faiss.index")
         elif backend == "chroma":
@@ -112,7 +123,7 @@ def benchmark_backend(backend: str) -> Dict[str, Any]:
             kwargs["index_name"] = f"claims-bench-{backend}"
             kwargs["api_key"] = os.getenv("PINECONE_API_KEY")
 
-        store = get_vector_store(backend=backend, **kwargs)
+        store = get_vector_store(backend=backend, dimension=dimension, **kwargs)
         chunks = _build_sample_chunks()
         embeddings = [_embedding_for_text(chunk.text) for chunk in chunks]
 

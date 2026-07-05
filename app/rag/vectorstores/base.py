@@ -80,12 +80,13 @@ class VectorStore(ABC):
         pass
 
 
-def get_vector_store(backend: Optional[str] = None, **kwargs) -> VectorStore:
+def get_vector_store(backend: Optional[str] = None, dimension: Optional[int] = None, **kwargs) -> VectorStore:
     """
     Get the appropriate vector store based on backend.
 
     Args:
         backend: Vector store backend ("faiss", "chroma", "pinecone").
+        dimension: Embedding dimension (required for Pinecone).
         **kwargs: Additional configuration for the store.
 
     Returns:
@@ -100,6 +101,9 @@ def get_vector_store(backend: Optional[str] = None, **kwargs) -> VectorStore:
         return ChromaStore(**kwargs)
     elif backend_name == "pinecone":
         from app.rag.vectorstores.pinecone_store import PineconeStore
-        return PineconeStore(**kwargs)
+        # If dimension not provided, use default 1536 (text-embedding-3-small)
+        if dimension is None:
+            dimension = 1536
+        return PineconeStore(dimension=dimension, **kwargs)
     else:
         raise ValueError(f"Unknown vector store backend: {backend_name}")

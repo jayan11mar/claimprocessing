@@ -61,7 +61,7 @@ def _get_openai_embedding_fn(model_name: str) -> Callable[[List[str]], List[List
         Embedding function for OpenAI models.
     """
     if OpenAIEmbeddings is None:
-        return _get_fallback_embedding_fn()
+        return _get_fallback_embedding_fn(_get_openai_embedding_dimension(model_name))
 
     settings = get_settings()
     embeddings = OpenAIEmbeddings(
@@ -75,6 +75,24 @@ def _get_openai_embedding_fn(model_name: str) -> Callable[[List[str]], List[List
     return embed_fn
 
 
+def _get_openai_embedding_dimension(model_name: str) -> int:
+    """Get the embedding dimension for an OpenAI model.
+    
+    Args:
+        model_name: OpenAI embedding model name.
+        
+    Returns:
+        The embedding dimension for the model.
+    """
+    # OpenAI embedding model dimensions
+    # text-embedding-3-small: 1536 (default)
+    # text-embedding-3-large: 3072
+    # text-embedding-ada-002: 1536
+    if "text-embedding-3-large" in model_name:
+        return 3072
+    return 1536  # Default for text-embedding-3-small and text-embedding-ada-002
+
+
 def _get_sentence_transformer_embedding_fn(model_name: str) -> Callable[[List[str]], List[List[float]]]:
     """
     Get sentence-transformer embedding function.
@@ -86,7 +104,7 @@ def _get_sentence_transformer_embedding_fn(model_name: str) -> Callable[[List[st
         Embedding function for sentence-transformer models.
     """
     if SentenceTransformer is None:
-        return _get_fallback_embedding_fn()
+        return _get_fallback_embedding_fn(_get_sentence_transformer_dimension(model_name))
 
     model = SentenceTransformer(model_name)
 
@@ -97,11 +115,41 @@ def _get_sentence_transformer_embedding_fn(model_name: str) -> Callable[[List[st
     return embed_fn
 
 
-def _get_fallback_embedding_fn() -> Callable[[List[str]], List[List[float]]]:
-    """Return a deterministic placeholder embedding function when heavyweight deps are unavailable."""
+def _get_sentence_transformer_dimension(model_name: str) -> int:
+    """Get the embedding dimension for a sentence-transformer model.
+    
+    Args:
+        model_name: Sentence-transformer model name.
+        
+    Returns:
+        The embedding dimension for the model.
+    """
+    # Common sentence-transformer model dimensions
+    # all-MiniLM-L6-v2: 384
+    # all-mpnet-base-v2: 768
+    # all-MiniLM-L12-v2: 384
+    # paraphrase-MiniLM-L6-v2: 384
+    # paraphrase-mpnet-base-v2: 768
+    # Default to 384 for most MiniLM models
+    if "mpnet" in model_name.lower():
+        return 768
+    return 384  # Default for most MiniLM models
+
+
+def _get_fallback_embedding_fn(dimension: int = 1536) -> Callable[[List[str]], List[List[float]]]:
+    """Return a deterministic placeholder embedding function when heavyweight deps are unavailable.
+    
+    Args:
+        dimension: The embedding dimension to return. Defaults to 1536 to match
+                   text-embedding-3-small and the default Pinecone index dimension.
+    
+    Returns:
+        Embedding function that returns vectors of the specified dimension.
+    """
 
     def embed_fn(texts: List[str]) -> List[List[float]]:
-        return [[float(sum(ord(char) for char in text) % 1000) / 1000.0, 0.0, 0.0] for text in texts]
+        # Generate a deterministic embedding of the correct dimension
+        return [[sum(ord(c) * (i + 1) for c in text) % 100 / 100.0 for i in range(dimension)] for text in texts]
 
     return embed_fn
 

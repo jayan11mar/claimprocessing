@@ -30,6 +30,7 @@ class Chunk:
     source_path: str
     doc_type: str
     insurance_type: str
+    insurer: Optional[str] = None
     product_code: Optional[str] = None
     product_name: Optional[str] = None
     claim_type: Optional[str] = None
@@ -45,6 +46,7 @@ class Chunk:
             "source_path": self.source_path,
             "doc_type": self.doc_type,
             "insurance_type": self.insurance_type,
+            "insurer": self.insurer,
             "product_code": self.product_code,
             "product_name": self.product_name,
             "claim_type": self.claim_type,
@@ -217,6 +219,8 @@ def chunk_document(
 
     # Determine if we should use semantic chunking
     semantic_types = {"policy_wording", "regulation", "network_agreement", "exclusion_summary"}
+    raw_metadata = dict(getattr(document, "raw_metadata", {}) or {})
+    insurer = raw_metadata.get("insurer")
 
     if use_semantic and document.doc_type in semantic_types:
         return semantic_chunk(
@@ -226,10 +230,11 @@ def chunk_document(
             source_path=document.source_path,
             doc_type=document.doc_type,
             insurance_type=document.insurance_type,
+            insurer=insurer,
             product_code=document.product_code,
             product_name=document.product_name,
             claim_type=document.claim_type,
-            raw_metadata=document.raw_metadata,
+            raw_metadata=raw_metadata,
         )
     else:
         return recursive_chunk(
@@ -239,8 +244,9 @@ def chunk_document(
             source_path=document.source_path,
             doc_type=document.doc_type,
             insurance_type=document.insurance_type,
+            insurer=insurer,
             product_code=document.product_code,
             product_name=document.product_name,
             claim_type=document.claim_type,
-            raw_metadata=document.raw_metadata,
+            raw_metadata=raw_metadata,
         )

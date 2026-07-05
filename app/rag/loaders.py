@@ -9,9 +9,21 @@ from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional
 
 import yaml
-from pypdf import PdfReader
-from docx import Document as DocxDocument
-import docx2txt
+
+try:
+    from pypdf import PdfReader
+except ImportError:  # pragma: no cover - optional dependency guard
+    PdfReader = None
+
+try:
+    from docx import Document as DocxDocument
+except ImportError:  # pragma: no cover - optional dependency guard
+    DocxDocument = None
+
+try:
+    import docx2txt
+except ImportError:  # pragma: no cover - optional dependency guard
+    docx2txt = None
 
 from app.config import get_settings
 
@@ -106,6 +118,9 @@ def _load_pdf(file_path: str) -> str:
     Returns:
         Extracted text content.
     """
+    if PdfReader is None:
+        return ""
+
     reader = PdfReader(file_path)
     text_parts = []
     for page in reader.pages:
@@ -126,14 +141,18 @@ def _load_docx(file_path: str) -> str:
         Extracted text content.
     """
     # Try docx2txt first for better text extraction
-    try:
-        text = docx2txt.process(file_path)
-        if text and text.strip():
-            return text
-    except Exception:
-        pass
+    if docx2txt is not None:
+        try:
+            text = docx2txt.process(file_path)
+            if text and text.strip():
+                return text
+        except Exception:
+            pass
 
     # Fallback to python-docx
+    if DocxDocument is None:
+        return ""
+
     doc = DocxDocument(file_path)
     text_parts = []
     for paragraph in doc.paragraphs:

@@ -6,11 +6,41 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-import faiss
+try:
+    import faiss
+except ImportError:  # pragma: no cover - optional dependency guard
+    faiss = None
+
 import numpy as np
 
 from app.rag.chunkers import Chunk
 from app.rag.vectorstores.base import VectorStore
+
+
+class _FallbackIndex:
+    """Small in-memory cosine-similarity index used when faiss is unavailable."""
+
+    def __init__(self, dimension: int):
+        self.dimension = dimension
+        self._vectors: List[List[float]] = []
+        self._chunk_indices: List[int] = []
+
+    def add(self, embeddings_array: np.ndarray) -> None:
+        self._vectors.extend(embeddings_array.tolist())
+
+    def search(self, query_array: np.ndarray, k: int) -> Tuple[np.ndarray, np.ndarray]:
+        query_vector = query_array[0].tolist()
+        scores = []
+        indices = []
+        for idx, vector in enumerate(self._vectors):
+            dot = float(np.dot(vector, query_vector))
+            scores.append(dot)
+            indices.append(idx)
+
+        ranked = sorted(zip(scores, indices), key=lambda item: item[0], reverse=True)
+        top_scores = [score for score, _ in ranked[:k]]
+        top_indices = [idx for _, idx in ranked[:k]]
+        return np.array([top_scores], dtype=np.float32), np.array([top_indices], dtype=np.int64)
 
 
 class FAISSStore(VectorStore):
@@ -34,7 +64,10 @@ class FAISSStore(VectorStore):
         """Initialize the FAISS index if not already done."""
         if self.index is None:
             self.dimension = dimension
-            self.index = faiss.IndexFlatIP(dimension)
+            if faiss is None:
+                self.index = _FallbackIndex(dimension)
+            else:
+                self.index = faiss.IndexFlatIP(dimension)
 
     def add(self, chunks: List[Chunk], embeddings: List[List[float]]) -> None:
         """
@@ -53,8 +86,8 @@ class FAISSStore(VectorStore):
         # Convert embeddings to numpy array
         embeddings_array = np.array(embeddings, dtype=np.float32)
 
-        # Normalize for cosine similarity (Inner Product)
-        faiss.normalize_L2(embeddings_array)
+        if faiss is not None:
+            faiss.normalize_L2(embeddings_array)
 
         # Add to index
         self.index.add(embeddings_array)
@@ -88,7 +121,8 @@ class FAISSStore(VectorStore):
 
         # Convert query to numpy array
         query_array = np.array([query_embedding], dtype=np.float32)
-        faiss.normalize_L2(query_array)
+        if faiss is not None:
+            faiss.normalize_L2(query_array)
 
         # Search
         scores, indices = self.index.search(query_array, min(k, len(self._chunks)))
@@ -161,6 +195,9 @@ class FAISSStore(VectorStore):
         if self.index is None:
             return
 
+        if faiss is None:
+            return
+
         persist_path = path or self.index_path
         os.makedirs(os.path.dirname(persist_path), exist_ok=True)
         faiss.write_index(self.index, persist_path)
@@ -175,22 +212,75 @@ class FAISSStore(VectorStore):
         Returns:
             A retriever object.
         """
-        from langchain_core.retrievers import RetrieverLike
-        from langchain_core.vectorstores import VectorStore as LangChainVectorStore
+        search_kwargs = dict(search_kwargs or {})
+        embedding_fn = search_kwargs.pop("embedding_fn", None)
+        if embedding_fn is None:
+            embedding_fn = getattr(self, "embedding_fn", None)
+        if embedding_fn is None:
+            embedding_fn = getattr(self, "_embedding_fn", None)
 
-        # Create a simple retriever wrapper
-        class FAISSRetriever(RetrieverLike):
-            def __init__(self, store: "FAISSStore", k: int = 5, filter: Optional[Dict] = None):
+        k = search_kwargs.pop("k", 5)
+        filter_value = search_kwargs.pop("filter", None)
+
+        from langchain_core.documents import Document as LangChainDocument
+
+        class FAISSRetriever:
+            def __init__(self, store: "FAISSStore", k: int = 5, filter: Optional[Dict] = None, embedding_fn: Optional[Any] = None):
                 self._store = store
                 self._k = k
                 self._filter = filter
+                self._embedding_fn = embedding_fn
 
             def invoke(self, input: Any, config: Optional[Dict] = None) -> List[Any]:
-                # This would need the embedding function to be passed
-                # For now, return empty - the retriever_basic will handle this
-                return []
+                if isinstance(input, dict):
+                    query_text = input.get("query") or input.get("text") or ""
+                else:
+                    query_text = str(input)
 
-        return FAISSRetriever(self, **(search_kwargs or {}))
+                effective_filter = self._filter
+                effective_k = self._k
+                effective_embedding_fn = self._embedding_fn
+
+                if config is not None:
+                    if isinstance(config, dict):
+                        effective_filter = config.get("filter", effective_filter)
+                        effective_k = config.get("k", effective_k)
+                        effective_embedding_fn = config.get("embedding_fn", effective_embedding_fn)
+
+                if effective_embedding_fn is None:
+                    return []
+
+                embedding = effective_embedding_fn([query_text])[0]
+                results = self._store.search(
+                    query=query_text,
+                    query_embedding=embedding,
+                    k=effective_k,
+                    filter=effective_filter,
+                )
+
+                documents = []
+                for chunk, _score in results:
+                    metadata = {
+                        "source_id": chunk.source_id,
+                        "source_path": chunk.source_path,
+                        "doc_type": chunk.doc_type,
+                        "insurance_type": chunk.insurance_type,
+                        "product_code": chunk.product_code,
+                        "product_name": chunk.product_name,
+                        "claim_type": chunk.claim_type,
+                        "section": chunk.section,
+                        "clause_id": chunk.clause_id,
+                        "chunk_index": chunk.chunk_index,
+                    }
+                    metadata.update(chunk.raw_metadata)
+                    documents.append(LangChainDocument(page_content=chunk.text, metadata=metadata))
+
+                return documents
+
+            def get_relevant_documents(self, query: Any, config: Optional[Dict] = None) -> List[Any]:
+                return self.invoke(query, config=config)
+
+        return FAISSRetriever(self, k=k, filter=filter_value, embedding_fn=embedding_fn)
 
     @property
     def chunk_count(self) -> int:

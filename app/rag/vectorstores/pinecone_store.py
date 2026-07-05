@@ -4,9 +4,14 @@ Pinecone vector store implementation for the claims knowledge base.
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from pinecone import Pinecone, ServerlessSpec
+try:
+    from pinecone import Pinecone, ServerlessSpec
+except ImportError:  # pragma: no cover - optional dependency guard
+    Pinecone = None
+    ServerlessSpec = None
 
 from app.rag.chunkers import Chunk
+from app.rag.metadata import build_chunk_metadata
 from app.rag.vectorstores.base import VectorStore
 
 
@@ -31,21 +36,29 @@ class PineconeStore(VectorStore):
         """
         self.index_name = index_name
         self.dimension = dimension
-        self._pc: Optional[Pinecone] = None
+        self._api_key = api_key
+        self.environment = environment
+        self._pc: Optional[Any] = None
         self._index: Optional[Any] = None
 
-    def _get_client(self) -> Pinecone:
+    def _get_client(self) -> Any:
         """Get or create the Pinecone client."""
+        if Pinecone is None:
+            raise RuntimeError("pinecone is not installed; install it to use the Pinecone backend")
         if self._pc is None:
             from app.config import get_settings
             settings = get_settings()
             api_key = self._api_key or getattr(settings, "PINECONE_API_KEY", None)
+            if not api_key:
+                raise RuntimeError("PINECONE_API_KEY is not configured")
             self._pc = Pinecone(api_key=api_key)
         return self._pc
 
     def _get_index(self) -> Any:
         """Get or create the index."""
         if self._index is None:
+            if ServerlessSpec is None:
+                raise RuntimeError("pinecone serverless spec is unavailable")
             pc = self._get_client()
             # Check if index exists, create if not
             try:
@@ -72,24 +85,10 @@ class PineconeStore(VectorStore):
 
         vectors = []
         for chunk, embedding in zip(chunks, embeddings):
-            metadata = {
-                "source_id": chunk.source_id,
-                "source_path": chunk.source_path,
-                "doc_type": chunk.doc_type,
-                "insurance_type": chunk.insurance_type,
-                "chunk_index": chunk.chunk_index,
-            }
-            if chunk.product_code:
-                metadata["product_code"] = chunk.product_code
-            if chunk.product_name:
-                metadata["product_name"] = chunk.product_name
-            if chunk.claim_type:
-                metadata["claim_type"] = chunk.claim_type
-            if chunk.section:
-                metadata["section"] = chunk.section
-            if chunk.clause_id:
-                metadata["clause_id"] = chunk.clause_id
-            metadata.update(chunk.raw_metadata)
+            metadata = build_chunk_metadata(chunk)
+            metadata["source_id"] = chunk.source_id
+            metadata["source_path"] = chunk.source_path
+            metadata["chunk_index"] = chunk.chunk_index
 
             vectors.append({
                 "id": f"{chunk.source_id}_{chunk.chunk_index}",
@@ -136,6 +135,7 @@ class PineconeStore(VectorStore):
                 source_path=metadata.get("source_path", ""),
                 doc_type=metadata.get("doc_type", ""),
                 insurance_type=metadata.get("insurance_type", ""),
+                insurer=metadata.get("insurer"),
                 product_code=metadata.get("product_code"),
                 product_name=metadata.get("product_name"),
                 claim_type=metadata.get("claim_type"),
@@ -144,7 +144,7 @@ class PineconeStore(VectorStore):
                 chunk_index=metadata.get("chunk_index", 0),
                 raw_metadata={k: v for k, v in metadata.items()
                              if k not in ["source_id", "source_path", "doc_type",
-                                         "insurance_type", "product_code", "product_name",
+                                         "insurance_type", "insurer", "product_code", "product_name",
                                          "claim_type", "section", "clause_id", "chunk_index", "text"]},
             )
             score = match.get("score", 1.0)

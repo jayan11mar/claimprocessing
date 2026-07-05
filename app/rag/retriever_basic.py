@@ -7,13 +7,11 @@ import os
 from collections import defaultdict
 from typing import Any, Dict, List, Optional
 
-from langchain_core.vectorstores import VectorStore as LangChainVectorStore
-from langchain_core.documents import Document as LangChainDocument
-
-from app.rag.loaders import load_documents_from_manifest, Document
+from app.config import get_settings
+from app.rag.loaders import load_documents_from_manifest
 from app.rag.chunkers import chunk_document, ChunkConfig, Chunk
 from app.rag.embeddings import get_embedding_fn
-from app.rag.vectorstores import get_vector_store, VectorStore
+from app.rag.vectorstores import get_vector_store
 
 
 def build_basic_retriever(
@@ -21,6 +19,9 @@ def build_basic_retriever(
     vector_backend: Optional[str] = None,
     chunk_config: Optional[ChunkConfig] = None,
     use_semantic_chunking: bool = True,
+    metadata_filter: Optional[Dict[str, Any]] = None,
+    filter: Optional[Dict[str, Any]] = None,
+    search_kwargs: Optional[Dict[str, Any]] = None,
 ) -> Any:
     """
     Build a basic retriever over the claims knowledge base.
@@ -49,12 +50,23 @@ def build_basic_retriever(
     documents = load_documents_from_manifest()
 
     # Chunk documents
+    settings = get_settings()
     if chunk_config is None:
-        chunk_config = ChunkConfig()
+        chunk_config = ChunkConfig(
+            chunk_size=int(getattr(settings, "CHUNK_SIZE", 800)),
+            chunk_overlap=int(getattr(settings, "CHUNK_OVERLAP", 100)),
+        )
+
+    effective_use_semantic = use_semantic_chunking
+    chunk_strategy = str(getattr(settings, "CHUNKING_STRATEGY", "recursive")).lower()
+    if chunk_strategy in {"recursive", "recursive_chunking"}:
+        effective_use_semantic = False
+    elif chunk_strategy in {"semantic", "semantic_chunking", "semantic-chunking"}:
+        effective_use_semantic = True
 
     all_chunks: List[Chunk] = []
     for doc in documents:
-        chunks = chunk_document(doc, chunk_config, use_semantic=use_semantic_chunking)
+        chunks = chunk_document(doc, chunk_config, use_semantic=effective_use_semantic)
         all_chunks.extend(chunks)
 
     # Get embedding function
@@ -74,7 +86,14 @@ def build_basic_retriever(
     store.persist()
 
     # Return retriever
-    return store.as_retriever()
+    effective_filter = metadata_filter if metadata_filter is not None else filter
+    effective_search_kwargs = dict(search_kwargs or {})
+    if effective_filter is not None and "filter" not in effective_search_kwargs:
+        effective_search_kwargs["filter"] = effective_filter
+    if "k" not in effective_search_kwargs:
+        effective_search_kwargs["k"] = 5
+
+    return store.as_retriever(search_kwargs=effective_search_kwargs)
 
 
 def get_retriever_with_stats(
@@ -82,6 +101,9 @@ def get_retriever_with_stats(
     vector_backend: Optional[str] = None,
     chunk_config: Optional[ChunkConfig] = None,
     use_semantic_chunking: bool = True,
+    metadata_filter: Optional[Dict[str, Any]] = None,
+    filter: Optional[Dict[str, Any]] = None,
+    search_kwargs: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Build a retriever and return statistics about the ingestion.
@@ -110,12 +132,23 @@ def get_retriever_with_stats(
     }
 
     # Chunk documents
+    settings = get_settings()
     if chunk_config is None:
-        chunk_config = ChunkConfig()
+        chunk_config = ChunkConfig(
+            chunk_size=int(getattr(settings, "CHUNK_SIZE", 800)),
+            chunk_overlap=int(getattr(settings, "CHUNK_OVERLAP", 100)),
+        )
+
+    effective_use_semantic = use_semantic_chunking
+    chunk_strategy = str(getattr(settings, "CHUNKING_STRATEGY", "recursive")).lower()
+    if chunk_strategy in {"recursive", "recursive_chunking"}:
+        effective_use_semantic = False
+    elif chunk_strategy in {"semantic", "semantic_chunking", "semantic-chunking"}:
+        effective_use_semantic = True
 
     all_chunks: List[Chunk] = []
     for doc in documents:
-        chunks = chunk_document(doc, chunk_config, use_semantic=use_semantic_chunking)
+        chunks = chunk_document(doc, chunk_config, use_semantic=effective_use_semantic)
         all_chunks.extend(chunks)
         stats["doc_type_counts"][doc.doc_type] += 1
         stats["chunks_by_doc_type"][doc.doc_type] += len(chunks)
@@ -139,8 +172,15 @@ def get_retriever_with_stats(
     store.persist()
 
     # Return retriever and stats
+    effective_filter = metadata_filter if metadata_filter is not None else filter
+    effective_search_kwargs = dict(search_kwargs or {})
+    if effective_filter is not None and "filter" not in effective_search_kwargs:
+        effective_search_kwargs["filter"] = effective_filter
+    if "k" not in effective_search_kwargs:
+        effective_search_kwargs["k"] = 5
+
     return {
-        "retriever": store.as_retriever(),
+        "retriever": store.as_retriever(search_kwargs=effective_search_kwargs),
         "stats": dict(stats),
         "store": store,
     }

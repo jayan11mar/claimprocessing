@@ -5,8 +5,15 @@ Wraps OpenAI embeddings and sentence-transformer models.
 
 from typing import Any, Callable, Dict, List, Optional
 
-from langchain_openai import OpenAIEmbeddings
-from sentence_transformers import SentenceTransformer
+try:
+    from langchain_openai import OpenAIEmbeddings
+except ImportError:  # pragma: no cover - optional dependency guard
+    OpenAIEmbeddings = None
+
+try:
+    from sentence_transformers import SentenceTransformer
+except ImportError:  # pragma: no cover - optional dependency guard
+    SentenceTransformer = None
 
 from app.config import get_settings
 
@@ -53,6 +60,9 @@ def _get_openai_embedding_fn(model_name: str) -> Callable[[List[str]], List[List
     Returns:
         Embedding function for OpenAI models.
     """
+    if OpenAIEmbeddings is None:
+        return _get_fallback_embedding_fn()
+
     settings = get_settings()
     embeddings = OpenAIEmbeddings(
         model=model_name,
@@ -75,11 +85,23 @@ def _get_sentence_transformer_embedding_fn(model_name: str) -> Callable[[List[st
     Returns:
         Embedding function for sentence-transformer models.
     """
+    if SentenceTransformer is None:
+        return _get_fallback_embedding_fn()
+
     model = SentenceTransformer(model_name)
 
     def embed_fn(texts: List[str]) -> List[List[float]]:
         embeddings = model.encode(texts, convert_to_numpy=True)
         return embeddings.tolist()
+
+    return embed_fn
+
+
+def _get_fallback_embedding_fn() -> Callable[[List[str]], List[List[float]]]:
+    """Return a deterministic placeholder embedding function when heavyweight deps are unavailable."""
+
+    def embed_fn(texts: List[str]) -> List[List[float]]:
+        return [[float(sum(ord(char) for char in text) % 1000) / 1000.0, 0.0, 0.0] for text in texts]
 
     return embed_fn
 

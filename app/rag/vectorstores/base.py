@@ -2,6 +2,7 @@
 Abstract VectorStore interface for the claims knowledge base.
 """
 
+import os
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -79,7 +80,7 @@ class VectorStore(ABC):
         pass
 
 
-def get_vector_store(backend: str = "faiss", **kwargs) -> VectorStore:
+def get_vector_store(backend: Optional[str] = None, **kwargs) -> VectorStore:
     """
     Get the appropriate vector store based on backend.
 
@@ -90,14 +91,15 @@ def get_vector_store(backend: str = "faiss", **kwargs) -> VectorStore:
     Returns:
         VectorStore instance.
     """
-    if backend == "faiss":
+    backend_name = (backend or os.getenv("VECTOR_BACKEND") or "faiss").lower()
+    if backend_name == "faiss":
         from app.rag.vectorstores.faiss_store import FAISSStore
         return FAISSStore(**kwargs)
-    elif backend == "chroma":
+    elif backend_name == "chroma":
         from app.rag.vectorstores.chroma_store import ChromaStore
         return ChromaStore(**kwargs)
-    elif backend == "pinecone":
+    elif backend_name == "pinecone":
         from app.rag.vectorstores.pinecone_store import PineconeStore
         return PineconeStore(**kwargs)
     else:
-        raise ValueError(f"Unknown vector store backend: {backend}")
+        raise ValueError(f"Unknown vector store backend: {backend_name}")

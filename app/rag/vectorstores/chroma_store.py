@@ -6,10 +6,15 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-import chromadb
-from chromadb.api.models import Collection
+try:
+    import chromadb
+    from chromadb.api.models import Collection
+except ImportError:  # pragma: no cover - optional dependency guard
+    chromadb = None
+    Collection = Any
 
 from app.rag.chunkers import Chunk
+from app.rag.metadata import build_chunk_metadata
 from app.rag.vectorstores.base import VectorStore
 
 
@@ -35,14 +40,16 @@ class ChromaStore(VectorStore):
         self._client: Optional[chromadb.PersistentClient] = None
         self._collection: Optional[Collection] = None
 
-    def _get_client(self) -> chromadb.PersistentClient:
+    def _get_client(self) -> Any:
         """Get or create the Chroma client."""
+        if chromadb is None:
+            raise RuntimeError("chromadb is not installed; install it to use the Chroma backend")
         if self._client is None:
             os.makedirs(self.persist_directory, exist_ok=True)
             self._client = chromadb.PersistentClient(path=self.persist_directory)
         return self._client
 
-    def _get_collection(self) -> Collection:
+    def _get_collection(self) -> Any:
         """Get or create the collection."""
         if self._collection is None:
             client = self._get_client()
@@ -65,29 +72,13 @@ class ChromaStore(VectorStore):
         ids = [f"{chunk.source_id}_{chunk.chunk_index}" for chunk in chunks]
         documents = [chunk.text for chunk in chunks]
 
-        # Build metadata for each chunk
         metadatas = []
         for chunk in chunks:
-            meta = {
-                "source_id": chunk.source_id,
-                "source_path": chunk.source_path,
-                "doc_type": chunk.doc_type,
-                "insurance_type": chunk.insurance_type,
-                "chunk_index": chunk.chunk_index,
-            }
-            if chunk.product_code:
-                meta["product_code"] = chunk.product_code
-            if chunk.product_name:
-                meta["product_name"] = chunk.product_name
-            if chunk.claim_type:
-                meta["claim_type"] = chunk.claim_type
-            if chunk.section:
-                meta["section"] = chunk.section
-            if chunk.clause_id:
-                meta["clause_id"] = chunk.clause_id
-            # Add raw metadata
-            meta.update(chunk.raw_metadata)
-            metadatas.append(meta)
+            metadata = build_chunk_metadata(chunk)
+            metadata["source_id"] = chunk.source_id
+            metadata["source_path"] = chunk.source_path
+            metadata["chunk_index"] = chunk.chunk_index
+            metadatas.append(metadata)
 
         collection.add(
             ids=ids,
@@ -125,21 +116,23 @@ class ChromaStore(VectorStore):
 
         chunks = []
         for i in range(len(results["ids"][0])):
+            metadata = results["metadatas"][0][i]
             chunk = Chunk(
                 text=results["documents"][0][i],
-                source_id=results["metadatas"][0][i].get("source_id", ""),
-                source_path=results["metadatas"][0][i].get("source_path", ""),
-                doc_type=results["metadatas"][0][i].get("doc_type", ""),
-                insurance_type=results["metadatas"][0][i].get("insurance_type", ""),
-                product_code=results["metadatas"][0][i].get("product_code"),
-                product_name=results["metadatas"][0][i].get("product_name"),
-                claim_type=results["metadatas"][0][i].get("claim_type"),
-                section=results["metadatas"][0][i].get("section"),
-                clause_id=results["metadatas"][0][i].get("clause_id"),
-                chunk_index=results["metadatas"][0][i].get("chunk_index", 0),
-                raw_metadata={k: v for k, v in results["metadatas"][0][i].items()
+                source_id=metadata.get("source_id", ""),
+                source_path=metadata.get("source_path", ""),
+                doc_type=metadata.get("doc_type", ""),
+                insurance_type=metadata.get("insurance_type", ""),
+                insurer=metadata.get("insurer"),
+                product_code=metadata.get("product_code"),
+                product_name=metadata.get("product_name"),
+                claim_type=metadata.get("claim_type"),
+                section=metadata.get("section"),
+                clause_id=metadata.get("clause_id"),
+                chunk_index=metadata.get("chunk_index", 0),
+                raw_metadata={k: v for k, v in metadata.items()
                              if k not in ["source_id", "source_path", "doc_type",
-                                         "insurance_type", "product_code", "product_name",
+                                         "insurance_type", "insurer", "product_code", "product_name",
                                          "claim_type", "section", "clause_id", "chunk_index"]},
             )
             score = results["distances"][0][i] if "distances" in results else 1.0

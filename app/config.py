@@ -19,12 +19,15 @@ class Settings(BaseSettings):
 
     # RAG settings
     OPENAI_EMBEDDING_MODEL: str = Field("text-embedding-3-small", env="OPENAI_EMBEDDING_MODEL")
+    EMBEDDING_MODEL: Optional[str] = Field(None, env="EMBEDDING_MODEL")
     VECTOR_BACKEND: str = Field("faiss", env="VECTOR_BACKEND")
     PINECONE_API_KEY: Optional[str] = Field(None, env="PINECONE_API_KEY")
+    KNOWLEDGE_BASE_DIR: Optional[str] = Field(None, env="KNOWLEDGE_BASE_DIR")
 
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+        extra = "ignore"
 
 
 @lru_cache()

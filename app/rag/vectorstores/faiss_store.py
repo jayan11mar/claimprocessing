@@ -16,13 +16,13 @@ from app.rag.vectorstores.base import VectorStore
 class FAISSStore(VectorStore):
     """FAISS-based vector store implementation."""
 
-    def __init__(self, index_path: Optional[str] = None, dimension: int = 1536):
+    def __init__(self, index_path: Optional[str] = None, dimension: Optional[int] = None):
         """
         Initialize FAISS store.
 
         Args:
             index_path: Path to persist/load the FAISS index.
-            dimension: Embedding dimension (default 1536 for text-embedding-3-small).
+            dimension: Embedding dimension. If None, inferred from first batch of embeddings.
         """
         self.dimension = dimension
         self.index_path = index_path or str(Path(__file__).parent.parent.parent.parent / "data" / "faiss_index")
@@ -30,10 +30,11 @@ class FAISSStore(VectorStore):
         self._chunks: List[Chunk] = []
         self._chunk_ids: List[str] = []
 
-    def _init_index(self) -> None:
+    def _init_index(self, dimension: int) -> None:
         """Initialize the FAISS index if not already done."""
         if self.index is None:
-            self.index = faiss.IndexFlatIP(self.dimension)
+            self.dimension = dimension
+            self.index = faiss.IndexFlatIP(dimension)
 
     def add(self, chunks: List[Chunk], embeddings: List[List[float]]) -> None:
         """
@@ -43,7 +44,11 @@ class FAISSStore(VectorStore):
             chunks: List of Chunk objects.
             embeddings: List of embedding vectors corresponding to each chunk.
         """
-        self._init_index()
+        if not embeddings:
+            return
+        # Infer dimension from the first embedding if not already set
+        inferred_dim = len(embeddings[0])
+        self._init_index(inferred_dim)
 
         # Convert embeddings to numpy array
         embeddings_array = np.array(embeddings, dtype=np.float32)

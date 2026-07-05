@@ -48,7 +48,7 @@ sources:
 
   # 3) IRDAI regulations
   - id: irda_health_reg_2016
-    path: regulations/irDAI_health_regulations_2016.pdf
+    path: regulations/irDAI_health_regulations_2016.docx
     doc_type: regulation
     insurance_type: health
     product_code: IRDA-HI-2016

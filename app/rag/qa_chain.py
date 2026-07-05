@@ -1,0 +1,99 @@
+"""A lightweight QA chain that produces answer text and citations from hybrid retrieval."""
+
+from typing import Any, Dict, List, Optional
+
+from app.rag.chunkers import Chunk, ChunkConfig, chunk_document
+from app.rag.loaders import load_documents_from_manifest
+from app.rag.retriever_hybrid import hybrid_retrieve
+
+
+def _load_chunks_from_manifest() -> List[Chunk]:
+    documents = load_documents_from_manifest()
+    chunks: List[Chunk] = []
+    for doc in documents:
+        chunks.extend(chunk_document(doc, ChunkConfig(chunk_size=800, chunk_overlap=100), use_semantic=True))
+    return chunks
+
+
+def _build_qa_payload(
+    query: str,
+    chunks: Optional[List[Chunk]] = None,
+    claim_context: Optional[str] = None,
+    top_k: int = 5,
+    embedding_fn: Optional[Any] = None,
+) -> Dict[str, Any]:
+    if chunks is None:
+        chunks = _load_chunks_from_manifest()
+
+    if not chunks:
+        return {
+            "answer_text": "No knowledge-base content was available for this query.",
+            "citations": [],
+            "confidence": 0.0,
+        }
+
+    results = hybrid_retrieve(chunks, query, k=top_k, embedding_fn=embedding_fn)
+    if not results:
+        return {
+            "answer_text": "No relevant guidance was found in the knowledge base.",
+            "citations": [],
+            "confidence": 0.0,
+        }
+
+    best_chunk = results[0]["chunk"]
+    excerpt = best_chunk.text.strip().replace("\n", " ")
+    if len(excerpt) > 260:
+        excerpt = excerpt[:257] + "..."
+
+    if claim_context:
+        answer_text = f"For {claim_context}, the retrieved guidance says: {excerpt}"
+    else:
+        answer_text = f"The retrieved guidance says: {excerpt}"
+
+    citations = []
+    for result in results[: min(3, len(results))]:
+        citations.append(
+            {
+                "chunk_id": result["chunk_id"],
+                "text": result["chunk"].text,
+                "source_id": result["source_id"],
+                "source_path": result["source_path"],
+                "score": result.get("rerank_score", result["combined_score"]),
+            }
+        )
+
+    confidence = min(0.99, max(0.45, 0.55 + 0.08 * len(citations) + 0.03 * min(1.0, results[0]["combined_score"])))
+    return {
+        "answer_text": answer_text,
+        "citations": citations,
+        "confidence": round(confidence, 3),
+    }
+
+
+def run_qa_chain(
+    query: str,
+    chunks: Optional[List[Chunk]] = None,
+    claim_context: Optional[str] = None,
+    top_k: int = 5,
+    embedding_fn: Optional[Any] = None,
+) -> Dict[str, Any]:
+    """Run a hybrid retrieval QA flow and return answer text plus citations."""
+    return _build_qa_payload(query, chunks=chunks, claim_context=claim_context, top_k=top_k, embedding_fn=embedding_fn)
+
+
+def stream_qa_chain(
+    query: str,
+    chunks: Optional[List[Chunk]] = None,
+    claim_context: Optional[str] = None,
+    top_k: int = 5,
+    embedding_fn: Optional[Any] = None,
+    chunk_size: int = 24,
+):
+    """Yield a QA answer incrementally in small text chunks for streaming-style UIs."""
+    payload = _build_qa_payload(query, chunks=chunks, claim_context=claim_context, top_k=top_k, embedding_fn=embedding_fn)
+    answer_text = payload.get("answer_text", "")
+    if not answer_text:
+        return
+
+    for start in range(0, len(answer_text), chunk_size):
+        yield answer_text[start:start + chunk_size]

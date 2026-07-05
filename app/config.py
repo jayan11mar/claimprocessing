@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    OPENAI_API_KEY: str = Field(..., env="OPENAI_API_KEY")
+    OPENAI_API_KEY: Optional[str] = Field(None, env="OPENAI_API_KEY")
     OPENAI_MODEL_NAME: str = Field("gpt-4o-mini", env="OPENAI_MODEL_NAME")
     OPENAI_MODEL_TEMPERATURE: float = Field(0.8, env="OPENAI_MODEL_TEMPERATURE")
     OPENAI_REQUEST_TIMEOUT: float = Field(30.0, env="OPENAI_REQUEST_TIMEOUT")

@@ -1,0 +1,16 @@
+{
+  "summary": {
+    "projects_evaluated": 4,
+    "cases_evaluated": 200,
+    "passed_cases": 200,
+    "failed_cases": 0
+  },
+  "trace_capture_target": 30,
+  "trace_capture_status": "local tracing disabled; evidence captured from evaluation artifacts and endpoint tests",
+  "evidence_paths": {
+    "evaluation_summary": "reports/summary.json",
+    "evaluation_report": "reports/report.md",
+    "api_tests": "tests/test_api_rag_endpoints.py",
+    "pipeline_tests": "tests/test_rag_pipeline.py"
+  }
+}

@@ -21,9 +21,9 @@ Architecture stack:
 - **Validation & models**: Pydantic.
 - **Observability**: Structured JSON logging and LangSmith traces.
 
-This plan covers **both Week 2 and Week 4 deliverables**:
+This plan covers **both Week 2 and core assistant deliverables**:
 - Week 2: Insurance FAQ chatbot with prompt engineering, few-shot learning, CoT, structured JSON outputs, guardrails, and simple UI.
-- Week 4: Full LangChain-based app with memory, tools, FastAPI backend, Streamlit frontend, logging, tests, and evaluation.
+- core assistant: Full LangChain-based app with memory, tools, FastAPI backend, Streamlit frontend, logging, tests, and evaluation.
 
 ---
 
@@ -244,7 +244,7 @@ Upgrade the FAQ chatbot with Pydantic-validated outputs, a prompt template libra
 
 ---
 
-## Phase 3 - Introduce LangChain, SQLite memory, semantic example selection (Week 4 start)
+## Phase 3 - Introduce LangChain, SQLite memory, semantic example selection (core assistant start)
 
 **Goal**  
 Refactor the FAQ chatbot into a LangChain-based chain with SQLite-backed conversational memory and semantic few-shot selection while preserving Week 2 behavior.
@@ -301,7 +301,7 @@ Improve multi-turn context reliability for same-session conversations without ch
 
 ---
 
-## Phase 4 - FastAPI backend with /chat, /reset, /health and Streamlit as client (Week 4 core)
+## Phase 4 - FastAPI backend with /chat, /reset, /health and Streamlit as client (core assistant core)
 
 **Goal**  
 Create a FastAPI backend exposing `/chat`, `/reset`, `/health`, and refactor Streamlit to call these endpoints. Add structured JSON logging and basic retry/fallback behavior.
@@ -335,7 +335,7 @@ Create a FastAPI backend exposing `/chat`, `/reset`, `/health`, and refactor Str
 
 ---
 
-## Phase 5 - Domain tools: Claims Intake, Fraud Detector, Settlement Calculator (Week 4 tools)
+## Phase 5 - Domain tools: Claims Intake, Fraud Detector, Settlement Calculator (core assistant tools)
 
 **Goal**  
 Implement the three custom domain tools and integrate them as LangChain tools within the chat flow.
@@ -378,7 +378,7 @@ Implement the three custom domain tools and integrate them as LangChain tools wi
 
 ---
 
-## Phase 6 - Observability, LangSmith, error handling, and tests (Week 4 hardening)
+## Phase 6 - Observability, LangSmith, error handling, and tests (core assistant hardening)
 
 **Goal**  
 Add robust error handling, LangSmith tracing, latency tracking, and unit tests with ≥80% coverage for the custom tools.
@@ -410,10 +410,10 @@ Add robust error handling, LangSmith tracing, latency tracking, and unit tests w
 
 ---
 
-## Phase 7 - Evaluation, Week 2 & Week 4 validation, and documentation
+## Phase 7 - Evaluation, Week 2 & core assistant validation, and documentation
 
 **Goal**  
-Validate the system against the 20 specified test queries, and finalize documentation showing that both Week 2 and Week 4 requirements are met.
+Validate the system against the 20 specified test queries, and finalize documentation showing that both Week 2 and core assistant requirements are met.
 
 **Tasks**
 
@@ -431,13 +431,13 @@ Validate the system against the 20 specified test queries, and finalize document
   - [ ] High-level architecture description and simple diagram (optional ASCII).
   - [ ] Setup and run instructions (backend, frontend, env variables, DB initialization).
   - [ ] How to run tests and evaluation harness.
-  - [ ] Note on Week 2 vs Week 4 requirements and where each is satisfied.
+  - [ ] Note on Week 2 vs core assistant requirements and where each is satisfied.
 - [ ] Capture or link LangSmith traces/screenshots showing chain execution and tool usage.
 
 **Acceptance criteria**
 
 - [ ] All 20 test queries run end-to-end through `/chat` and are documented in the evaluation report.
-- [ ] README and docs clearly explain how this project satisfies both Week 2 and Week 4 requirements.
+- [ ] README and docs clearly explain how this project satisfies both Week 2 and core assistant requirements.
 - [ ] Repo is ready for review as a capstone project.
 
 ## Phase 7A - Golden dataset and regression validation for future RAG extension
@@ -524,13 +524,13 @@ Move policy and claim storage from in-memory dictionaries to SQL tables, and req
 
 ---
 
-## Week 6 extension - RAG layer for Claims Processing
+## RAG extension extension - RAG layer for Claims Processing
 
-> These phases extend the existing Week 2/Week 4 claims assistant with a production-grade RAG layer,
-> aligning with the Week 6 requirements document and the trainer's banking RAG reference project.
-> Implement them only after Week 4 phases are stable. Each phase should be independently runnable.
+> These phases extend the existing Week 2/core assistant claims assistant with a production-grade RAG layer,
+> aligning with the RAG extension requirements document and the trainer's banking RAG reference project.
+> Implement them only after core assistant phases are stable. Each phase should be independently runnable.
 
-### Week 6 overall goals
+### RAG extension overall goals
 
 - Add a document-backed knowledge layer over policy wordings, IRDAI regulations, exclusion lists,
   hospital network agreements, and prior adjudication memos.
@@ -544,7 +544,7 @@ banking assistant):
 
 ```text
 project-root/
-├── app/                  # existing FastAPI + chains + tools + prompts (Week 4)
+├── app/                  # existing FastAPI + chains + tools + prompts (core assistant)
 │   ├── rag/              # new: RAG pipeline
 │   │   ├── loaders.py    # multi-format document loaders
 │   │   ├── chunkers.py   # recursive + semantic chunking strategies
@@ -557,7 +557,7 @@ project-root/
 │   │   └── qa_chain.py         # answer + citations QA chain
 │   └── ... existing modules ...
 ├── eval/                 # new/extended: RAG eval harness
-│   ├── golden_set.json   # Week 6 golden set (50 queries: 20 Week 4 + 30 RAG/hybrid)
+│   ├── golden_set.json   # RAG extension golden set (50 queries: 20 core assistant + 30 RAG/hybrid)
 │   ├── intrinsic.py      # retrieval metrics (Hit@K, MRR, NDCG, context precision/recall)
 │   ├── extrinsic.py      # answer faithfulness/answer correctness metrics
 │   ├── llm_judge.py      # LLM-as-judge scoring
@@ -756,7 +756,7 @@ building an answer + citations QA chain that the claims agent can call.
 **How to run this phase independently**
 
 - [ ] After Phase 10-11 ingestion, run: `python -m app.rag.qa_demo`.
-- [ ] Test queries drawn from Week 6 per-project RAG test table (coverage lookup, exclusion,
+- [ ] Test queries drawn from RAG extension per-project RAG test table (coverage lookup, exclusion,
       regulatory reference, sub-limit, past cases, network, comparative, hard/ambiguous, refusal,
       cite-required rejection letter).
 
@@ -772,13 +772,13 @@ building an answer + citations QA chain that the claims agent can call.
 ## Phase 13 - RAG evaluation harness and acceptance thresholds
 
 **Goal**  
-Make the RAG pipeline measurable and align it with Week 6 acceptance thresholds for claims.
+Make the RAG pipeline measurable and align it with RAG extension acceptance thresholds for claims.
 
 **Tasks**
 
 - [ ] Build a 50-item golden set in `eval/golden_set.json`:
-  - [ ] Include the 20 Week 4 queries plus 30 RAG/hybrid queries (10 per-project RAG queries
-        enumerated in the Week 6 document, plus 20 hybrid queries combining tools + RAG).
+  - [ ] Include the 20 core assistant queries plus 30 RAG/hybrid queries (10 per-project RAG queries
+        enumerated in the RAG extension document, plus 20 hybrid queries combining tools + RAG).
 - [ ] Implement `eval/intrinsic.py`:
   - [ ] Metrics: Hit@K, MRR, NDCG, context precision/recall.
 - [ ] Implement `eval/extrinsic.py`:
@@ -802,12 +802,12 @@ Make the RAG pipeline measurable and align it with Week 6 acceptance thresholds 
 **How to run this phase independently**
 
 - [ ] Run: `python -m eval.run_eval`.
-- [ ] Inspect metrics and compare against Week 6 acceptance thresholds for Claims (Hit@5, MRR,
+- [ ] Inspect metrics and compare against RAG extension acceptance thresholds for Claims (Hit@5, MRR,
       faithfulness, answer correctness, LLM-judge average, citation coverage).
 
 **Acceptance criteria**
 
-- [ ] Metrics meet or approach the thresholds listed for "Claims / Insurance" in the Week 6
+- [ ] Metrics meet or approach the thresholds listed for "Claims / Insurance" in the RAG extension
       document.
 - [ ] Citation coverage is 100% for factual claims in the golden set.
 - [ ] Evaluation results and methodology documents are committed.
@@ -817,7 +817,7 @@ Make the RAG pipeline measurable and align it with Week 6 acceptance thresholds 
 ## Phase 14 - Agent integration, new endpoints, and tool routing
 
 **Goal**  
-Expose the RAG retrieval tool to the existing claims agent, add Week 6 endpoints, and ensure the
+Expose the RAG retrieval tool to the existing claims agent, add RAG extension endpoints, and ensure the
 agent can route between deterministic tools and RAG based on intent.
 
 **Tasks**
@@ -848,21 +848,21 @@ agent can route between deterministic tools and RAG based on intent.
 
 **Acceptance criteria**
 
-- [ ] All Week 4 endpoints continue to work; new Week 6 endpoints are added without regression.
+- [ ] All core assistant endpoints continue to work; new RAG extension endpoints are added without regression.
 - [ ] Agent can route between tools and RAG based on intent/classification.
 - [ ] RAG-backed answers in `/chat` include traceable citations (doc name/page/section).
 
 ---
 
-## Phase 15 - Week 6 acceptance criteria validation and sign-off
+## Phase 15 - Acceptance criteria validation and sign-off
 
 **Goal**  
-Systematically validate all Week 6 requirements and acceptance thresholds for the Claims Processing
+Systematically validate the project requirements and acceptance thresholds for the Claims Processing
 & Settlement Automation assistant.
 
 **Tasks**
 
-- [ ] Create `docs/project_acceptance_mapping.md` that lists each Week 6 criterion and maps it to:
+- [ ] Create `docs/project_acceptance_mapping.md` that lists each acceptance criterion and maps it to:
   - [ ] Implemented module(s).
   - [ ] Test(s) or evaluation metric(s).
   - [ ] Evidence (LangSmith trace ID, screenshot, eval JSON path).
@@ -882,8 +882,8 @@ Systematically validate all Week 6 requirements and acceptance thresholds for th
 
 **Acceptance criteria**
 
-- [ ] Every Week 6 requirement and acceptance threshold from the requirements PDF has a clear,
+- [ ] Every project requirement and acceptance threshold from the requirements PDF has a clear,
       implemented check and evidence.
 - [ ] Test suite and evaluation harness pass without critical failures.
-- [ ] Week 4 functionality remains intact (no regressions), and Week 6 RAG layer is demonstrably
+- [ ] Existing functionality remains intact (no regressions), and the RAG layer is demonstrably
       production-grade for the training context.

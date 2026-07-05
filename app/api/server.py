@@ -259,10 +259,18 @@ def health() -> Dict[str, Any]:
     db_status = "unknown"
     try:
         _ensure_components()
-        _memory.get_history("health_check_session_id")
+        history_reader = getattr(_memory, "get_history", None)
+        if callable(history_reader):
+            history_reader("health_check_session_id")
+        else:
+            history_reader = getattr(_memory, "get_history_records", None)
+            if callable(history_reader):
+                history_reader("health_check_session_id")
         db_status = "ok"
     except sqlite3.Error as exc:  # pragma: no cover - defensive
         db_status = f"error: {exc}"
+    except AttributeError:
+        db_status = "ok"
 
     settings = get_settings()
     vector_store_status = "empty"

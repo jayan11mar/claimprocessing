@@ -21,9 +21,9 @@ Architecture stack:
 - **Validation & models**: Pydantic.
 - **Observability**: Structured JSON logging and LangSmith traces.
 
-This plan covers **both Week 2 and Week 4 deliverables**:
+This plan covers **both Week 2 and core assistant deliverables**:
 - Week 2: Insurance FAQ chatbot with prompt engineering, few-shot learning, CoT, structured JSON outputs, guardrails, and simple UI.
-- Week 4: Full LangChain-based app with memory, tools, FastAPI backend, Streamlit frontend, logging, tests, and evaluation.
+- core assistant: Full LangChain-based app with memory, tools, FastAPI backend, Streamlit frontend, logging, tests, and evaluation.
 
 ---
 
@@ -244,7 +244,7 @@ Upgrade the FAQ chatbot with Pydantic-validated outputs, a prompt template libra
 
 ---
 
-## Phase 3 - Introduce LangChain, SQLite memory, semantic example selection (Week 4 start)
+## Phase 3 - Introduce LangChain, SQLite memory, semantic example selection (core assistant start)
 
 **Goal**  
 Refactor the FAQ chatbot into a LangChain-based chain with SQLite-backed conversational memory and semantic few-shot selection while preserving Week 2 behavior.
@@ -301,7 +301,7 @@ Improve multi-turn context reliability for same-session conversations without ch
 
 ---
 
-## Phase 4 - FastAPI backend with /chat, /reset, /health and Streamlit as client (Week 4 core)
+## Phase 4 - FastAPI backend with /chat, /reset, /health and Streamlit as client (core assistant core)
 
 **Goal**  
 Create a FastAPI backend exposing `/chat`, `/reset`, `/health`, and refactor Streamlit to call these endpoints. Add structured JSON logging and basic retry/fallback behavior.
@@ -335,7 +335,7 @@ Create a FastAPI backend exposing `/chat`, `/reset`, `/health`, and refactor Str
 
 ---
 
-## Phase 5 - Domain tools: Claims Intake, Fraud Detector, Settlement Calculator (Week 4 tools)
+## Phase 5 - Domain tools: Claims Intake, Fraud Detector, Settlement Calculator (core assistant tools)
 
 **Goal**  
 Implement the three custom domain tools and integrate them as LangChain tools within the chat flow.
@@ -378,7 +378,7 @@ Implement the three custom domain tools and integrate them as LangChain tools wi
 
 ---
 
-## Phase 6 - Observability, LangSmith, error handling, and tests (Week 4 hardening)
+## Phase 6 - Observability, LangSmith, error handling, and tests (core assistant hardening)
 
 **Goal**  
 Add robust error handling, LangSmith tracing, latency tracking, and unit tests with ≥80% coverage for the custom tools.
@@ -410,10 +410,10 @@ Add robust error handling, LangSmith tracing, latency tracking, and unit tests w
 
 ---
 
-## Phase 7 - Evaluation, Week 2 & Week 4 validation, and documentation
+## Phase 7 - Evaluation, Week 2 & core assistant validation, and documentation
 
 **Goal**  
-Validate the system against the 20 specified test queries, and finalize documentation showing that both Week 2 and Week 4 requirements are met.
+Validate the system against the 20 specified test queries, and finalize documentation showing that both Week 2 and core assistant requirements are met.
 
 **Tasks**
 
@@ -431,13 +431,13 @@ Validate the system against the 20 specified test queries, and finalize document
   - [ ] High-level architecture description and simple diagram (optional ASCII).
   - [ ] Setup and run instructions (backend, frontend, env variables, DB initialization).
   - [ ] How to run tests and evaluation harness.
-  - [ ] Note on Week 2 vs Week 4 requirements and where each is satisfied.
+  - [ ] Note on Week 2 vs core assistant requirements and where each is satisfied.
 - [ ] Capture or link LangSmith traces/screenshots showing chain execution and tool usage.
 
 **Acceptance criteria**
 
 - [ ] All 20 test queries run end-to-end through `/chat` and are documented in the evaluation report.
-- [ ] README and docs clearly explain how this project satisfies both Week 2 and Week 4 requirements.
+- [ ] README and docs clearly explain how this project satisfies both Week 2 and core assistant requirements.
 - [ ] Repo is ready for review as a capstone project.
 
 ## Phase 7A - Golden dataset and regression validation for future RAG extension

@@ -27,7 +27,7 @@ from app.rag.vectorstores import get_vector_store
 
 logger = get_logger("app.api.server")
 
-app = FastAPI(title="Claims Assistant API", version="0.1.0")
+app = FastAPI(title="Claims Processing & Settlement API", version="0.1.0")
 _START_TIME = time.time()
 
 # Expose this module as `server` in builtins so tests can reference `server` directly

@@ -2,7 +2,7 @@ API :  RAG & Retrieval Endpoints Testing Guide
 
 ## Swagger UI Testing
 
-**Access Swagger UI:** `http://localhost:8000/docs` (after running `python main.py`)
+**Access Swagger UI:** `http://localhost:8000/docs` (after running `python -m app.main`)
 
 ## Endpoint Testing Matrix
 

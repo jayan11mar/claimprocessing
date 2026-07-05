@@ -111,9 +111,9 @@ def call_chat_api(session_id: str, message: str, api_url: str) -> Dict[str, Any]
 
 
 def main() -> None:
-    st.set_page_config(page_title="Claims Assistant", page_icon="🛡️", layout="wide",
+    st.set_page_config(page_title="Claims Processing & Settlement", page_icon="🛡️", layout="wide",
                        initial_sidebar_state="expanded")
-    st.title("Claims processing & Settlement Automation Assistant")
+    st.title("Claims Processing & Settlement")
     inject_chat_style()
 
     query_params = st.query_params

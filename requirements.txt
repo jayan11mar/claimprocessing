@@ -25,8 +25,12 @@ pytest-cov
 chromadb
 langchain-chroma
 faiss-cpu
+numpy
 rank-bm25
 sentence-transformers
+
+# Testing / client tooling
+httpx
 
 # Document ingestion (PDF, DOCX, HTML, etc.)
 pypdf

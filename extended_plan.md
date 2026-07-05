@@ -1,4 +1,4 @@
-# Gen AI Capstone Plan - Claims Processing & Settlement Automation Assistant
+# Gen AI Capstone Plan - Claims Processing & Settlement
 
 > **Usage with GitHub Copilot**  
 > Implement this project **phase-by-phase**. For each phase:
@@ -10,7 +10,7 @@
 
 ## Project overview
 
-This project implements an Insurance **Claims Processing & Settlement Automation Assistant** with an FAQ chatbot and agentic tools for claims intake, fraud signals, and settlement calculations.
+This project implements an Insurance **Claims Processing & Settlement** solution with an FAQ chatbot and agentic tools for claims intake, fraud signals, and settlement calculations.
 
 Architecture stack:
 - **LLM**: OpenAI-compatible ChatCompletion API.
@@ -157,7 +157,7 @@ Create a clean, reproducible project skeleton suitable for incremental Copilot-d
 - [ ] Implement basic JSON logging setup in `app/logging/json_logger.py`:
   - [ ] Function `get_logger(name: str)` that returns a logger emitting JSON lines (`timestamp`, `level`, `message`, plus extra dict).
 - [ ] Create placeholder files for all modules (empty classes/functions) so imports will resolve in later phases.
-- [ ] Add a minimal `frontend/streamlit_app.py` that renders a placeholder page (“Claims Assistant - WIP”).
+- [ ] Add a minimal `frontend/streamlit_app.py` that renders a placeholder page (“Claims Processing & Settlement - WIP”).
 - [ ] Add a minimal `README.md` describing setup steps (install, env, run placeholder Streamlit).
 
 **Acceptance criteria**
@@ -526,7 +526,7 @@ Move policy and claim storage from in-memory dictionaries to SQL tables, and req
 
 ## RAG extension extension - RAG layer for Claims Processing
 
-> These phases extend the existing Week 2/core assistant claims assistant with a production-grade RAG layer,
+> These phases extend the existing Week 2/core Claims Processing & Settlement solution with a production-grade RAG layer,
 > aligning with the RAG extension requirements document and the trainer's banking RAG reference project.
 > Implement them only after core assistant phases are stable. Each phase should be independently runnable.
 

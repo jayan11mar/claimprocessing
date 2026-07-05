@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     OPENAI_MODEL_TEMPERATURE: float = Field(0.8, env="OPENAI_MODEL_TEMPERATURE")
     OPENAI_REQUEST_TIMEOUT: float = Field(30.0, env="OPENAI_REQUEST_TIMEOUT")
     LOG_LEVEL: str = Field("INFO", env="LOG_LEVEL")
-    SQLITE_DB_PATH: str = Field("claims.db", env="SQLITE_DB_PATH")
+    SQLITE_DB_PATH: str = Field("data/claims.db", env="SQLITE_DB_PATH")
     ENVIRONMENT: str = Field("dev", env="ENVIRONMENT")
 
     LANGSMITH_API_KEY: Optional[str] = Field(None, env="LANGSMITH_API_KEY")

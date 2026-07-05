@@ -4,6 +4,13 @@ This demonstrates the fix for the issue where asking "can you verify if a claim 
 with policy P654321 was failing.
 """
 
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from app.tools.policy_checker import check_policy_status
 
 print("=" * 70)

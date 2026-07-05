@@ -1,1 +1,1 @@
-"""Claims Assistant application package."""
+"""Claims Processing & Settlement application package."""

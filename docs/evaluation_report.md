@@ -1,6 +1,6 @@
 # Evaluation Report
 
-This report documents the evaluation run for the Claims Processing & Settlement Automation Assistant.
+This report documents the evaluation run for Claims Processing & Settlement.
 
 ## Evaluation harness
 

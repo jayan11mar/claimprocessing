@@ -1,10 +1,37 @@
-# Claims Processing & Settlement Automation Assistant
+# Claims Processing & Settlement Assistant
 
-This repository contains an insurance claims FAQ assistant with LangChain-based automation, FastAPI backend, Streamlit frontend, and custom domain tools.
+This repository contains a claims support assistant for insurance workflows. It combines a FastAPI backend, a Streamlit frontend, LangChain-based orchestration, custom domain tools, and a retrieval-augmented knowledge base for policy and claims guidance.
+
+## Recent updates
+
+The project now includes:
+
+- A conversational claims assistant with FAQ handling and tool-based workflows
+- Policy status, claim status, claims intake, fraud scoring, and settlement calculation tools
+- Retrieval-augmented generation (RAG) over a knowledge base with hybrid retrieval and citations
+- Multiple vector-store backends including FAISS, Chroma, and Pinecone support
+- SQLite-backed conversation memory for multi-turn sessions
+- LangSmith tracing, JSON logging, guardrails, and correlation-aware request handling
+- Evaluation and regression scripts for end-to-end behavior and golden datasets
+
+## Architecture at a glance
+
+- Backend API: FastAPI service in app/api/server.py
+- Application entrypoint: app/main.py
+- Orchestration layer: app/chains/
+- RAG pipeline: app/rag/
+- Domain tools: app/tools/
+- Frontend UI: frontend/streamlit_app.py
+- Data and evaluation assets: data/, docs/, eval/, scripts/, tests/
+
+## Prerequisites
+
+- Python 3.9+
+- OpenAI API access for LLM and embedding usage
 
 ## Setup
 
-1. Create a Python virtual environment and activate it.
+1. Create and activate a virtual environment.
 2. Install dependencies:
 
 ```bash
@@ -17,142 +44,77 @@ python -m pip install -r requirements.txt
 cp .env.example .env
 ```
 
-4. Update `.env` with your OpenAI API key and environment settings.
+4. Update .env with your configuration, including at minimum:
 
-## Run the Streamlit app
+```env
+OPENAI_API_KEY=your_openai_key
+OPENAI_MODEL_NAME=gpt-4o-mini
+VECTOR_BACKEND=faiss
+```
+
+## Run the application
+
+### Start the API server
+
+```bash
+uvicorn app.main:app --reload
+```
+
+The API will be available at http://127.0.0.1:8000.
+
+### Start the Streamlit frontend
 
 ```bash
 streamlit run frontend/streamlit_app.py
 ```
 
-## Run the backend API
-
-```bash
-uvicorn main:app --reload
-```
+## API endpoints
 
 The backend exposes:
 
-- `GET /health`
-- `POST /chat`
-- `POST /reset`
+- GET /health
+- POST /chat
+- POST /reset
+- POST /retrieve
+- POST /ingest
+- GET /sources
+- GET /history/{session_id}
+- POST /evaluate
 
-## Run the frontend client
+## Evaluation and validation
 
-```bash
-streamlit run frontend/streamlit_app.py
-```
-
-## Run tests
-
-Use the repository root on `PYTHONPATH` so imports from `app/` resolve correctly:
+Run the test suite:
 
 ```bash
 PYTHONPATH=. pytest -q
 ```
 
-### Recommended phase-update validation
-
-After each project phase update, run the integration suite to verify core tool chaining flows:
-
-```bash
-PYTHONPATH=. pytest tests/test_policy_status_integration.py -q
-```
-
-## Evaluate end-to-end behavior
-
-An evaluation harness is included at `scripts/evaluate.py`.
-It sends 20 sample queries covering FAQ, tool usage, and multi-turn conversation behavior to the running `/chat` endpoint and saves the results to `scripts/results.json`.
+Run the end-to-end evaluation harness:
 
 ```bash
 python scripts/evaluate.py
 ```
 
-## Golden dataset regression validation
-
-The project includes a golden dataset seed structure in `data/golden_dataset/` and a validation harness at `scripts/validate_golden_dataset.py`.
-The golden dataset categories are:
-
-- `faq.json`: FAQ intent, category, confidence, and answer formatting validation
-- `claims.json`: claim intake workflows and tool decision validation
-- `fraud.json`: fraud score logic and signal validation
-- `settlement.json`: settlement breakdown validation
-- `memory.json`: multi-turn memory persistence and retrieval validation
-- `guardrails.json`: PII, off-topic, and prompt injection guardrail validation
-- `rag_loan_underwriting.json`, `rag_customer_svc.json`, `rag_aml_fraud.json`, `rag_claims_insurance.json`: 50-item RAG golden sets for each project context with query, expected answer, expected chunks, difficulty, and threshold metrics
-
-Run the regression validation script with:
+Run golden-dataset regression validation:
 
 ```bash
 python scripts/validate_golden_dataset.py
 ```
 
-## Architecture
+Additional validation helpers are available in the scripts/ folder for memory continuity, ingestion verification, and RAG evaluation.
 
-The system is built as a modular FastAPI + Streamlit application with LangChain orchestration, custom domain tools, SQLite memory, Pydantic validation, JSON logging, and optional LangSmith tracing.
+## Project structure
 
-## Documentation
+- app/: application modules and business logic
+- frontend/: Streamlit chat UI
+- data/: knowledge base, fixtures, and local indexes
+- docs/: reference and evaluation documents
+- eval/: evaluation utilities and reporting
+- scripts/: operational and validation scripts
+- tests/: automated test coverage
 
-- `docs/evaluation_report.md`: evaluation summary of the 20 queries.
+## Notes
 
-## Database Schema
-
-The `claims.db` SQLite database contains the following tables:
-
-### policies
-Stores insurance policy information:
-- `policy_number` (TEXT, PRIMARY KEY)
-- `policy_holder_id` (TEXT)
-- `status` (TEXT, NOT NULL)
-- `sum_insured` (REAL, NOT NULL)
-- `deductible` (REAL, NOT NULL)
-- `copay_percent` (REAL, NOT NULL)
-- `sub_limits` (TEXT)
-- `depreciation_schedule` (TEXT)
-- `start_date` (TEXT)
-- `end_date` (TEXT)
-- `product_code` (TEXT)
-- `coverage_type` (TEXT)
-- `underwriting_class` (TEXT)
-- `risk_category` (TEXT)
-- `created_at` (TEXT, NOT NULL)
-- `updated_at` (TEXT, NOT NULL)
-
-### claims
-Stores claim records with foreign key to policies:
-- `claim_id` (TEXT, PRIMARY KEY)
-- `policy_number` (TEXT, NOT NULL, FOREIGN KEY to policies)
-- `policy_holder_id` (TEXT)
-- `claim_amount` (REAL, NOT NULL)
-- `incident_date` (TEXT)
-- `admission_date` (TEXT)
-- `discharge_date` (TEXT)
-- `diagnosis_code` (TEXT)
-- `hospital_name` (TEXT)
-- `supporting_documents` (TEXT)
-- `extra_info` (TEXT)
-- `status` (TEXT)
-- `loss_type` (TEXT)
-- `reported_date` (TEXT)
-- `closed_date` (TEXT)
-- `approved_amount` (REAL)
-- `fraud_score` (REAL)
-- `settlement_status` (TEXT)
-- `created_at` (TEXT, NOT NULL)
-- `updated_at` (TEXT, NOT NULL)
-
-### chat_history
-Stores chat conversation data:
-- `id` (INTEGER, PRIMARY KEY AUTOINCREMENT)
-- `session_id` (TEXT, NOT NULL)
-- `role` (TEXT, NOT NULL)
-- `content` (TEXT, NOT NULL)
-- `created_at` (TEXT, NOT NULL)
-
-## Project layout
-
-- `app/`: application modules
-- `frontend/streamlit_app.py`: chat UI client
-- `scripts/evaluate.py`: evaluation harness
-- `docs/evaluation_report.md`: evaluation report
-- `.env.example`: environment variable template
+- The default vector backend is FAISS, but the configuration supports Chroma or Pinecone.
+- SQLite is used for session memory and chat history.
+- Optional LangSmith tracing can be enabled through environment variables.

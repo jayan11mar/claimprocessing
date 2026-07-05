@@ -1,4 +1,4 @@
-# Gen AI Capstone Plan - Claims Processing & Settlement Automation Assistant
+# Gen AI Capstone Plan - Claims Processing & Settlement
 
 > **Usage with GitHub Copilot**  
 > Implement this project **phase-by-phase**. For each phase:
@@ -10,7 +10,7 @@
 
 ## Project overview
 
-This project implements an Insurance **Claims Processing & Settlement Automation Assistant** with an FAQ chatbot and agentic tools for claims intake, fraud signals, and settlement calculations.
+This project implements an Insurance **Claims Processing & Settlement** solution with an FAQ chatbot and agentic tools for claims intake, fraud signals, and settlement calculations.
 
 Architecture stack:
 - **LLM**: OpenAI-compatible ChatCompletion API.
@@ -157,7 +157,7 @@ Create a clean, reproducible project skeleton suitable for incremental Copilot-d
 - [ ] Implement basic JSON logging setup in `app/logging/json_logger.py`:
   - [ ] Function `get_logger(name: str)` that returns a logger emitting JSON lines (`timestamp`, `level`, `message`, plus extra dict).
 - [ ] Create placeholder files for all modules (empty classes/functions) so imports will resolve in later phases.
-- [ ] Add a minimal `frontend/streamlit_app.py` that renders a placeholder page (“Claims Assistant - WIP”).
+- [ ] Add a minimal `frontend/streamlit_app.py` that renders a placeholder page (“Claims Processing & Settlement - WIP”).
 - [ ] Add a minimal `README.md` describing setup steps (install, env, run placeholder Streamlit).
 
 **Acceptance criteria**

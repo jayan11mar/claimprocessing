@@ -862,7 +862,7 @@ Systematically validate all Week 6 requirements and acceptance thresholds for th
 
 **Tasks**
 
-- [ ] Create `docs/week6_acceptance_mapping.md` that lists each Week 6 criterion and maps it to:
+- [ ] Create `docs/project_acceptance_mapping.md` that lists each Week 6 criterion and maps it to:
   - [ ] Implemented module(s).
   - [ ] Test(s) or evaluation metric(s).
   - [ ] Evidence (LangSmith trace ID, screenshot, eval JSON path).
@@ -870,7 +870,7 @@ Systematically validate all Week 6 requirements and acceptance thresholds for th
   - [ ] Cover ingestion endpoints, retrieval-only endpoint, and RAG-backed `/chat` behavior.
 - [ ] Run `python -m eval.run_eval` and capture metrics vs thresholds.
 - [ ] Capture LangSmith traces for at least 30 sample RAG + hybrid queries showing run trees.
-- [ ] Generate a sign-off document `docs/week6_signoff_report.md` summarizing:
+- [ ] Generate a sign-off document `docs/project_signoff_report.md` summarizing:
   - [ ] Which thresholds are met.
   - [ ] Any gaps and mitigation notes.
 

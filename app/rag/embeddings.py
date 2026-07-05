@@ -45,6 +45,8 @@ def get_embedding_fn(model_name: Optional[str] = None) -> Callable[[List[str]], 
     }
 
     if model_name in openai_models or model_name.startswith("text-embedding"):
+        if not getattr(settings, "OPENAI_API_KEY", None):
+            return _get_fallback_embedding_fn(_get_openai_embedding_dimension(model_name))
         return _get_openai_embedding_fn(model_name)
     else:
         return _get_sentence_transformer_embedding_fn(model_name)

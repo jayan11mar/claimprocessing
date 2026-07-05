@@ -79,6 +79,7 @@ The golden dataset categories are:
 - `settlement.json`: settlement breakdown validation
 - `memory.json`: multi-turn memory persistence and retrieval validation
 - `guardrails.json`: PII, off-topic, and prompt injection guardrail validation
+- `rag_loan_underwriting.json`, `rag_customer_svc.json`, `rag_aml_fraud.json`, `rag_claims_insurance.json`: 50-item RAG golden sets for each project context with query, expected answer, expected chunks, difficulty, and threshold metrics
 
 Run the regression validation script with:
 

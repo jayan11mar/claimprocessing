@@ -207,6 +207,61 @@ def validate_guardrails_item(item: Dict[str, Any]) -> bool:
     return True
 
 
+def validate_rag_dataset(path: Path) -> bool:
+    payload = load_dataset(path)
+    if not isinstance(payload, dict):
+        print(f"FAIL [{path.name}]: expected a JSON object at the dataset root")
+        return False
+
+    project = payload.get("project")
+    threshold_metrics = payload.get("threshold_metrics")
+    items = payload.get("items", [])
+
+    if not project:
+        print(f"FAIL [{path.name}]: missing project name")
+        return False
+
+    if not isinstance(threshold_metrics, dict) or not threshold_metrics:
+        print(f"FAIL [{path.name}]: missing threshold_metrics")
+        return False
+
+    if not isinstance(items, list):
+        print(f"FAIL [{path.name}]: items must be a list")
+        return False
+
+    if len(items) != 50:
+        print(f"FAIL [{path.name}]: expected 50 items, found {len(items)}")
+        return False
+
+    for item in items:
+        if not isinstance(item, dict):
+            print(f"FAIL [{path.name}]: each item must be an object")
+            return False
+
+        for field in ["query", "expected_answer", "expected_chunks", "difficulty"]:
+            if field not in item:
+                print(f"FAIL [{path.name}]: missing field '{field}' in item {item.get('id', '?')}")
+                return False
+
+        if not str(item.get("query", "")).strip():
+            print(f"FAIL [{path.name}]: empty query in item {item.get('id', '?')}")
+            return False
+
+        if not str(item.get("expected_answer", "")).strip():
+            print(f"FAIL [{path.name}]: empty expected_answer in item {item.get('id', '?')}")
+            return False
+
+        if not isinstance(item.get("expected_chunks", []), list) or not item.get("expected_chunks"):
+            print(f"FAIL [{path.name}]: expected_chunks must be a non-empty list in item {item.get('id', '?')}")
+            return False
+
+        if item.get("difficulty") not in {"easy", "medium", "hard"}:
+            print(f"FAIL [{path.name}]: invalid difficulty in item {item.get('id', '?')}")
+            return False
+
+    return True
+
+
 def main() -> int:
     root = Path(__file__).resolve().parent.parent
     dataset_dir = root / "data" / "golden_dataset"
@@ -229,6 +284,17 @@ def main() -> int:
 
     for dataset_path in sorted(dataset_dir.glob("*.json")):
         category = dataset_path.stem
+        if category.startswith("rag_"):
+            try:
+                ok = validate_rag_dataset(dataset_path)
+            except Exception as exc:
+                print(f"FAIL [{dataset_path.name}]: exception during validation: {exc}")
+                ok = False
+
+            if not ok:
+                failures += 1
+            continue
+
         validator = map_validators.get(category)
         if validator is None:
             print(f"SKIP: No validator configured for {dataset_path.name}")

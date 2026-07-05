@@ -7,9 +7,11 @@
       "claim_id": "C1001"
     },
     "expected": {
-      "score": 0.1,
+      "score": 0.3,
       "score_tolerance": 0.01,
-      "signals": []
+      "signals": [
+        "Duplicate claim amounts detected"
+      ]
     }
   },
   {

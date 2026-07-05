@@ -1,0 +1,513 @@
+{
+  "project": "customer svc",
+  "threshold_metrics": {
+    "hit_rate_at_5": 0.85,
+    "mrr": 0.65,
+    "faithfulness": 0.85,
+    "answer_correctness": 0.8,
+    "llm_judge_avg": 4.0,
+    "citation_coverage": 1.0
+  },
+  "items": [
+    {
+      "id": "RAG-01",
+      "query": "Explain billing adjustment guidance for customer svc case 1. Focus on billing and cite the relevant policy language.",
+      "expected_answer": "The response should describe the billing adjustment rule, mention billing, and explain the decision impact for case 1.",
+      "expected_chunks": [
+        "billing adjustment guideline for customer svc",
+        "billing evidence section for case 1"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-02",
+      "query": "Explain policy change guidance for customer svc case 2. Focus on refund and cite the relevant policy language.",
+      "expected_answer": "The response should describe the policy change rule, mention refund, and explain the decision impact for case 2.",
+      "expected_chunks": [
+        "policy change guideline for customer svc",
+        "refund evidence section for case 2"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-03",
+      "query": "Explain refund timeline guidance for customer svc case 3. Focus on policy and cite the relevant policy language.",
+      "expected_answer": "The response should describe the refund timeline rule, mention policy, and explain the decision impact for case 3.",
+      "expected_chunks": [
+        "refund timeline guideline for customer svc",
+        "policy evidence section for case 3"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-04",
+      "query": "Explain claim follow-up guidance for customer svc case 4. Focus on document and cite the relevant policy language.",
+      "expected_answer": "The response should describe the claim follow-up rule, mention document, and explain the decision impact for case 4.",
+      "expected_chunks": [
+        "claim follow-up guideline for customer svc",
+        "document evidence section for case 4"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-05",
+      "query": "Explain document upload guidance for customer svc case 5. Focus on follow-up and cite the relevant policy language.",
+      "expected_answer": "The response should describe the document upload rule, mention follow-up, and explain the decision impact for case 5.",
+      "expected_chunks": [
+        "document upload guideline for customer svc",
+        "follow-up evidence section for case 5"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-06",
+      "query": "Explain billing adjustment guidance for customer svc case 6. Focus on billing and cite the relevant policy language.",
+      "expected_answer": "The response should describe the billing adjustment rule, mention billing, and explain the decision impact for case 6.",
+      "expected_chunks": [
+        "billing adjustment guideline for customer svc",
+        "billing evidence section for case 6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-07",
+      "query": "Explain policy change guidance for customer svc case 7. Focus on refund and cite the relevant policy language.",
+      "expected_answer": "The response should describe the policy change rule, mention refund, and explain the decision impact for case 7.",
+      "expected_chunks": [
+        "policy change guideline for customer svc",
+        "refund evidence section for case 7"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-08",
+      "query": "Explain refund timeline guidance for customer svc case 8. Focus on policy and cite the relevant policy language.",
+      "expected_answer": "The response should describe the refund timeline rule, mention policy, and explain the decision impact for case 8.",
+      "expected_chunks": [
+        "refund timeline guideline for customer svc",
+        "policy evidence section for case 8"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-09",
+      "query": "Explain claim follow-up guidance for customer svc case 9. Focus on document and cite the relevant policy language.",
+      "expected_answer": "The response should describe the claim follow-up rule, mention document, and explain the decision impact for case 9.",
+      "expected_chunks": [
+        "claim follow-up guideline for customer svc",
+        "document evidence section for case 9"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-10",
+      "query": "Explain document upload guidance for customer svc case 10. Focus on follow-up and cite the relevant policy language.",
+      "expected_answer": "The response should describe the document upload rule, mention follow-up, and explain the decision impact for case 10.",
+      "expected_chunks": [
+        "document upload guideline for customer svc",
+        "follow-up evidence section for case 10"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-11",
+      "query": "Explain billing adjustment guidance for customer svc case 11. Focus on billing and cite the relevant policy language.",
+      "expected_answer": "The response should describe the billing adjustment rule, mention billing, and explain the decision impact for case 11.",
+      "expected_chunks": [
+        "billing adjustment guideline for customer svc",
+        "billing evidence section for case 11"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-12",
+      "query": "Explain policy change guidance for customer svc case 12. Focus on refund and cite the relevant policy language.",
+      "expected_answer": "The response should describe the policy change rule, mention refund, and explain the decision impact for case 12.",
+      "expected_chunks": [
+        "policy change guideline for customer svc",
+        "refund evidence section for case 12"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-13",
+      "query": "Explain refund timeline guidance for customer svc case 13. Focus on policy and cite the relevant policy language.",
+      "expected_answer": "The response should describe the refund timeline rule, mention policy, and explain the decision impact for case 13.",
+      "expected_chunks": [
+        "refund timeline guideline for customer svc",
+        "policy evidence section for case 13"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-14",
+      "query": "Explain claim follow-up guidance for customer svc case 14. Focus on document and cite the relevant policy language.",
+      "expected_answer": "The response should describe the claim follow-up rule, mention document, and explain the decision impact for case 14.",
+      "expected_chunks": [
+        "claim follow-up guideline for customer svc",
+        "document evidence section for case 14"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-15",
+      "query": "Explain document upload guidance for customer svc case 15. Focus on follow-up and cite the relevant policy language.",
+      "expected_answer": "The response should describe the document upload rule, mention follow-up, and explain the decision impact for case 15.",
+      "expected_chunks": [
+        "document upload guideline for customer svc",
+        "follow-up evidence section for case 15"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-16",
+      "query": "Explain billing adjustment guidance for customer svc case 16. Focus on billing and cite the relevant policy language.",
+      "expected_answer": "The response should describe the billing adjustment rule, mention billing, and explain the decision impact for case 16.",
+      "expected_chunks": [
+        "billing adjustment guideline for customer svc",
+        "billing evidence section for case 16"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-17",
+      "query": "Explain policy change guidance for customer svc case 17. Focus on refund and cite the relevant policy language.",
+      "expected_answer": "The response should describe the policy change rule, mention refund, and explain the decision impact for case 17.",
+      "expected_chunks": [
+        "policy change guideline for customer svc",
+        "refund evidence section for case 17"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-18",
+      "query": "Explain refund timeline guidance for customer svc case 18. Focus on policy and cite the relevant policy language.",
+      "expected_answer": "The response should describe the refund timeline rule, mention policy, and explain the decision impact for case 18.",
+      "expected_chunks": [
+        "refund timeline guideline for customer svc",
+        "policy evidence section for case 18"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-19",
+      "query": "Explain claim follow-up guidance for customer svc case 19. Focus on document and cite the relevant policy language.",
+      "expected_answer": "The response should describe the claim follow-up rule, mention document, and explain the decision impact for case 19.",
+      "expected_chunks": [
+        "claim follow-up guideline for customer svc",
+        "document evidence section for case 19"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-20",
+      "query": "Explain document upload guidance for customer svc case 20. Focus on follow-up and cite the relevant policy language.",
+      "expected_answer": "The response should describe the document upload rule, mention follow-up, and explain the decision impact for case 20.",
+      "expected_chunks": [
+        "document upload guideline for customer svc",
+        "follow-up evidence section for case 20"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-21",
+      "query": "Explain billing adjustment guidance for customer svc case 21. Focus on billing and cite the relevant policy language.",
+      "expected_answer": "The response should describe the billing adjustment rule, mention billing, and explain the decision impact for case 21.",
+      "expected_chunks": [
+        "billing adjustment guideline for customer svc",
+        "billing evidence section for case 21"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-22",
+      "query": "Explain policy change guidance for customer svc case 22. Focus on refund and cite the relevant policy language.",
+      "expected_answer": "The response should describe the policy change rule, mention refund, and explain the decision impact for case 22.",
+      "expected_chunks": [
+        "policy change guideline for customer svc",
+        "refund evidence section for case 22"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-23",
+      "query": "Explain refund timeline guidance for customer svc case 23. Focus on policy and cite the relevant policy language.",
+      "expected_answer": "The response should describe the refund timeline rule, mention policy, and explain the decision impact for case 23.",
+      "expected_chunks": [
+        "refund timeline guideline for customer svc",
+        "policy evidence section for case 23"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-24",
+      "query": "Explain claim follow-up guidance for customer svc case 24. Focus on document and cite the relevant policy language.",
+      "expected_answer": "The response should describe the claim follow-up rule, mention document, and explain the decision impact for case 24.",
+      "expected_chunks": [
+        "claim follow-up guideline for customer svc",
+        "document evidence section for case 24"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-25",
+      "query": "Explain document upload guidance for customer svc case 25. Focus on follow-up and cite the relevant policy language.",
+      "expected_answer": "The response should describe the document upload rule, mention follow-up, and explain the decision impact for case 25.",
+      "expected_chunks": [
+        "document upload guideline for customer svc",
+        "follow-up evidence section for case 25"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-26",
+      "query": "Explain billing adjustment guidance for customer svc case 26. Focus on billing and cite the relevant policy language.",
+      "expected_answer": "The response should describe the billing adjustment rule, mention billing, and explain the decision impact for case 26.",
+      "expected_chunks": [
+        "billing adjustment guideline for customer svc",
+        "billing evidence section for case 26"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-27",
+      "query": "Explain policy change guidance for customer svc case 27. Focus on refund and cite the relevant policy language.",
+      "expected_answer": "The response should describe the policy change rule, mention refund, and explain the decision impact for case 27.",
+      "expected_chunks": [
+        "policy change guideline for customer svc",
+        "refund evidence section for case 27"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-28",
+      "query": "Explain refund timeline guidance for customer svc case 28. Focus on policy and cite the relevant policy language.",
+      "expected_answer": "The response should describe the refund timeline rule, mention policy, and explain the decision impact for case 28.",
+      "expected_chunks": [
+        "refund timeline guideline for customer svc",
+        "policy evidence section for case 28"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-29",
+      "query": "Explain claim follow-up guidance for customer svc case 29. Focus on document and cite the relevant policy language.",
+      "expected_answer": "The response should describe the claim follow-up rule, mention document, and explain the decision impact for case 29.",
+      "expected_chunks": [
+        "claim follow-up guideline for customer svc",
+        "document evidence section for case 29"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-30",
+      "query": "Explain document upload guidance for customer svc case 30. Focus on follow-up and cite the relevant policy language.",
+      "expected_answer": "The response should describe the document upload rule, mention follow-up, and explain the decision impact for case 30.",
+      "expected_chunks": [
+        "document upload guideline for customer svc",
+        "follow-up evidence section for case 30"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-31",
+      "query": "Explain billing adjustment guidance for customer svc case 31. Focus on billing and cite the relevant policy language.",
+      "expected_answer": "The response should describe the billing adjustment rule, mention billing, and explain the decision impact for case 31.",
+      "expected_chunks": [
+        "billing adjustment guideline for customer svc",
+        "billing evidence section for case 31"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-32",
+      "query": "Explain policy change guidance for customer svc case 32. Focus on refund and cite the relevant policy language.",
+      "expected_answer": "The response should describe the policy change rule, mention refund, and explain the decision impact for case 32.",
+      "expected_chunks": [
+        "policy change guideline for customer svc",
+        "refund evidence section for case 32"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-33",
+      "query": "Explain refund timeline guidance for customer svc case 33. Focus on policy and cite the relevant policy language.",
+      "expected_answer": "The response should describe the refund timeline rule, mention policy, and explain the decision impact for case 33.",
+      "expected_chunks": [
+        "refund timeline guideline for customer svc",
+        "policy evidence section for case 33"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-34",
+      "query": "Explain claim follow-up guidance for customer svc case 34. Focus on document and cite the relevant policy language.",
+      "expected_answer": "The response should describe the claim follow-up rule, mention document, and explain the decision impact for case 34.",
+      "expected_chunks": [
+        "claim follow-up guideline for customer svc",
+        "document evidence section for case 34"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-35",
+      "query": "Explain document upload guidance for customer svc case 35. Focus on follow-up and cite the relevant policy language.",
+      "expected_answer": "The response should describe the document upload rule, mention follow-up, and explain the decision impact for case 35.",
+      "expected_chunks": [
+        "document upload guideline for customer svc",
+        "follow-up evidence section for case 35"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-36",
+      "query": "Explain billing adjustment guidance for customer svc case 36. Focus on billing and cite the relevant policy language.",
+      "expected_answer": "The response should describe the billing adjustment rule, mention billing, and explain the decision impact for case 36.",
+      "expected_chunks": [
+        "billing adjustment guideline for customer svc",
+        "billing evidence section for case 36"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-37",
+      "query": "Explain policy change guidance for customer svc case 37. Focus on refund and cite the relevant policy language.",
+      "expected_answer": "The response should describe the policy change rule, mention refund, and explain the decision impact for case 37.",
+      "expected_chunks": [
+        "policy change guideline for customer svc",
+        "refund evidence section for case 37"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-38",
+      "query": "Explain refund timeline guidance for customer svc case 38. Focus on policy and cite the relevant policy language.",
+      "expected_answer": "The response should describe the refund timeline rule, mention policy, and explain the decision impact for case 38.",
+      "expected_chunks": [
+        "refund timeline guideline for customer svc",
+        "policy evidence section for case 38"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-39",
+      "query": "Explain claim follow-up guidance for customer svc case 39. Focus on document and cite the relevant policy language.",
+      "expected_answer": "The response should describe the claim follow-up rule, mention document, and explain the decision impact for case 39.",
+      "expected_chunks": [
+        "claim follow-up guideline for customer svc",
+        "document evidence section for case 39"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-40",
+      "query": "Explain document upload guidance for customer svc case 40. Focus on follow-up and cite the relevant policy language.",
+      "expected_answer": "The response should describe the document upload rule, mention follow-up, and explain the decision impact for case 40.",
+      "expected_chunks": [
+        "document upload guideline for customer svc",
+        "follow-up evidence section for case 40"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-41",
+      "query": "Explain billing adjustment guidance for customer svc case 41. Focus on billing and cite the relevant policy language.",
+      "expected_answer": "The response should describe the billing adjustment rule, mention billing, and explain the decision impact for case 41.",
+      "expected_chunks": [
+        "billing adjustment guideline for customer svc",
+        "billing evidence section for case 41"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-42",
+      "query": "Explain policy change guidance for customer svc case 42. Focus on refund and cite the relevant policy language.",
+      "expected_answer": "The response should describe the policy change rule, mention refund, and explain the decision impact for case 42.",
+      "expected_chunks": [
+        "policy change guideline for customer svc",
+        "refund evidence section for case 42"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-43",
+      "query": "Explain refund timeline guidance for customer svc case 43. Focus on policy and cite the relevant policy language.",
+      "expected_answer": "The response should describe the refund timeline rule, mention policy, and explain the decision impact for case 43.",
+      "expected_chunks": [
+        "refund timeline guideline for customer svc",
+        "policy evidence section for case 43"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-44",
+      "query": "Explain claim follow-up guidance for customer svc case 44. Focus on document and cite the relevant policy language.",
+      "expected_answer": "The response should describe the claim follow-up rule, mention document, and explain the decision impact for case 44.",
+      "expected_chunks": [
+        "claim follow-up guideline for customer svc",
+        "document evidence section for case 44"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-45",
+      "query": "Explain document upload guidance for customer svc case 45. Focus on follow-up and cite the relevant policy language.",
+      "expected_answer": "The response should describe the document upload rule, mention follow-up, and explain the decision impact for case 45.",
+      "expected_chunks": [
+        "document upload guideline for customer svc",
+        "follow-up evidence section for case 45"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-46",
+      "query": "Explain billing adjustment guidance for customer svc case 46. Focus on billing and cite the relevant policy language.",
+      "expected_answer": "The response should describe the billing adjustment rule, mention billing, and explain the decision impact for case 46.",
+      "expected_chunks": [
+        "billing adjustment guideline for customer svc",
+        "billing evidence section for case 46"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-47",
+      "query": "Explain policy change guidance for customer svc case 47. Focus on refund and cite the relevant policy language.",
+      "expected_answer": "The response should describe the policy change rule, mention refund, and explain the decision impact for case 47.",
+      "expected_chunks": [
+        "policy change guideline for customer svc",
+        "refund evidence section for case 47"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "RAG-48",
+      "query": "Explain refund timeline guidance for customer svc case 48. Focus on policy and cite the relevant policy language.",
+      "expected_answer": "The response should describe the refund timeline rule, mention policy, and explain the decision impact for case 48.",
+      "expected_chunks": [
+        "refund timeline guideline for customer svc",
+        "policy evidence section for case 48"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "RAG-49",
+      "query": "Explain claim follow-up guidance for customer svc case 49. Focus on document and cite the relevant policy language.",
+      "expected_answer": "The response should describe the claim follow-up rule, mention document, and explain the decision impact for case 49.",
+      "expected_chunks": [
+        "claim follow-up guideline for customer svc",
+        "document evidence section for case 49"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "RAG-50",
+      "query": "Explain document upload guidance for customer svc case 50. Focus on follow-up and cite the relevant policy language.",
+      "expected_answer": "The response should describe the document upload rule, mention follow-up, and explain the decision impact for case 50.",
+      "expected_chunks": [
+        "document upload guideline for customer svc",
+        "follow-up evidence section for case 50"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}

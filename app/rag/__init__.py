@@ -17,6 +17,8 @@ __all__ = [
     "run_qa_chain",
     "stream_qa_chain",
     "rerank_results",
+    "evaluate_rag_queries",
+    "run_rag_evaluation",
 ]
 
 
@@ -46,4 +48,10 @@ def __getattr__(name):
     if name == "rerank_results":
         from app.rag.reranker import rerank_results
         return rerank_results
+    if name in {"evaluate_rag_queries", "run_rag_evaluation"}:
+        from app.rag.evaluation_harness import evaluate_rag_queries, run_rag_evaluation
+        return {
+            "evaluate_rag_queries": evaluate_rag_queries,
+            "run_rag_evaluation": run_rag_evaluation,
+        }[name]
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

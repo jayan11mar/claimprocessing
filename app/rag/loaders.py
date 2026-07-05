@@ -3,6 +3,7 @@ Document loaders for the claims knowledge base.
 Handles loading and parsing of PDF, DOCX, Markdown, and JSON files.
 """
 
+import csv
 import json
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional
@@ -207,6 +208,34 @@ def _load_json_memos(file_path: str) -> List[Dict[str, Any]]:
     return memos
 
 
+def _load_csv_memos(file_path: str) -> List[Dict[str, Any]]:
+    """
+    Load and flatten CSV memos into text blocks.
+    Each row becomes a text block with key: value pairs.
+
+    Args:
+        file_path: Path to the CSV file containing memos.
+
+    Returns:
+        List of dictionaries with flattened text and metadata.
+    """
+    memos = []
+    with open(file_path, "r", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            # Build a readable text block from all fields
+            text_parts = []
+            for key, value in row.items():
+                if value and value.strip():
+                    label = key.replace("_", " ").title()
+                    text_parts.append(f"{label}: {value.strip()}")
+            memos.append({
+                "text": "\n".join(text_parts),
+                "raw_metadata": dict(row),
+            })
+    return memos
+
+
 def load_documents_from_manifest() -> List[Document]:
     """
     Load all documents from manifest sources.
@@ -269,6 +298,21 @@ def load_documents_from_manifest() -> List[Document]:
 
         elif suffix == ".json":
             memos = _load_json_memos(file_path)
+            for i, memo in enumerate(memos):
+                documents.append(Document(
+                    text=memo["text"],
+                    source_id=f"{source_id}_{i}" if len(memos) > 1 else source_id,
+                    source_path=file_path,
+                    doc_type=doc_type,
+                    insurance_type=source["insurance_type"],
+                    product_code=source["product_code"],
+                    product_name=source["product_name"],
+                    claim_type=source["claim_type"],
+                    raw_metadata={**source.get("metadata", {}), **memo["raw_metadata"]},
+                ))
+
+        elif suffix == ".csv":
+            memos = _load_csv_memos(file_path)
             for i, memo in enumerate(memos):
                 documents.append(Document(
                     text=memo["text"],

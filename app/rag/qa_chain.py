@@ -21,6 +21,7 @@ def _build_qa_payload(
     claim_context: Optional[str] = None,
     top_k: int = 5,
     embedding_fn: Optional[Any] = None,
+    metadata_filter: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     if chunks is None:
         chunks = _load_chunks_from_manifest()
@@ -32,7 +33,7 @@ def _build_qa_payload(
             "confidence": 0.0,
         }
 
-    results = hybrid_retrieve(chunks, query, k=top_k, embedding_fn=embedding_fn)
+    results = hybrid_retrieve(chunks, query, k=top_k, embedding_fn=embedding_fn, metadata_filter=metadata_filter)
     if not results:
         return {
             "answer_text": "No relevant guidance was found in the knowledge base.",
@@ -76,9 +77,22 @@ def run_qa_chain(
     claim_context: Optional[str] = None,
     top_k: int = 5,
     embedding_fn: Optional[Any] = None,
+    metadata_filter: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    """Run a hybrid retrieval QA flow and return answer text plus citations."""
-    return _build_qa_payload(query, chunks=chunks, claim_context=claim_context, top_k=top_k, embedding_fn=embedding_fn)
+    """Run a hybrid retrieval QA flow and return answer text plus citations.
+
+    Args:
+        query: The query string.
+        chunks: Optional list of Chunk objects. If None, loads from manifest.
+        claim_context: Optional claim context string for answer formatting.
+        top_k: Number of results to return.
+        embedding_fn: Optional embedding function for dense scoring.
+        metadata_filter: Optional dict of metadata fields to filter chunks on.
+
+    Returns:
+        Dict with answer_text, citations, and confidence.
+    """
+    return _build_qa_payload(query, chunks=chunks, claim_context=claim_context, top_k=top_k, embedding_fn=embedding_fn, metadata_filter=metadata_filter)
 
 
 def stream_qa_chain(
@@ -88,9 +102,10 @@ def stream_qa_chain(
     top_k: int = 5,
     embedding_fn: Optional[Any] = None,
     chunk_size: int = 24,
+    metadata_filter: Optional[Dict[str, Any]] = None,
 ):
     """Yield a QA answer incrementally in small text chunks for streaming-style UIs."""
-    payload = _build_qa_payload(query, chunks=chunks, claim_context=claim_context, top_k=top_k, embedding_fn=embedding_fn)
+    payload = _build_qa_payload(query, chunks=chunks, claim_context=claim_context, top_k=top_k, embedding_fn=embedding_fn, metadata_filter=metadata_filter)
     answer_text = payload.get("answer_text", "")
     if not answer_text:
         return

@@ -79,6 +79,13 @@ class VectorStore(ABC):
         """
         pass
 
+    def get_embedding_model_version(self) -> Optional[str]:
+        """
+        Return the embedding model version stored with this index, if any.
+        Returns None if no version was stored (legacy index).
+        """
+        return None
+
 
 def get_vector_store(backend: Optional[str] = None, dimension: Optional[int] = None, **kwargs) -> VectorStore:
     """

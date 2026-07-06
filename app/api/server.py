@@ -551,9 +551,63 @@ def delete_source(doc_id: str) -> Dict[str, Any]:
     _ensure_rag_documents_loaded()
     if doc_id in _rag_documents:
         del _rag_documents[doc_id]
+        # Also delete from vector store if it exists
+        if _rag_vector_store is not None:
+            try:
+                _rag_vector_store.delete(ids=[doc_id])
+            except Exception:
+                pass
         _rebuild_rag_index()
+        logger.info("source_deleted", {"doc_id": doc_id})
         return {"status": "deleted", "doc_id": doc_id}
+    logger.warning("source_delete_not_found", {"doc_id": doc_id})
     return {"status": "not_found", "doc_id": doc_id}
+
+
+@app.post("/sources/{doc_id}/reload")
+def reload_source(doc_id: str) -> Dict[str, Any]:
+    """Re-ingest a single source document by its doc_id.
+    Deletes the old chunks from the vector store and re-ingests from the manifest.
+    """
+    _ensure_rag_documents_loaded()
+
+    # Find the document from the manifest
+    try:
+        manifest_docs = load_documents_from_manifest()
+    except Exception as exc:
+        return {"status": "error", "doc_id": doc_id, "message": f"Failed to load manifest: {exc}"}
+
+    target_doc = None
+    for doc in manifest_docs:
+        if doc.source_id == doc_id:
+            target_doc = doc
+            break
+
+    if target_doc is None:
+        return {"status": "error", "doc_id": doc_id, "message": f"Document '{doc_id}' not found in manifest"}
+
+    # Delete old entry if it exists
+    if doc_id in _rag_documents:
+        del _rag_documents[doc_id]
+        if _rag_vector_store is not None:
+            try:
+                _rag_vector_store.delete(ids=[doc_id])
+            except Exception:
+                pass
+
+    # Re-load the document
+    _rag_documents[doc_id] = target_doc
+
+    # Rebuild the index
+    _rebuild_rag_index()
+
+    logger.info("source_reloaded", {"doc_id": doc_id})
+    return {
+        "status": "reloaded",
+        "doc_id": doc_id,
+        "message": f"Document '{doc_id}' has been re-ingested.",
+        "document_count": len(_rag_documents),
+    }
 
 
 @app.get("/history/{session_id}", response_model=HistoryResponse)

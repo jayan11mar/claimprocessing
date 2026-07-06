@@ -27,10 +27,42 @@ def hybrid_retrieve(
     k: int = 5,
     embedding_fn: Optional[Callable[[List[str]], List[List[float]]]] = None,
     rerank: bool = True,
+    metadata_filter: Optional[Dict[str, Any]] = None,
 ) -> List[Dict[str, Any]]:
-    """Fuse BM25 and a lightweight dense-style score into a ranked list."""
+    """Fuse BM25 and a lightweight dense-style score into a ranked list.
+
+    Args:
+        chunks: List of Chunk objects to search.
+        query: The query string.
+        k: Number of results to return.
+        embedding_fn: Optional embedding function for dense scoring.
+        rerank: Whether to apply cross-encoder reranking.
+        metadata_filter: Optional dict of metadata fields to filter on.
+                         Only chunks matching ALL filter criteria are returned.
+
+    Returns:
+        Ranked list of result dicts.
+    """
     if not chunks:
         return []
+
+    # Apply metadata filter early to reduce the search space
+    if metadata_filter:
+        filtered_chunks = []
+        for chunk in chunks:
+            match = True
+            for key, value in metadata_filter.items():
+                chunk_val = getattr(chunk, key, None)
+                if chunk_val is None:
+                    chunk_val = chunk.raw_metadata.get(key)
+                if chunk_val != value:
+                    match = False
+                    break
+            if match:
+                filtered_chunks.append(chunk)
+        chunks = filtered_chunks
+        if not chunks:
+            return []
 
     variants = build_query_variants(query)
     bm25_results = bm25_retrieve(chunks, query, k=len(chunks))

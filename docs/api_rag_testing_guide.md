@@ -13,7 +13,8 @@ API :  RAG & Retrieval Endpoints Testing Guide
 | **3** | `/retrieve` | POST | Hybrid search without LLM (pure retrieval) | `{"query": "hospital coverage", "top_k": 5}` | `{"results": [{"chunk": {"text": "...", "source_id": "doc1"}, "score": 0.95}, ...]}` |
 | **4** | `/evaluate` | POST | Run RAG evaluation against golden dataset | `{}` (no body required) | `{"summary": {"total_cases": 10, "passed_cases": 8, "thresholds": {...}}, "cases": [...]}` |
 | **5** | `/sources` | GET | List all indexed documents | *No body* | `{"documents": [{"source_id": "doc1", "source_path": "policy.md", "doc_type": "policy", "text_preview": "..."}]}` |
-| **6** | `/sources/{doc_id}` | DELETE | Remove a document and rebuild index | *Path parameter: doc_id from /sources* | `{"status": "success", "message": "Document deleted", "remaining_docs": N}` |
+| **6** | `/sources/{doc_id}` | DELETE | Remove a document and rebuild index | *Path parameter: doc_id from /sources* | `{"status": "deleted", "doc_id": "health-policy-001"}` |
+| **6b** | `/sources/{doc_id}/reload` | POST | Re-ingest a single source document from manifest | *Path parameter: doc_id from /sources* | `{"status": "reloaded", "doc_id": "health-policy-001", "document_count": N}` |
 | **7** | `/chat` | POST | Chat with retrieval context (enhanced) | `{"session_id": "user123", "message": "What's my coverage?"}` | `{"intent": "...", "answer": "...", "retrieval_trace": [{"tool": "knowledge_retrieval", "query": "..."}], "citations": [...]}` |
 | **8** | `/history/{session_id}` | GET | Retrieve prior turns for a chat session | *Path parameter: session_id* | `{"session_id": "user123", "message_count": 2, "turn_count": 1, "history": [...]}` |
 | **9** | `/reset` | POST | Clear chat history for a session | `{"session_id": "user123"}` | `{"status": "ok", "session_id": "user123"}` |
@@ -32,7 +33,8 @@ API :  RAG & Retrieval Endpoints Testing Guide
 7. **Run Evaluation** → `POST /evaluate`
 8. **Inspect Chat History** → `GET /history/{session_id}`
 9. **Reset Session History** → `POST /reset`
-10. **Clean Up** → `DELETE /sources/{doc_id}`
+10. **Delete a Source Document** → `DELETE /sources/{doc_id}`
+11. **Reload a Source Document** → `POST /sources/{doc_id}/reload`
 
 ---
 
@@ -235,10 +237,26 @@ API :  RAG & Retrieval Endpoints Testing Guide
 **Expected Response:**
 ```json
 {
-  "status": "success",
-  "message": "Document deleted and index rebuilt",
-  "deleted_doc_id": "health-policy-001",
-  "remaining_docs": 1
+  "status": "deleted",
+  "doc_id": "health-policy-001"
+}
+```
+
+---
+
+### 6b. POST /sources/{doc_id}/reload - Re-ingest a Source Document
+
+**Purpose:** Re-load a single source document from the manifest, deleting old chunks and re-ingesting fresh content
+
+**Path Parameter:** `doc_id` = `health_policy_hdfcergo` (a manifest source ID from /sources)
+
+**Expected Response:**
+```json
+{
+  "status": "reloaded",
+  "doc_id": "health_policy_hdfcergo",
+  "message": "Document 'health_policy_hdfcergo' has been re-ingested.",
+  "document_count": 9
 }
 ```
 

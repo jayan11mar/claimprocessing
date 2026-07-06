@@ -105,6 +105,7 @@ def evaluate_rag_queries(
     chunks: Optional[List[Chunk]] = None,
     retrieval_fn: Optional[Callable[[List[Chunk], str, int], List[Dict[str, Any]]]] = None,
     answer_fn: Optional[Callable[..., Dict[str, Any]]] = None,
+    metadata_filter: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Evaluate a set of RAG queries and return a structured pass/fail report."""
     if cases is None:

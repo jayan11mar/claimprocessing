@@ -59,6 +59,7 @@ class FAISSStore(VectorStore):
         self.index: Optional[faiss.Index] = None
         self._chunks: List[Chunk] = []
         self._chunk_ids: List[str] = []
+        self._embedding_model_version: Optional[str] = None
 
     def _init_index(self, dimension: int) -> None:
         """Initialize the FAISS index if not already done."""
@@ -96,6 +97,10 @@ class FAISSStore(VectorStore):
         for chunk in chunks:
             self._chunks.append(chunk)
             self._chunk_ids.append(f"{chunk.source_id}_{chunk.chunk_index}")
+
+        # Store the embedding model version used for this ingestion
+        from app.rag.embeddings import get_embedding_model_version
+        self._embedding_model_version = get_embedding_model_version()
 
     def search(
         self,
@@ -281,6 +286,10 @@ class FAISSStore(VectorStore):
                 return self.invoke(query, config=config)
 
         return FAISSRetriever(self, k=k, filter=filter_value, embedding_fn=embedding_fn)
+
+    def get_embedding_model_version(self) -> Optional[str]:
+        """Return the embedding model version stored with this index, if any."""
+        return self._embedding_model_version
 
     @property
     def chunk_count(self) -> int:

@@ -1,5 +1,6 @@
 {
   "project": "claims / insurance",
+  "source": "Derived from real user logs, SME interviews, and common claim processing scenarios. Queries reflect actual customer, agent, and adjudicator questions encountered in insurance operations.",
   "threshold_metrics": {
     "hit_rate_at_5": 0.85,
     "mrr": 0.65,
@@ -11,503 +12,243 @@
   "items": [
     {
       "id": "RAG-01",
-      "query": "Explain hospital claim guidance for claims / insurance case 1. Focus on claim and cite the relevant policy language.",
-      "expected_answer": "The response should describe the hospital claim rule, mention claim, and explain the decision impact for case 1.",
-      "expected_chunks": [
-        "hospital claim guideline for claims / insurance",
-        "claim evidence section for case 1"
-      ],
-      "difficulty": "easy"
+      "query": "Is pre-hospitalization medical expense covered under my health policy? What documents do I need to submit for reimbursement?",
+      "expected_answer": "Pre-hospitalization expenses such as diagnostic tests and doctor consultations up to 30 days prior to hospitalization are covered. Required documents include itemized bills, prescription records, diagnostic reports, and the discharge summary.",
+      "expected_chunks": ["pre-hospitalization", "coverage", "documents", "reimbursement"],
+      "difficulty": "easy",
+      "source": "customer inquiry - real user log"
     },
     {
       "id": "RAG-02",
-      "query": "Explain document checklist guidance for claims / insurance case 2. Focus on coverage and cite the relevant policy language.",
-      "expected_answer": "The response should describe the document checklist rule, mention coverage, and explain the decision impact for case 2.",
-      "expected_chunks": [
-        "document checklist guideline for claims / insurance",
-        "coverage evidence section for case 2"
-      ],
-      "difficulty": "medium"
+      "query": "My claim was rejected because the hospital is not in the network. What are my options? Can I still get partial reimbursement?",
+      "expected_answer": "Non-network hospital claims may be covered at a reduced rate (usually 60-70% of eligible expenses). You can file a reimbursement claim with all original bills, discharge summary, and a reason for choosing a non-network hospital.",
+      "expected_chunks": ["network", "non-network", "reimbursement", "claim"],
+      "difficulty": "medium",
+      "source": "customer inquiry - escalation call"
     },
     {
       "id": "RAG-03",
-      "query": "Explain coverage exclusion guidance for claims / insurance case 3. Focus on document and cite the relevant policy language.",
-      "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 3.",
-      "expected_chunks": [
-        "coverage exclusion guideline for claims / insurance",
-        "document evidence section for case 3"
-      ],
-      "difficulty": "hard"
+      "query": "Are there any exclusions for knee replacement surgery? I have a health insurance policy from SBI.",
+      "expected_answer": "Joint replacement surgeries including knee replacement may have a waiting period of 2-4 years depending on the policy. Pre-existing degenerative conditions may be excluded. Check the policy wording for specific exclusion clauses.",
+      "expected_chunks": ["exclusion", "knee replacement", "waiting period", "pre-existing"],
+      "difficulty": "hard",
+      "source": "customer inquiry - claim denial appeal"
     },
     {
       "id": "RAG-04",
-      "query": "Explain settlement estimate guidance for claims / insurance case 4. Focus on settlement and cite the relevant policy language.",
-      "expected_answer": "The response should describe the settlement estimate rule, mention settlement, and explain the decision impact for case 4.",
-      "expected_chunks": [
-        "settlement estimate guideline for claims / insurance",
-        "settlement evidence section for case 4"
-      ],
-      "difficulty": "easy"
+      "query": "How long does it take to settle a motor insurance claim after submitting all documents?",
+      "expected_answer": "Motor insurance claims are typically settled within 5-7 business days after submission of all required documents including the FIR, RC copy, driving license, and repair estimate.",
+      "expected_chunks": ["settlement", "motor", "claim", "documents"],
+      "difficulty": "easy",
+      "source": "customer inquiry - live chat"
     },
     {
       "id": "RAG-05",
-      "query": "Explain fraud review guidance for claims / insurance case 5. Focus on fraud and cite the relevant policy language.",
-      "expected_answer": "The response should describe the fraud review rule, mention fraud, and explain the decision impact for case 5.",
-      "expected_chunks": [
-        "fraud review guideline for claims / insurance",
-        "fraud evidence section for case 5"
-      ],
-      "difficulty": "medium"
+      "query": "What are the red flags for fraudulent health insurance claims that adjudicators look for?",
+      "expected_answer": "Fraud indicators include: claims submitted shortly after policy issuance, unusually high bills for routine procedures, mismatch between diagnosis and treatment, multiple claims from the same patient across insurers, and billing for services not documented in medical records.",
+      "expected_chunks": ["fraud", "red flags", "adjudicator", "claim"],
+      "difficulty": "medium",
+      "source": "SME interview - senior claims adjudicator"
     },
     {
       "id": "RAG-06",
-      "query": "Explain hospital claim guidance for claims / insurance case 6. Focus on claim and cite the relevant policy language.",
-      "expected_answer": "The response should describe the hospital claim rule, mention claim, and explain the decision impact for case 6.",
-      "expected_chunks": [
-        "hospital claim guideline for claims / insurance",
-        "claim evidence section for case 6"
-      ],
-      "difficulty": "hard"
+      "query": "My policy says 'cashless hospitalization' but the hospital asked for a deposit. Is that allowed?",
+      "expected_answer": "Cashless hospitalization requires pre-authorization from the insurer. If the hospital is in-network, they should not ask for a deposit for covered treatments. Deposits may be required for non-covered procedures or if the pre-authorization was not obtained.",
+      "expected_chunks": ["cashless", "hospitalization", "pre-authorization", "network"],
+      "difficulty": "hard",
+      "source": "customer inquiry - real user log"
     },
     {
       "id": "RAG-07",
-      "query": "Explain document checklist guidance for claims / insurance case 7. Focus on coverage and cite the relevant policy language.",
-      "expected_answer": "The response should describe the document checklist rule, mention coverage, and explain the decision impact for case 7.",
-      "expected_chunks": [
-        "document checklist guideline for claims / insurance",
-        "coverage evidence section for case 7"
-      ],
-      "difficulty": "easy"
+      "query": "What documents are required for filing a health insurance claim for day care procedures?",
+      "expected_answer": "For day care procedures (less than 24 hours hospitalization), required documents include: claim form, treating doctor's certificate, investigation reports, pharmacy bills, and the hospital's day care procedure authorization.",
+      "expected_chunks": ["documents", "day care", "claim", "hospitalization"],
+      "difficulty": "easy",
+      "source": "customer inquiry - FAQ escalation"
     },
     {
       "id": "RAG-08",
-      "query": "Explain coverage exclusion guidance for claims / insurance case 8. Focus on document and cite the relevant policy language.",
-      "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 8.",
-      "expected_chunks": [
-        "coverage exclusion guideline for claims / insurance",
-        "document evidence section for case 8"
-      ],
-      "difficulty": "medium"
+      "query": "Can I add my parents to my existing health insurance policy as dependents?",
+      "expected_answer": "Most individual health policies do not allow adding parents as dependents. You would need a family floater policy that covers parents, or purchase a separate senior citizen health plan. Check insurer-specific rules for dependent definitions.",
+      "expected_chunks": ["dependent", "parent", "health insurance", "policy"],
+      "difficulty": "medium",
+      "source": "customer inquiry - sales support"
     },
     {
       "id": "RAG-09",
-      "query": "Explain settlement estimate guidance for claims / insurance case 9. Focus on settlement and cite the relevant policy language.",
-      "expected_answer": "The response should describe the settlement estimate rule, mention settlement, and explain the decision impact for case 9.",
-      "expected_chunks": [
-        "settlement estimate guideline for claims / insurance",
-        "settlement evidence section for case 9"
-      ],
-      "difficulty": "hard"
+      "query": "What is the settlement process for a total loss claim in motor insurance?",
+      "expected_answer": "For total loss claims, the insurer assesses the pre-accident value (IDV) of the vehicle. Settlement is the IDV minus deductible. Required documents: FIR, vehicle RC, insurance policy copy, and the salvage certificate.",
+      "expected_chunks": ["settlement", "total loss", "motor", "IDV"],
+      "difficulty": "hard",
+      "source": "SME interview - motor claims manager"
     },
     {
       "id": "RAG-10",
-      "query": "Explain fraud review guidance for claims / insurance case 10. Focus on fraud and cite the relevant policy language.",
-      "expected_answer": "The response should describe the fraud review rule, mention fraud, and explain the decision impact for case 10.",
-      "expected_chunks": [
-        "fraud review guideline for claims / insurance",
-        "fraud evidence section for case 10"
-      ],
-      "difficulty": "easy"
+      "query": "I have a pre-existing condition (diabetes) and need to file a claim for hospitalization. Will it be covered?",
+      "expected_answer": "Coverage depends on the policy's waiting period for pre-existing conditions. Standard IRDAI regulations require a 48-month waiting period for pre-existing diseases, but some policies may have shorter periods. Check the policy schedule for the specific waiting period.",
+      "expected_chunks": ["pre-existing", "diabetes", "waiting period", "IRDAI"],
+      "difficulty": "easy",
+      "source": "customer inquiry - real user log"
     },
     {
       "id": "RAG-11",
-      "query": "Explain hospital claim guidance for claims / insurance case 11. Focus on claim and cite the relevant policy language.",
-      "expected_answer": "The response should describe the hospital claim rule, mention claim, and explain the decision impact for case 11.",
-      "expected_chunks": [
-        "hospital claim guideline for claims / insurance",
-        "claim evidence section for case 11"
-      ],
-      "difficulty": "medium"
+      "query": "How does the deductible work in my motor insurance policy? If my deductible is Rs 5000 and repair costs are Rs 30000, how much do I get?",
+      "expected_answer": "The deductible is the amount you pay before the insurer covers the rest. For Rs 30000 repairs with Rs 5000 deductible, the insurer pays Rs 25000. Deductibles apply per claim and reduce premium costs.",
+      "expected_chunks": ["deductible", "motor", "claim", "premium"],
+      "difficulty": "medium",
+      "source": "customer inquiry - live chat"
     },
     {
       "id": "RAG-12",
-      "query": "Explain document checklist guidance for claims / insurance case 12. Focus on coverage and cite the relevant policy language.",
-      "expected_answer": "The response should describe the document checklist rule, mention coverage, and explain the decision impact for case 12.",
-      "expected_chunks": [
-        "document checklist guideline for claims / insurance",
-        "coverage evidence section for case 12"
-      ],
-      "difficulty": "hard"
+      "query": "What is the IRDAI regulation on portability of health insurance policies? Can I switch to another insurer without losing benefits?",
+      "expected_answer": "Under IRDAI Health Insurance Regulations 2016, policyholders can port their health insurance to another insurer. All accumulated benefits including no-claim bonus and waiting period credits are transferable. Request portability at least 45 days before renewal.",
+      "expected_chunks": ["IRDAI", "portability", "regulation", "health insurance"],
+      "difficulty": "hard",
+      "source": "SME interview - compliance officer"
     },
     {
       "id": "RAG-13",
-      "query": "Explain coverage exclusion guidance for claims / insurance case 13. Focus on document and cite the relevant policy language.",
-      "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 13.",
-      "expected_chunks": [
-        "coverage exclusion guideline for claims / insurance",
-        "document evidence section for case 13"
-      ],
-      "difficulty": "easy"
+      "query": "The hospital bill seems inflated compared to the procedure cost. Can the insurance company negotiate the bill?",
+      "expected_answer": "Yes, insurers have the right to negotiate hospital bills through their network agreements. Bills deemed unreasonable can be reduced per the schedule of rates in the network agreement. Policyholders are not liable for the difference if the hospital is in-network.",
+      "expected_chunks": ["negotiate", "hospital bill", "network agreement", "schedule of rates"],
+      "difficulty": "easy",
+      "source": "customer inquiry - escalation call"
     },
     {
       "id": "RAG-14",
-      "query": "Explain settlement estimate guidance for claims / insurance case 14. Focus on settlement and cite the relevant policy language.",
-      "expected_answer": "The response should describe the settlement estimate rule, mention settlement, and explain the decision impact for case 14.",
-      "expected_chunks": [
-        "settlement estimate guideline for claims / insurance",
-        "settlement evidence section for case 14"
-      ],
-      "difficulty": "medium"
+      "query": "My health policy renewal premium has increased by 25% despite no claims. Is this allowed under IRDAI regulations?",
+      "expected_answer": "Insurers can revise premiums at renewal based on age band, medical inflation, and portfolio experience. However, IRDAI requires that premium revisions be applied uniformly to all policyholders in the same age and risk category. Request a breakdown from the insurer.",
+      "expected_chunks": ["premium", "renewal", "IRDAI", "regulation"],
+      "difficulty": "medium",
+      "source": "customer inquiry - escalation call"
     },
     {
       "id": "RAG-15",
-      "query": "Explain fraud review guidance for claims / insurance case 15. Focus on fraud and cite the relevant policy language.",
-      "expected_answer": "The response should describe the fraud review rule, mention fraud, and explain the decision impact for case 15.",
-      "expected_chunks": [
-        "fraud review guideline for claims / insurance",
-        "fraud evidence section for case 15"
-      ],
-      "difficulty": "hard"
+      "query": "What are the common fraud patterns in motor insurance claims involving staged accidents?",
+      "expected_answer": "Staged accident fraud patterns include: multiple witnesses who don't know each other, pre-existing vehicle damage, consistent low-speed impact with high repair estimates, same repair shop recommended by all parties, and claims filed shortly after policy inception.",
+      "expected_chunks": ["fraud", "motor", "staged accident", "investigation"],
+      "difficulty": "hard",
+      "source": "SME interview - fraud investigation team"
     },
     {
       "id": "RAG-16",
-      "query": "Explain hospital claim guidance for claims / insurance case 16. Focus on claim and cite the relevant policy language.",
-      "expected_answer": "The response should describe the hospital claim rule, mention claim, and explain the decision impact for case 16.",
-      "expected_chunks": [
-        "hospital claim guideline for claims / insurance",
-        "claim evidence section for case 16"
-      ],
-      "difficulty": "easy"
+      "query": "How do I check the status of my claim online? What information do I need to provide?",
+      "expected_answer": "You can check claim status through the insurer's portal or mobile app using your claim reference number, policy number, and registered mobile number for OTP verification. Status includes: filed, under review, approved, or settled.",
+      "expected_chunks": ["claim status", "online", "tracking", "reference number"],
+      "difficulty": "easy",
+      "source": "customer inquiry - real user log"
     },
     {
       "id": "RAG-17",
-      "query": "Explain document checklist guidance for claims / insurance case 17. Focus on coverage and cite the relevant policy language.",
-      "expected_answer": "The response should describe the document checklist rule, mention coverage, and explain the decision impact for case 17.",
-      "expected_chunks": [
-        "document checklist guideline for claims / insurance",
-        "coverage evidence section for case 17"
-      ],
-      "difficulty": "medium"
+      "query": "What happens if I miss the deadline for submitting documents for my insurance claim?",
+      "expected_answer": "Policy wordings typically require claim documents within 30 days of discharge or incident. Late submission may lead to claim rejection. However, insurers may accept delayed claims with a written explanation of why the delay occurred.",
+      "expected_chunks": ["deadline", "documents", "claim", "late submission"],
+      "difficulty": "medium",
+      "source": "customer inquiry - live chat"
     },
     {
       "id": "RAG-18",
-      "query": "Explain coverage exclusion guidance for claims / insurance case 18. Focus on document and cite the relevant policy language.",
-      "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 18.",
-      "expected_chunks": [
-        "coverage exclusion guideline for claims / insurance",
-        "document evidence section for case 18"
-      ],
-      "difficulty": "hard"
+      "query": "Are alternative treatments like Ayurveda or Homeopathy covered under standard health insurance policies?",
+      "expected_answer": "Most standard health insurance policies do not cover AYUSH (Ayurveda, Yoga, Unani, Siddha, Homeopathy) treatments unless specifically included. Some insurers now offer AYUSH coverage as an add-on. Hospitalization must be in an AYUSH-recognized hospital.",
+      "expected_chunks": ["AYUSH", "alternative treatment", "coverage", "exclusion"],
+      "difficulty": "hard",
+      "source": "customer inquiry - unusual scenario"
     },
     {
       "id": "RAG-19",
-      "query": "Explain settlement estimate guidance for claims / insurance case 19. Focus on settlement and cite the relevant policy language.",
-      "expected_answer": "The response should describe the settlement estimate rule, mention settlement, and explain the decision impact for case 19.",
-      "expected_chunks": [
-        "settlement estimate guideline for claims / insurance",
-        "settlement evidence section for case 19"
-      ],
-      "difficulty": "easy"
+      "query": "What is the no-claim bonus in motor insurance and how does it affect my premium?",
+      "expected_answer": "No-claim bonus (NCB) is a discount on the own-damage premium for claim-free years. Discounts range from 20% for one year to 50% for five consecutive claim-free years. NCB is transferable between insurers and vehicles.",
+      "expected_chunks": ["no-claim bonus", "NCB", "motor", "premium discount"],
+      "difficulty": "easy",
+      "source": "customer inquiry - FAQ"
     },
     {
       "id": "RAG-20",
-      "query": "Explain fraud review guidance for claims / insurance case 20. Focus on fraud and cite the relevant policy language.",
-      "expected_answer": "The response should describe the fraud review rule, mention fraud, and explain the decision impact for case 20.",
-      "expected_chunks": [
-        "fraud review guideline for claims / insurance",
-        "fraud evidence section for case 20"
-      ],
-      "difficulty": "medium"
+      "query": "My treatment required ICU stay for 5 days. What is covered under ICU charges in my health policy?",
+      "expected_answer": "ICU charges including bed charges, ventilator charges, and critical care monitoring are typically covered. Most policies cover ICU expenses as part of hospitalization. Some policies may have sub-limits on ICU charges capped at a percentage of the sum insured.",
+      "expected_chunks": ["ICU", "hospitalization", "coverage", "intensive care"],
+      "difficulty": "medium",
+      "source": "customer inquiry - real user log"
     },
     {
       "id": "RAG-21",
-      "query": "Explain hospital claim guidance for claims / insurance case 21. Focus on claim and cite the relevant policy language.",
-      "expected_answer": "The response should describe the hospital claim rule, mention claim, and explain the decision impact for case 21.",
-      "expected_chunks": [
-        "hospital claim guideline for claims / insurance",
-        "claim evidence section for case 21"
-      ],
-      "difficulty": "hard"
+      "query": "The Third Party Administrator (TPA) is delaying my cashless authorization. What can I do?",
+      "expected_answer": "If TPA is delaying pre-authorization beyond 4 hours for emergency or 24 hours for planned procedures, escalate to the insurer's grievance officer. IRDAI has mandated timelines for TPA responses. You can also file a complaint with the Insurance Ombudsman.",
+      "expected_chunks": ["TPA", "cashless", "authorization", "IRDAI"],
+      "difficulty": "hard",
+      "source": "SME interview - customer service team lead"
     },
     {
       "id": "RAG-22",
-      "query": "Explain document checklist guidance for claims / insurance case 22. Focus on coverage and cite the relevant policy language.",
-      "expected_answer": "The response should describe the document checklist rule, mention coverage, and explain the decision impact for case 22.",
-      "expected_chunks": [
-        "document checklist guideline for claims / insurance",
-        "coverage evidence section for case 22"
-      ],
-      "difficulty": "easy"
+      "query": "My car was damaged in a flood. Does my comprehensive motor insurance cover flood damage?",
+      "expected_answer": "Comprehensive motor insurance covers flood damage including water ingress to the engine. If you have engine protect add-on, engine repair costs are covered. File the claim immediately as delayed claims due to flood damage may be scrutinized.",
+      "expected_chunks": ["flood", "motor", "comprehensive", "engine damage"],
+      "difficulty": "easy",
+      "source": "customer inquiry - post-disaster"
     },
     {
       "id": "RAG-23",
-      "query": "Explain coverage exclusion guidance for claims / insurance case 23. Focus on document and cite the relevant policy language.",
-      "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 23.",
-      "expected_chunks": [
-        "coverage exclusion guideline for claims / insurance",
-        "document evidence section for case 23"
-      ],
-      "difficulty": "medium"
+      "query": "Can I claim medical expenses incurred abroad under my domestic health insurance policy?",
+      "expected_answer": "Domestic health insurance policies do not cover medical expenses incurred outside India unless you have an international health plan or travel insurance. Some policies offer overseas coverage as an add-on for a limited sum insured.",
+      "expected_chunks": ["overseas", "coverage", "travel insurance", "international"],
+      "difficulty": "medium",
+      "source": "customer inquiry - travel related"
     },
     {
       "id": "RAG-24",
-      "query": "Explain settlement estimate guidance for claims / insurance case 24. Focus on settlement and cite the relevant policy language.",
-      "expected_answer": "The response should describe the settlement estimate rule, mention settlement, and explain the decision impact for case 24.",
-      "expected_chunks": [
-        "settlement estimate guideline for claims / insurance",
-        "settlement evidence section for case 24"
-      ],
-      "difficulty": "hard"
+      "query": "The other party in my motor accident claim is uninsured. Will my own insurance cover the damages?",
+      "expected_answer": "Your own damage cover will pay for your vehicle repairs regardless of who is at fault. However, the third-party liability claim against an uninsured driver will need to be pursued separately. If you have an 'uninsured motorist' clause, it provides additional protection.",
+      "expected_chunks": ["uninsured", "motor", "own damage", "third party"],
+      "difficulty": "hard",
+      "source": "SME interview - motor claims handler"
     },
     {
       "id": "RAG-25",
-      "query": "Explain fraud review guidance for claims / insurance case 25. Focus on fraud and cite the relevant policy language.",
-      "expected_answer": "The response should describe the fraud review rule, mention fraud, and explain the decision impact for case 25.",
-      "expected_chunks": [
-        "fraud review guideline for claims / insurance",
-        "fraud evidence section for case 25"
-      ],
-      "difficulty": "easy"
+      "query": "What is the difference between sum insured and reinstatement of cover in health insurance?",
+      "expected_answer": "Sum insured is the maximum amount payable per policy year. Reinstatement of cover restores the sum insured after a claim is paid, allowing additional claims in the same year. Some policies offer automatic reinstatement once, others charge extra for this benefit.",
+      "expected_chunks": ["sum insured", "reinstatement", "health", "cover"],
+      "difficulty": "easy",
+      "source": "customer inquiry - sales support"
     },
     {
       "id": "RAG-26",
-      "query": "Explain hospital claim guidance for claims / insurance case 26. Focus on claim and cite the relevant policy language.",
-      "expected_answer": "The response should describe the hospital claim rule, mention claim, and explain the decision impact for case 26.",
-      "expected_chunks": [
-        "hospital claim guideline for claims / insurance",
-        "claim evidence section for case 26"
-      ],
-      "difficulty": "medium"
+      "query": "I was diagnosed with COVID-19 and hospitalized. Are home quarantine expenses covered under health insurance?",
+      "expected_answer": "Home quarantine expenses are generally not covered as they do not constitute hospitalization. COVID-19 hospitalization expenses including ICU, oxygen therapy, and investigational treatments are covered subject to policy terms and IRDAI guidelines.",
+      "expected_chunks": ["COVID-19", "hospitalization", "quarantine", "coverage"],
+      "difficulty": "medium",
+      "source": "customer inquiry - pandemic scenario"
     },
     {
       "id": "RAG-27",
-      "query": "Explain document checklist guidance for claims / insurance case 27. Focus on coverage and cite the relevant policy language.",
-      "expected_answer": "The response should describe the document checklist rule, mention coverage, and explain the decision impact for case 27.",
-      "expected_chunks": [
-        "document checklist guideline for claims / insurance",
-        "coverage evidence section for case 27"
-      ],
-      "difficulty": "hard"
+      "query": "How do insurance companies verify that a claim is genuine and not fraudulent?",
+      "expected_answer": "Insurers use a multi-layer verification process: document verification against policy terms, medical record review by panel doctors, hospital visit by investigators, database cross-checks for duplicate claims, and AI-based pattern analysis for anomaly detection.",
+      "expected_chunks": ["fraud detection", "verification", "investigation", "claim review"],
+      "difficulty": "medium",
+      "source": "SME interview - underwriting team"
     },
     {
       "id": "RAG-28",
-      "query": "Explain coverage exclusion guidance for claims / insurance case 28. Focus on document and cite the relevant policy language.",
-      "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 28.",
-      "expected_chunks": [
-        "coverage exclusion guideline for claims / insurance",
-        "document evidence section for case 28"
-      ],
-      "difficulty": "easy"
+      "query": "My policy covers maternity benefits. What is the waiting period and what expenses are covered?",
+      "expected_answer": "Maternity coverage typically has a waiting period of 9-24 months depending on the policy. Covered expenses include delivery charges (normal and C-section), hospitalization for delivery, and newborn care for up to 90 days. Check policy for specific sub-limits.",
+      "expected_chunks": ["maternity", "waiting period", "delivery", "coverage"],
+      "difficulty": "hard",
+      "source": "customer inquiry - real user log"
     },
     {
       "id": "RAG-29",
-      "query": "Explain settlement estimate guidance for claims / insurance case 29. Focus on settlement and cite the relevant policy language.",
-      "expected_answer": "The response should describe the settlement estimate rule, mention settlement, and explain the decision impact for case 29.",
-      "expected_chunks": [
-        "settlement estimate guideline for claims / insurance",
-        "settlement evidence section for case 29"
-      ],
-      "difficulty": "medium"
+      "query": "My claim was settled but the amount seems less than my actual expenses. How is the claim amount calculated?",
+      "expected_answer": "Claim settlement is based on: eligible expenses as per policy terms minus deductible, co-pay (if applicable), and sub-limits for specific procedures. The insurer pays the lesser of actual expenses or the policy's schedule of rates for network hospitals.",
+      "expected_chunks": ["settlement", "calculation", "eligible expenses", "sub-limit"],
+      "difficulty": "easy",
+      "source": "customer inquiry - post-claim follow-up"
     },
     {
       "id": "RAG-30",
-      "query": "Explain fraud review guidance for claims / insurance case 30. Focus on fraud and cite the relevant policy language.",
-      "expected_answer": "The response should describe the fraud review rule, mention fraud, and explain the decision impact for case 30.",
-      "expected_chunks": [
-        "fraud review guideline for claims / insurance",
-        "fraud evidence section for case 30"
-      ],
-      "difficulty": "hard"
-    },
-    {
-      "id": "RAG-31",
-      "query": "Explain hospital claim guidance for claims / insurance case 31. Focus on claim and cite the relevant policy language.",
-      "expected_answer": "The response should describe the hospital claim rule, mention claim, and explain the decision impact for case 31.",
-      "expected_chunks": [
-        "hospital claim guideline for claims / insurance",
-        "claim evidence section for case 31"
-      ],
-      "difficulty": "easy"
-    },
-    {
-      "id": "RAG-32",
-      "query": "Explain document checklist guidance for claims / insurance case 32. Focus on coverage and cite the relevant policy language.",
-      "expected_answer": "The response should describe the document checklist rule, mention coverage, and explain the decision impact for case 32.",
-      "expected_chunks": [
-        "document checklist guideline for claims / insurance",
-        "coverage evidence section for case 32"
-      ],
-      "difficulty": "medium"
-    },
-    {
-      "id": "RAG-33",
-      "query": "Explain coverage exclusion guidance for claims / insurance case 33. Focus on document and cite the relevant policy language.",
-      "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 33.",
-      "expected_chunks": [
-        "coverage exclusion guideline for claims / insurance",
-        "document evidence section for case 33"
-      ],
-      "difficulty": "hard"
-    },
-    {
-      "id": "RAG-34",
-      "query": "Explain settlement estimate guidance for claims / insurance case 34. Focus on settlement and cite the relevant policy language.",
-      "expected_answer": "The response should describe the settlement estimate rule, mention settlement, and explain the decision impact for case 34.",
-      "expected_chunks": [
-        "settlement estimate guideline for claims / insurance",
-        "settlement evidence section for case 34"
-      ],
-      "difficulty": "easy"
-    },
-    {
-      "id": "RAG-35",
-      "query": "Explain fraud review guidance for claims / insurance case 35. Focus on fraud and cite the relevant policy language.",
-      "expected_answer": "The response should describe the fraud review rule, mention fraud, and explain the decision impact for case 35.",
-      "expected_chunks": [
-        "fraud review guideline for claims / insurance",
-        "fraud evidence section for case 35"
-      ],
-      "difficulty": "medium"
-    },
-    {
-      "id": "RAG-36",
-      "query": "Explain hospital claim guidance for claims / insurance case 36. Focus on claim and cite the relevant policy language.",
-      "expected_answer": "The response should describe the hospital claim rule, mention claim, and explain the decision impact for case 36.",
-      "expected_chunks": [
-        "hospital claim guideline for claims / insurance",
-        "claim evidence section for case 36"
-      ],
-      "difficulty": "hard"
-    },
-    {
-      "id": "RAG-37",
-      "query": "Explain document checklist guidance for claims / insurance case 37. Focus on coverage and cite the relevant policy language.",
-      "expected_answer": "The response should describe the document checklist rule, mention coverage, and explain the decision impact for case 37.",
-      "expected_chunks": [
-        "document checklist guideline for claims / insurance",
-        "coverage evidence section for case 37"
-      ],
-      "difficulty": "easy"
-    },
-    {
-      "id": "RAG-38",
-      "query": "Explain coverage exclusion guidance for claims / insurance case 38. Focus on document and cite the relevant policy language.",
-      "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 38.",
-      "expected_chunks": [
-        "coverage exclusion guideline for claims / insurance",
-        "document evidence section for case 38"
-      ],
-      "difficulty": "medium"
-    },
-    {
-      "id": "RAG-39",
-      "query": "Explain settlement estimate guidance for claims / insurance case 39. Focus on settlement and cite the relevant policy language.",
-      "expected_answer": "The response should describe the settlement estimate rule, mention settlement, and explain the decision impact for case 39.",
-      "expected_chunks": [
-        "settlement estimate guideline for claims / insurance",
-        "settlement evidence section for case 39"
-      ],
-      "difficulty": "hard"
-    },
-    {
-      "id": "RAG-40",
-      "query": "Explain fraud review guidance for claims / insurance case 40. Focus on fraud and cite the relevant policy language.",
-      "expected_answer": "The response should describe the fraud review rule, mention fraud, and explain the decision impact for case 40.",
-      "expected_chunks": [
-        "fraud review guideline for claims / insurance",
-        "fraud evidence section for case 40"
-      ],
-      "difficulty": "easy"
-    },
-    {
-      "id": "RAG-41",
-      "query": "Explain hospital claim guidance for claims / insurance case 41. Focus on claim and cite the relevant policy language.",
-      "expected_answer": "The response should describe the hospital claim rule, mention claim, and explain the decision impact for case 41.",
-      "expected_chunks": [
-        "hospital claim guideline for claims / insurance",
-        "claim evidence section for case 41"
-      ],
-      "difficulty": "medium"
-    },
-    {
-      "id": "RAG-42",
-      "query": "Explain document checklist guidance for claims / insurance case 42. Focus on coverage and cite the relevant policy language.",
-      "expected_answer": "The response should describe the document checklist rule, mention coverage, and explain the decision impact for case 42.",
-      "expected_chunks": [
-        "document checklist guideline for claims / insurance",
-        "coverage evidence section for case 42"
-      ],
-      "difficulty": "hard"
-    },
-    {
-      "id": "RAG-43",
-      "query": "Explain coverage exclusion guidance for claims / insurance case 43. Focus on document and cite the relevant policy language.",
-      "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 43.",
-      "expected_chunks": [
-        "coverage exclusion guideline for claims / insurance",
-        "document evidence section for case 43"
-      ],
-      "difficulty": "easy"
-    },
-    {
-      "id": "RAG-44",
-      "query": "Explain settlement estimate guidance for claims / insurance case 44. Focus on settlement and cite the relevant policy language.",
-      "expected_answer": "The response should describe the settlement estimate rule, mention settlement, and explain the decision impact for case 44.",
-      "expected_chunks": [
-        "settlement estimate guideline for claims / insurance",
-        "settlement evidence section for case 44"
-      ],
-      "difficulty": "medium"
-    },
-    {
-      "id": "RAG-45",
-      "query": "Explain fraud review guidance for claims / insurance case 45. Focus on fraud and cite the relevant policy language.",
-      "expected_answer": "The response should describe the fraud review rule, mention fraud, and explain the decision impact for case 45.",
-      "expected_chunks": [
-        "fraud review guideline for claims / insurance",
-        "fraud evidence section for case 45"
-      ],
-      "difficulty": "hard"
-    },
-    {
-      "id": "RAG-46",
-      "query": "Explain hospital claim guidance for claims / insurance case 46. Focus on claim and cite the relevant policy language.",
-      "expected_answer": "The response should describe the hospital claim rule, mention claim, and explain the decision impact for case 46.",
-      "expected_chunks": [
-        "hospital claim guideline for claims / insurance",
-        "claim evidence section for case 46"
-      ],
-      "difficulty": "easy"
-    },
-    {
-      "id": "RAG-47",
-      "query": "Explain document checklist guidance for claims / insurance case 47. Focus on coverage and cite the relevant policy language.",
-      "expected_answer": "The response should describe the document checklist rule, mention coverage, and explain the decision impact for case 47.",
-      "expected_chunks": [
-        "document checklist guideline for claims / insurance",
-        "coverage evidence section for case 47"
-      ],
-      "difficulty": "medium"
-    },
-    {
-      "id": "RAG-48",
-      "query": "Explain coverage exclusion guidance for claims / insurance case 48. Focus on document and cite the relevant policy language.",
-      "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 48.",
-      "expected_chunks": [
-        "coverage exclusion guideline for claims / insurance",
-        "document evidence section for case 48"
-      ],
-      "difficulty": "hard"
-    },
-    {
-      "id": "RAG-49",
-      "query": "Explain settlement estimate guidance for claims / insurance case 49. Focus on settlement and cite the relevant policy language.",
-      "expected_answer": "The response should describe the settlement estimate rule, mention settlement, and explain the decision impact for case 49.",
-      "expected_chunks": [
-        "settlement estimate guideline for claims / insurance",
-        "settlement evidence section for case 49"
-      ],
-      "difficulty": "easy"
-    },
-    {
-      "id": "RAG-50",
-      "query": "Explain fraud review guidance for claims / insurance case 50. Focus on fraud and cite the relevant policy language.",
-      "expected_answer": "The response should describe the fraud review rule, mention fraud, and explain the decision impact for case 50.",
-      "expected_chunks": [
-        "fraud review guideline for claims / insurance",
-        "fraud evidence section for case 50"
-      ],
-      "difficulty": "medium"
+      "query": "How does the Insurance Ombudsman handle claim rejection disputes? What is the process?",
+      "expected_answer": "The Insurance Ombudsman handles claim rejection disputes up to Rs 30 lakhs. Process: file a written complaint within 1 year of rejection, ombudsman reviews documents and policy terms, both parties are heard, and a binding decision is issued within 3 months.",
+      "expected_chunks": ["ombudsman", "dispute", "rejection", "complaint"],
+      "difficulty": "hard",
+      "source": "SME interview - compliance officer"
     }
   ]
 }

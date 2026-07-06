@@ -52,6 +52,38 @@ def get_embedding_fn(model_name: Optional[str] = None) -> Callable[[List[str]], 
         return _get_sentence_transformer_embedding_fn(model_name)
 
 
+def get_embedding_model_version() -> str:
+    """
+    Return the version-pinned embedding model identifier.
+    This is stored alongside the vector index to detect model drift
+    between ingestion and query time.
+    """
+    settings = get_settings()
+    return getattr(settings, "EMBEDDING_MODEL_VERSION", "text-embedding-3-small@2024-02-15")
+
+
+def check_embedding_model_consistency(stored_version: Optional[str]) -> None:
+    """
+    Verify that the embedding model used at query time matches the one used at ingestion.
+    Raises a warning if they differ.
+
+    Args:
+        stored_version: The embedding model version stored with the index at ingestion time.
+    """
+    if stored_version is None:
+        return
+    current_version = get_embedding_model_version()
+    if current_version != stored_version:
+        import warnings
+        warnings.warn(
+            f"Embedding model mismatch detected! "
+            f"Index was built with '{stored_version}' but current config uses '{current_version}'. "
+            f"Re-ingest the knowledge base to ensure consistent retrieval quality.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+
 def _get_openai_embedding_fn(model_name: str) -> Callable[[List[str]], List[List[float]]]:
     """
     Get OpenAI embedding function.

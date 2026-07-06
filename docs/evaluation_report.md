@@ -25,6 +25,7 @@ This report documents the evaluation run for Claims Processing & Settlement.
 - **SQLite session memory**: multi-turn context is persisted in `app/memory/sqlite_memory.py` and returned via `/history/{session_id}` for reproduction and debugging.
 - **Guardrails**: rule-based guardrails detect and block PII or unsafe content during evaluation runs.
 - **Reset endpoint**: `/reset` clears session memory for a given `session_id` so runs can be restarted deterministically.
+- **Pairwise LLM judging with A/B randomization**: The evaluation system now supports pairwise comparison of answers using `judge_pairwise()` from `eval/llm_judge.py`. This feature randomizes A/B label positions (50/50 chance) to reduce position bias in LLM evaluation. The function returns scores for both answers along with a `labels_swapped` flag indicating whether randomization was applied.
 
 ## Query-by-query results
 

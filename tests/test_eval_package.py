@@ -56,6 +56,57 @@ def test_judge_answer_and_failure_bucketing_work():
     assert "poor answer relevance" in buckets["answer_quality"]
 
 
+def test_pairwise_judge_with_randomization():
+    from eval.llm_judge import judge_pairwise
+
+    # Test with two different quality answers
+    answer_good = "You need the itemized bill and discharge summary for hospital claims."
+    answer_poor = "Some documents are needed."
+
+    result = judge_pairwise(
+        query="What documents are required for a hospital claim?",
+        answer_a=answer_good,
+        answer_b=answer_poor,
+        expected_answer="You need the itemized bill and discharge summary.",
+        retrieved_chunks=["Itemized bill", "Discharge summary"],
+        randomize_labels=True,
+    )
+
+    # Verify structure
+    assert "answer_a" in result
+    assert "answer_b" in result
+    assert "labels_swapped" in result
+    assert "judge_model" in result
+    assert "generation_model" in result
+
+    # Verify scores are valid
+    assert 0.0 <= result["answer_a"]["overall_score"] <= 5.0
+    assert 0.0 <= result["answer_b"]["overall_score"] <= 5.0
+
+    # Verify criteria exist for both answers
+    assert "correctness" in result["answer_a"]["criteria"]
+    assert "completeness" in result["answer_a"]["criteria"]
+    assert "citation_quality" in result["answer_a"]["criteria"]
+    assert "clarity" in result["answer_a"]["criteria"]
+
+
+def test_pairwise_judge_without_randomization():
+    from eval.llm_judge import judge_pairwise
+
+    result = judge_pairwise(
+        query="What documents are required?",
+        answer_a="Answer A content",
+        answer_b="Answer B content",
+        expected_answer="Expected answer",
+        randomize_labels=False,
+    )
+
+    # When randomization is disabled, labels_swapped should always be False
+    assert result["labels_swapped"] is False
+    assert "answer_a" in result
+    assert "answer_b" in result
+
+
 def test_run_eval_creates_reports(tmp_path):
     output_dir = tmp_path / "eval_output"
     output_dir.mkdir()

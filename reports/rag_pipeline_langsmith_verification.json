@@ -1,0 +1,1017 @@
+{
+  "timestamp": "2026-07-06 11:51:48 UTC",
+  "verification_type": "RAG Pipeline with LangSmith Tracing",
+  "summary": {
+    "total_queries": 30,
+    "successful_queries": 30,
+    "failed_queries": 0,
+    "queries_with_trace_id": 30,
+    "meets_minimum_requirement": true,
+    "langsmith_tracing_enabled": true,
+    "rag_execution_verified": true
+  },
+  "rag_pipeline_verification": {
+    "vector_db_queried": true,
+    "llm_called_for_generation": true,
+    "citations_retrieved": 90,
+    "citations_with_content": 90,
+    "avg_chunks_per_query": 1.0,
+    "avg_confidence": 0.815,
+    "avg_execution_time_ms": 631.07
+  },
+  "query_results": [
+    {
+      "query_id": "RAG-01",
+      "query": "Is pre-hospitalization medical expense covered under my health policy? What documents do I need to submit for reimbursement?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-01-1783338683",
+      "answer_text": "For insurance claim, the retrieved guidance says: Company's authorized Repair shop/Garage is available.    What is Not Covered:    i) Any Repatriation expense incurred by the Insured,  without prior consent of the Company.    ii) This benefit will not be available, if the Insured is availing  of the benefi...",
+      "citations": [
+        {
+          "chunk_id": "motor_policy_sbi_private_155",
+          "text": "Company's authorized Repair shop/Garage is available. \n  What is Not Covered: \n  i) Any Repatriation expense incurred by the Insured, \nwithout prior consent of the Company. \n  ii) This benefit will not be available, if the Insured is availing \nof the benefit of Local Travel when on Tour or availing \nbenefit of Overnight accommodation expense when on \ntour. \n  This benefit can only be claimed once in aggregate during \nthe Policy Year\n 5. Medical Co-ordination: In the event of the insured vehicle \nmeeting with an accident, and any of the occupants getting \ninjured, the Company may facilitate for a conference call \nwith nearest Medical Service Provider including an \nAmbulance service Providers subject to availability. The \ncost of such service providers has however to be borne by",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.6994
+        },
+        {
+          "chunk_id": "health_policy_sbi_27",
+          "text": "2.1.(ar). Portability means a facility provided to the health \ninsurance Policyholders (including all members under family \ncover), to transfer the credits gained for, Pre-Existing \nDiseases and Speci\ufffdc Waiting Periods from one Insurer to \nanother Insurer.\n2.1.(as). Pre-Existing Disease means any condition, ailment, Injury \nor disease:\n i. That is/are diagnosed by a physician not more than 24 \nmonths prior to the date of commencement of the Policy \nissued by the Insurer; or \n ii. For which Medical Advice or treatment was recommended \nby, or received from, a physician, not more than 24 months \nprior to the date of commencement of the Policy.\n2.1.(at). Pre-Hospitalization Medical Expenses means Medical \nexpenses incurred during pre-de\ufffdned number of days",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.6737
+        },
+        {
+          "chunk_id": "health_policy_sbi_312",
+          "text": "documents mentioned above.\n 3. Certi\ufffded copies of document meaning documents \nattested by any vested authority (e.g. Notarized \nDocuments, attested from Gazetted o\ufffdcer, SBI Branch \nManager, Special Executive o\ufffdcer, any o\ufffdcer who is \nhaving authority of attestation of documents).\n \u2022 Claim Document Submission Address\n  All Claim related documents need to be sent to below \naddress.\n  Please do mention appropriate Claim number on Claim \ndocuments dispatched.\n  Accident & Health Claims team\n  SBI General Insurance Company Limited\n  9th Floor, Westport, Pan Card Club Road, Baner Pune, \nMaharashtra \u2013 411 045\n \u2022 Conditions for obtaining Cashless Facility:\n i. Cashless Facility can be availed only at Our Network \nProviders. The complete list of Network Providers and",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.6736
+        }
+      ],
+      "confidence": 0.814,
+      "execution_time_ms": 604,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-02",
+      "query": "My claim was rejected because the hospital is not in the network. What are my options? Can I still get partial reimbursement?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-02-1783338684",
+      "answer_text": "For insurance claim, the retrieved guidance says: IBAN Code  \t\t\t    Appendix 3 \u2013 Conditions Applicable to the Principal Investigator  \t\tThe Principal Investigator is free to participate in the Clinical Trial and there are no rights that may be exercised by, or obligations owed to, any third party that may ...",
+      "citations": [
+        {
+          "chunk_id": "network_agreement_docx_182",
+          "text": "IBAN Code\n\n\t\t\t\n\n\n\nAppendix 3 \u2013 Conditions Applicable to the Principal Investigator\n\n\t\tThe Principal Investigator is free to participate in the Clinical Trial and there are no rights that may be exercised by, or obligations owed to, any third party that may prevent or restrict the performance by the Principal Investigator of the obligations set out in the Agreement.\n\n\t\tThe Principal Investigator is not the subject of any regulatory litigation or misconduct litigation or investigation. No data produced by the Principal Investigator in any other clinical trial has been rejected because of concerns as to its accuracy or because it was generated by fraudulent means.",
+          "source_id": "network_agreement_docx",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement_bopartitemodel.docx",
+          "score": 0.673
+        },
+        {
+          "chunk_id": "health_policy_kotak_205",
+          "text": "We reserve the right to modify, add or restrict any Network Provider for \nCashless Facilities in Our sole discretion. Before availing Cashless \nFacilities, please check the applicable updated list of Network Providers \non Our website or by calling Our call centre. \nTurn Around Time (TAT) for settlement of Reimbursement is within 30 \ndays from the receipt of the complete documents.  \n \n(b) For Reimbursement Claims \nWe shall be given written notice of the Claim for reimbursement along \nwith the following details at least within 30 days of the Insured Person\u2019s \ndischarge from Hospital: \ni. The Policy Number \nii. Name of the Policyholder; \niii. Name and address of the Insured Person in respect of whom \nthe request is being made;",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "score": 0.5896
+        },
+        {
+          "chunk_id": "health_policy_sbi_313",
+          "text": "Providers. The complete list of Network Providers and \nempanelled Service providers are available on Our \nWebsite and can be obtained by Contacting Our TPA.\n ii. We reserve the right to modify, add or restrict any \nNetwork Provider for Cashless Facilities at Our sole \ndiscretion. The same shall be duly updated on Our \nwebsite. You shall check the updated list of Network \nProviders before applying for Cashless Claim. \n iii. Pre-authorization is valid for 15 days from date of \nissuance and if all the details of the \nHospitalization/treatment, including dates, Hospital \n  and locations match with the details as per Cashless \nauthorized. \n iv. We will make payment for the Cashless authorized \namount directly to the Network Provider.\n v. If the Claim is not noti\ufffded to Us within the speci\ufffded",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.5364
+        }
+      ],
+      "confidence": 0.814,
+      "execution_time_ms": 700,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-03",
+      "query": "Are there any exclusions for knee replacement surgery? I have a health insurance policy from SBI.",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-03-1783338684",
+      "answer_text": "For insurance claim, the retrieved guidance says: \u201cPilot product\u201d means a close-ended product running for a period not exceeding five years from the date of launch of the product covering risks that are otherwise generally declined or excluded in the extant products and where insurers have the option eithe...",
+      "citations": [
+        {
+          "chunk_id": "irda_health_reg_2016_12",
+          "text": "\u201cPilot product\u201d means a close-ended product running for a period not exceeding five years from the date of launch of the product covering risks that are otherwise generally declined or excluded in the extant products and where insurers have the option either to renew or not renew after the period of five years and as cleared under Product Filing Procedures.\n\n\u201cPortability\u201d means the right accorded to an individual health insurance policyholder (including family cover), to transfer the credit gained for pre-existing conditions and time bound exclusions, from one insurer to another or from one plan to another plan of the same insurer. \n\n\u201cSenior citizen\u201d means any person who has completed sixty or more years of age as on the date of commencement or renewal of a health insurance policy.",
+          "source_id": "irda_health_reg_2016",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/regulations/irDAI_health_regulations_2016.docx",
+          "score": 0.7345
+        },
+        {
+          "chunk_id": "health_policy_sbi_101",
+          "text": "iv. Expenses for any Cosmetic/ routine preventive health \ncheck-ups / dietary supplements and substances that can \nbe purchased without prescription, including but not \nlimited to Vitamins, minerals and organic substances shall \nnot be covered\n3.2(e). Reconstructive Surgery\n We will indemnify the Insured Person up to the limit speci\ufffded \nin the Policy Schedule, if during the Policy Year, the Insured \nPerson sustains bodily Injury/ Accident which requires \nreconstructive surgery (for cosmetic purpose) within 6 \nmonths from the date of Accident/Injury, provided: \n i. We have accepted Claim under the bene\ufffdt 3(a). In-Patient \nTreatment.\n ii. Claim arising out of pre-existing injuries will not be \ncovered under this bene\ufffdt.\n iii. Standard Exclusion 13.1(e). Cosmetic or plastic Surgery:",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.6714
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_82",
+          "text": "Medical Expenses for any medically necessary \ntreatment described at 1)a) while the Insured \nPerson (the Newborn baby) is Hospitalised \nduring the Policy Period as an inpatient \nprovided a proposal form is submitted for the \ninsurance of the newborn baby within 90 days \nafter the birth, and We have accepted the \nsame and received the premium sought. \nUnder this benefit, Coverage for newborn baby \nwill incept from the date, the premium has \nbeen received. \nThe coverage is subject to the policy \nexclusions, terms and conditions. \nThis Benefit is applicable if Maternity benefit is \nopted and We have accepted a maternity claim \nunder this Policy. \n1. Claims which have NOT been admitted \nunder 3a) i.e. Maternity Expenses \n2. Claims other than those available in \nSection B-1, Section C-1,2,3",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.6695
+        }
+      ],
+      "confidence": 0.813,
+      "execution_time_ms": 644,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-04",
+      "query": "How long does it take to settle a motor insurance claim after submitting all documents?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-04-1783338685",
+      "answer_text": "For insurance claim, the retrieved guidance says: claim documents along with the invoice directly to the TPA. If the claim documents are  collected by the Insured Person, the Insured Person should submit the same to the  Regional/nearest office of the TPA as per the terms of the policy. If the Insured Pers...",
+      "citations": [
+        {
+          "chunk_id": "network_agreement_pdf_47",
+          "text": "claim documents along with the invoice directly to the TPA. If the claim documents are \ncollected by the Insured Person, the Insured Person should submit the same to the \nRegional/nearest office of the TPA as per the terms of the policy. If the Insured Person does not \nopt for a Network Provider, the Insured Person may collect the claim form from eit her \nUnderwriting Office or the TPA or download the form from the website of the TPA. The \ndocuments for claim should be submitted to TPA by the Insured Person. The pre-& post \nhospitalisation claim documents will also be collected by the TPA office. TPA shal l give due \nacknowledgement of collected documents.  \nThe TPA shall also take all steps as may be necessary on receipt of intimation of any claim, either",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "score": 0.7103
+        },
+        {
+          "chunk_id": "network_agreement_pdf_46",
+          "text": "claim, hold consultations with the Doctors, Hospital staff and other persons as may be necessary \nand take all other such steps as required. The TPA will send a monthly report to the insurer on \nthe number of visits made and details thereof. \n \n12.1.2 Collection of Claim documents \n \nThe TPA shall offer a single window service to the Insured Persons for receiving the claim \ndocuments. TPA shall strive to secure all documents and information relating to a claim in \nelectronic form and assist the Insured/Claimants in this regard.  \n \nIn case of pre-authorisation for the Cashless Access Service, the Network Provider will send the \nclaim documents along with the invoice directly to the TPA. If the claim documents are",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "score": 0.6447
+        },
+        {
+          "chunk_id": "health_policy_kotak_225",
+          "text": "of any of his/her policies. \no In all such cases the insurer who has issued the chosen \npolicy shall be obliged to settle the claim as long as the \nclaim is within the limits of and according to the terms of \nthe chosen policy. \no Policyholder having multiple policies shall also have the \nright to prefer claims from other policy/ polic ies for the \namount disallowed under the earlier chosen policy / \npolicies, even if the sum insured is not exhausted. Then \nthe Insurer(s) shall settle the claim subject to the terms \nand conditions of the other policy / policies so chosen. \nd. If the amount to be  claimed exceeds the Sum Insured under a \nsingle policy after considering the deductible or co-pays, the policy \nholder shall have the right to choose insurers from whom he/she",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "score": 0.6281
+        }
+      ],
+      "confidence": 0.814,
+      "execution_time_ms": 604,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-05",
+      "query": "What are the red flags for fraudulent health insurance claims that adjudicators look for?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-05-1783338686",
+      "answer_text": "For insurance claim, the retrieved guidance says: behalf to obtain any bene\ufffdt under this Policy, all bene\ufffdts  under this Policy and the Premium paid shall be forfeited.  Any amount already paid against Claims made under this  Policy but which are found fraudulent later shall be repaid by all  recipient(s)/...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_sbi_284",
+          "text": "behalf to obtain any bene\ufffdt under this Policy, all bene\ufffdts \nunder this Policy and the Premium paid shall be forfeited.\n Any amount already paid against Claims made under this \nPolicy but which are found fraudulent later shall be repaid by all \nrecipient(s)/Policyholder(s), who has made that particular \nClaim, who shall be jointly and severally liable for such \nrepayment to the insurer.\n For the purpose of this clause, the expression \"fraud\" means \nany of the following acts committed by the Insured Person or \nby his agent or the Hospital/doctor/any other party acting on \nbehalf of the Insured Person, with intent to deceive the \nInsurer or to induce the Insurer to issue an Insurance Policy:\n i. The suggestion, as a fact of that which is not true and",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.7134
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_159",
+          "text": "used by the Insured Person or anyone acting on his/her behalf to obtain a ny benefit under \nthis Policy, all benefits under this policy and the premium paid shall be forfeited. \nAny amount already paid against claims made under this Policy but which are found fraudulent \nlater shall be repaid by all recipient(s)/policyholder(s), who have made that particular claim, \nwho shall be jointly and severally liable for such repayment to the Insurer. \nFor the purpose of this clause, the expression \"fraud\" means any of the following acts \ncommitted by the Insured Person or by his agent or the hospital/doctor/any other party acting \non behalf of the Insured Person, with intent to deceive the insurer or to induce the insurer to \nissue an insurance policy:",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.6978
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_171",
+          "text": "non-disclosure or misrepresentation. \n\u2022 Refund of Policy premium in case of death of Insured Person/s: Policy premium shall be \nrefunded proportionately for the deceased Insured Person, for the unexpired Policy Period \nin case of death of any Insured Person/s. \n\u2022 Notwithstanding anything contained herein or otherwise, no refunds of premium shall be \nmade in respect of Cancellation where, any claim has been admitted or any benefit has \nbeen availed by the Insured Person under the Policy. \ng. Free Look Period \nThe Free Look Period shall be applicable on new individual health insurance policies and not \non renewals or at the time of porting/migrating the Policy. \nThe Insured Person shall be allowed free look period of thirty days from date of receipt of the",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.6292
+        }
+      ],
+      "confidence": 0.814,
+      "execution_time_ms": 695,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-06",
+      "query": "My policy says 'cashless hospitalization' but the hospital asked for a deposit. Is that allowed?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-06-1783338687",
+      "answer_text": "For insurance claim, the retrieved guidance says: care.      9. CASHLESS ACCESS SERVICE       CASHLESS ACCESS SERVICE Wherever Cashless facility would apply, the TPA should ensure that all the  Insured Persons are provided with adequate facilities so that they do not have to pay any deposit at  the commenc...",
+      "citations": [
+        {
+          "chunk_id": "network_agreement_pdf_36",
+          "text": "care. \n \n \n9. CASHLESS ACCESS SERVICE \n \n  \nCASHLESS ACCESS SERVICE Wherever Cashless facility would apply, the TPA should ensure that all the \nInsured Persons are provided with adequate facilities so that they do not have to pay any deposit at \nthe commencement of the treatment or bills after the end of treatment to the extent as the Services \nare covered under the policy and u p to the limits specified in the policy and to the extent that a prior \nauthorisation for cashless settlement has been made by the TPA to the network provider. This service \nprovided by the TPA along with the responsibilities of the TPA and subject to respon sibilities of the \nInsurer is collectively referred to as the \u201cCashless Access Service\u201d. (Schedule II& III)",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "score": 0.7457
+        },
+        {
+          "chunk_id": "health_policy_kotak_197",
+          "text": "On the occurrence or discovery of any Illness or Injury that may give rise \nto a Claim under this Policy, then as a condition precedent to Our liability \nunder the Policy the following procedure shall be complied with: \n \n(a) For Cashless Facility  \nCashless Facility is only available at a Network Provider. The complete \nlist of Network Providers is available on Our website (The list is updated \nas and when there is any change in the Network Provider) or can be \nobtained from Our call centre. In order to avail of Cashless Facility, the \nfollowing procedure shall be followed: \n \n\uf02d Pre-authorization for Planned Hospitalization: \nAt least 48 hours prior to a planned Hospitalization, We or Our TPA shall \nbe contacted to request pre authorization for availing the Cashless",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "score": 0.7026
+        },
+        {
+          "chunk_id": "health_policy_sbi_12",
+          "text": "2.1(s). Dental Treatment means a treatment related to teeth or \nstructures supporting teeth including examinations, \ufffdllings \n(where appropriate), crowns, extractions and Surgery.\n2.1(t). Disclosure to information norm: The policy shall be void and \nall premium paid thereon shall be forfeited to the Company in \nthe event of misrepresentation, mis-description or \nnon-disclosure of any material fact.\n2.1(u). Domiciliary Hospitalization means medical treatment for an \nIllness/disease/Injury which in the normal course would require \ncare and treatment at a Hospital but is actually taken while \ncon\ufffdned at home under any of the following circumstances:\n i. The condition of the patient is such that he/she is not in a \ncondition to be moved to a Hospital, or",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.6656
+        }
+      ],
+      "confidence": 0.815,
+      "execution_time_ms": 647,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-07",
+      "query": "What documents are required for filing a health insurance claim for day care procedures?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-07-1783338688",
+      "answer_text": "For insurance claim, the retrieved guidance says: Def. 12 Day Care Procedures means those medical treatment, and/or surgical procedure  i. which is undertaken under General or Local Anaesthesia in a Hospital/day care centre in less  than 24 hours because of technological advancement,  ii. which would have ...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_hdfcergo_25",
+          "text": "Def. 12 Day Care Procedures means those medical treatment, and/or surgical procedure \ni. which is undertaken under General or Local Anaesthesia in a Hospital/day care centre in less \nthan 24 hours because of technological advancement, \nii. which would have otherwise required a Hospitalisation of more than 24 hours. \nTreatment normally taken on an Out-patient basis is not included in the scope of this definition \nDef. 13 Deductible means a cost-sharing requirement under a health insurance policy that provides that \nthe insurer will not be liable for a specified rupee amount in case of indemnity policies and for a \nspecified number of days/hours in case of hospital cash policies which will apply before any benefits \nare payable by the insurer. A deductible does not reduce the Sum Insured.",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.8323
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_24",
+          "text": "5 \nDef. 11 Day Care centre  means any institution established for day care treatment of illness and/or \ninjuries or a medical setup within a hospital and which has been registered with the local \nauthorities, wherever applicable, and is under the supervision of a registered and qualified medical \npractitioner AND must comply with all minimum criteria as under\u2014 \n- has qualified nursing staff under its employment; \n- has qualified medical practitioner/s in charge; \n- has a fully equipped operation theatre of its own where surgical procedures are carried out; \n- maintains daily records of patients and will make these accessible to the insurance company\u2019s \nauthorized personnel \nDef. 12 Day Care Procedures means those medical treatment, and/or surgical procedure",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.7353
+        },
+        {
+          "chunk_id": "health_policy_kotak_12",
+          "text": "authorized personnel \nDay Care Treatment \nmeans medical treatment, and/or surgical procedure which is: \ni. undertaken under General or Local Anaesthesia in a hospital/day care centre in less than 24 hrs \nbecause of technological advancement, and \nii. which would have otherwise required hospitalization of more than 24 hours \nTreatment normally taken on an out-patient basis is not included in the scope of this definition. \nDeductible \nmeans a cost sharing requirement under a health insurance policy that provides that the insurer will not be \nliable for a specified rupee amount in case of indemnity policies and for a specified number of days/hours in \ncase of hospital cash policies which will apply before any benefits are payable by the insurer. A deductible",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "score": 0.7339
+        }
+      ],
+      "confidence": 0.817,
+      "execution_time_ms": 629,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-08",
+      "query": "Can I add my parents to my existing health insurance policy as dependents?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-08-1783338689",
+      "answer_text": "For insurance claim, the retrieved guidance says: Overseas or Domestic Travel Insurance policies may only be offered by General and standalone health insurance companies, either as a standalone product or as an add-on cover to an existing health or personal accident policy, provided that the premium for th...",
+      "citations": [
+        {
+          "chunk_id": "irda_health_reg_2016_21",
+          "text": "Overseas or Domestic Travel Insurance policies may only be offered by General and standalone health insurance companies, either as a standalone product or as an add-on cover to an existing health or personal accident policy, provided that the premium for the add-on cover is cleared by the Authority under Product Filing Procedure. ",
+          "source_id": "irda_health_reg_2016",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/regulations/irDAI_health_regulations_2016.docx",
+          "score": 0.7729
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_60",
+          "text": "11 \nfinancially dependent with no independent source of income. Children Aged between 1 to 90 \nDays can be covered if Newborn Baby Benefit is added by payment of additional premium \nsubject to policy terms and conditions. \niii) Your natural parents or parents that have legally adopted You, provided that the parent was \nbelow 65 years at his initial participation in the Easy Health Policy, \niv) Your Parent -in-law as long as Your spouse continues to be married to You and were below \n65 years at his initial participation in the Easy Health Policy \nv) Your Grandparents provided that the grandparent were below 65 years at his initial \nparticipation in the Easy Health Policy, \nAll Dependent parents, Parent in laws, Grand Parents must be financially dependent on You.",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.7021
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_61",
+          "text": "All Dependent parents, Parent in laws, Grand Parents must be financially dependent on You. \nDef. 9 Dependent Child means a child (natural or legally adopted), who is unmarried, Aged between \n91 days and 25 years,  financially dependent on the primary Insured or Proposer and does not \nhave his / her independent sources of income. Children Aged between 1 to 90 Days can be covered \nif Newborn Baby Benefit is added by payment of additional premium subject to policy terms and \nconditions. \nDef. 10 Family Floater means a Policy described as such in the Schedule where under You and Your \nDependents named in the Schedule are insured under this Policy as at the Commencement Date. \nThe Sum Insured for a Family Floater means the sum shown in the Schedule which represents Our",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.6913
+        }
+      ],
+      "confidence": 0.816,
+      "execution_time_ms": 660,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-09",
+      "query": "What is the settlement process for a total loss claim in motor insurance?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-09-1783338690",
+      "answer_text": "For insurance claim, the retrieved guidance says: Specific Conditions:  \u2022 Claims made by the Insured under this Add-On Cover are  subject to the conditions set forth under the Motor  Insurance Policy  \u2022 To declare the Insured Vehicle a Total Loss/ Constructive  Loss, the estimates for the aggregate cost of...",
+      "citations": [
+        {
+          "chunk_id": "motor_policy_sbi_private_199",
+          "text": "Specific Conditions:\n \u2022 Claims made by the Insured under this Add-On Cover are \nsubject to the conditions set forth under the Motor \nInsurance Policy\n \u2022 To declare the Insured Vehicle a Total Loss/ Constructive \nLoss, the estimates for the aggregate cost of retrieval \nand/or repair have to be approved by Company's \nauthorized surveyor/workshops.\n \u2022 Any disbursement under this option will be regarded as full \nand final settlement of the liability under Motor Insurance \nPolicy. \n \u2022 No claim of similar nature shall be payable under any other \ncover of this Policy.\n \u2022 Motor Insurance Policy will expire upon settlement of the \nclaim under this cover.\n Specific Exclusions\n Company will not be liable to indemnify for the following events:\n \u2022 Where the Own Damage Claim under the Motor Insurance",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.8377
+        },
+        {
+          "chunk_id": "motor_policy_sbi_private_164",
+          "text": "the invoice of sale or current replacement price of new vehicle, in \ncase exactly same make/ model is available, whichever is less, in \nthe event of Insured vehicle undergoing a Total Loss/ CTL \nfollowing an accident or being stolen during the Policy Period and \nnot recovered. The Company will also reimburse the first time \nregistration charges and road tax which Insured  had incurred on \nthe vehicle insured.\n Special Conditions applicable to this benefit:\n 1) Insured is the first registered owner of the motor vehicle\n 2) The finance company/ bank whose interest is endorsed on \nthe Policy must agree in  writing.\n What Is Not Covered\n The Company will not pay the financial shortfall if:\n 1) The total loss/ CTL and theft claim is not valid & admissible \nunder Section I of the Policy",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.7652
+        },
+        {
+          "chunk_id": "motor_policy_sbi_22",
+          "text": "4.   Cancellation\n\u00b7 The insured can cancel the policy at any time during the term, by \ninforming the company. The company can cancel the policy only \non the grounds of established fraud, by giving minimum notice of \n7 days to the retail policyholder.\n\u00b7 Under no circumstances can the company cancel statutory \nMotor Third Party Liability insurance, or any other compulsory \ninsurance mandated by law except in case of double insurance or \ntotal loss subject to ensuring vehicle was not kept uninsured as \nper Motor Vehicle act provisions.\n\u00b7 The Company shall -\n a) refund proportion premium for unexpired policy period, if the \nterm of the policy is up to one year   and there is no claim(s) \nmade during the policy period.\n b) refund premium for the unexpired policy period, in respect of",
+          "source_id": "motor_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_wording.pdf",
+          "score": 0.7417
+        }
+      ],
+      "confidence": 0.817,
+      "execution_time_ms": 642,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-10",
+      "query": "I have a pre-existing condition (diabetes) and need to file a claim for hospitalization. Will it be covered?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-10-1783338690",
+      "answer_text": "For insurance claim, the retrieved guidance says: iv. Expenses for any Cosmetic/ routine preventive health  check-ups / dietary supplements and substances that can  be purchased without prescription, including but not  limited to Vitamins, minerals and organic substances shall  not be covered 3.2(e). Recon...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_sbi_101",
+          "text": "iv. Expenses for any Cosmetic/ routine preventive health \ncheck-ups / dietary supplements and substances that can \nbe purchased without prescription, including but not \nlimited to Vitamins, minerals and organic substances shall \nnot be covered\n3.2(e). Reconstructive Surgery\n We will indemnify the Insured Person up to the limit speci\ufffded \nin the Policy Schedule, if during the Policy Year, the Insured \nPerson sustains bodily Injury/ Accident which requires \nreconstructive surgery (for cosmetic purpose) within 6 \nmonths from the date of Accident/Injury, provided: \n i. We have accepted Claim under the bene\ufffdt 3(a). In-Patient \nTreatment.\n ii. Claim arising out of pre-existing injuries will not be \ncovered under this bene\ufffdt.\n iii. Standard Exclusion 13.1(e). Cosmetic or plastic Surgery:",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.7897
+        },
+        {
+          "chunk_id": "health_policy_kotak_30",
+          "text": "the group health policy to a retail policy of the same insurer when he/ she ceases to be a member of the group.  \nPre-existing Disease \nmeans any condition, ailment or injury or related condition(s) for which there were signs or symptoms, and / \nor were diagnosed, and / or for which medical advice / treatment was received within 48  months prior to the \nfirst policy issued by the insurer and renewed continuously thereafter. \nPre-Hospitalisation Medical \nExpenses \nmeans medical expenses incurred during predefined number of days preceding the hospitalization of the \nInsured Person, provided that: \ni. Such Medical Expenses are incurred for the same condition for which the Insured Person\u2019s Hospitalization \nwas required, and",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "score": 0.7577
+        },
+        {
+          "chunk_id": "health_policy_sbi_157",
+          "text": "Bene\ufffdt, 3.2(j) Endless Sum Insured and 3.3. Maternity and \nChild Care Cover will not be available for Global Cover.\n xi. Pre and Post Hospitalization expenses shall be excluded \nunder this bene\ufffdt.\n xii. In case of Planned Hospitalization, prior intimation at least \n7 days in advance of the travel and due approval from Us \nwill be necessary.\n i. Any Pre-existing condition or Disability or any \ncomplication arising therefrom.\n ii. Certi\ufffdcation by a Medical Practitioner who is a member of \nthe Insured Person\u2019s Family. \n iii. Bene\ufffdt under Accidental Death, Permanent Total \nDisablement and Permanent Partial Disablement arising \nfrom Medical or surgical treatment except as necessary \nsolely and directly as a result of an Accident.",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.7379
+        }
+      ],
+      "confidence": 0.815,
+      "execution_time_ms": 620,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-11",
+      "query": "How does the deductible work in my motor insurance policy? If my deductible is Rs 5000 and repair costs are Rs 30000, how much do I get?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-11-1783338691",
+      "answer_text": "For insurance claim, the retrieved guidance says: SBI General Insurance Company Limited  (ii) if any deductible in addition to the compulsory deductible  provided in this endorsement is voluntarily borne by the  insured, the sum representing the aggregate of the  compulsory and the voluntary deductibles is...",
+      "citations": [
+        {
+          "chunk_id": "motor_policy_sbi_private_80",
+          "text": "SBI General Insurance Company Limited\n (ii) if any deductible in addition to the compulsory deductible \nprovided in this endorsement is voluntarily borne by the \ninsured, the sum representing the aggregate of the \ncompulsory and the voluntary deductibles is to be inserted. \n  ** to insert Condition no 3.\n17.  VOLUNTARY DEDUCTIBLE\n It is hereby declared and agreed that the insured having opted a \nvoluntary deductible of Rs\u2026\u2026\u2026..* , a reduction in premium of Rs \n\u2026\u2026..** under Section 1 of the policy is hereby allowed.\n In consideration of the above, it is hereby understood and \nagreed that the insured shall bear under Section 1 of the Policy in \nrespect of each and every event (including event giving rise to a \ntotal loss/constructive total loss) the first Rs....***(or any less",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.6683
+        },
+        {
+          "chunk_id": "motor_policy_sbi_private_162",
+          "text": "50,000/- during the Policy Year. Each claim is subject to a \nDeductible of Rs 5000/- for Laptop and Jewellery and Rs \n2500/- for Mobiles and Rs 500/- for the rest. \n7.  COVER FOR KEY REPLACEMENTS\n In consideration of the payment of an additional premium and \nmentioned in the Schedule, the Company will re-imburse the \nInsured, the cost of replacing the vehicle keys which are lost, \nstolen or the vehicle lock is broken at the time of burglary or \nattempted burglary, by a new set of lock & keys, provided always \nthat \n a)  the liability of the Company will be restricted to one event \nand shall not exceed Rs. 65,000/- during the Policy Year.. \n b) The replacement should be carried out in a Company \nAuthorised Garage. \n c)  Each such replacement claim shall be subject to 10% co-",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.6481
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_25",
+          "text": "Def. 12 Day Care Procedures means those medical treatment, and/or surgical procedure \ni. which is undertaken under General or Local Anaesthesia in a Hospital/day care centre in less \nthan 24 hours because of technological advancement, \nii. which would have otherwise required a Hospitalisation of more than 24 hours. \nTreatment normally taken on an Out-patient basis is not included in the scope of this definition \nDef. 13 Deductible means a cost-sharing requirement under a health insurance policy that provides that \nthe insurer will not be liable for a specified rupee amount in case of indemnity policies and for a \nspecified number of days/hours in case of hospital cash policies which will apply before any benefits \nare payable by the insurer. A deductible does not reduce the Sum Insured.",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.6038
+        }
+      ],
+      "confidence": 0.814,
+      "execution_time_ms": 641,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-12",
+      "query": "What is the IRDAI regulation on portability of health insurance policies? Can I switch to another insurer without losing benefits?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-12-1783338692",
+      "answer_text": "For insurance claim, the retrieved guidance says: covered without any lapses under any health insurance policy with an Indian General/Health  insurer, the proposed Insured Person will get the accrued continuity benefits in waiting periods  as per IRDAI guidelines on portability.  l. Migration  The Insured ...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_hdfcergo_178",
+          "text": "covered without any lapses under any health insurance policy with an Indian General/Health \ninsurer, the proposed Insured Person will get the accrued continuity benefits in waiting periods \nas per IRDAI guidelines on portability. \nl. Migration \nThe Insured Person will have the option to migrate the Policy to other health insurance \nproducts/plans offered by the Company by applying for Migration of the policyatleast30 days \nbefore the policy renewal date as per IRDAI guidelines on Migration. If such person is \npresently covered and has been continuously covered without any lapses under any health \ninsurance product/plan offered by the Company, the Insured Person will get the accrued \ncontinuity benefits in waiting periods as per IRDAI guidelines on Migration.",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.782
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_177",
+          "text": "sixty continuous months is called as moratorium period. The moratorium would be applicable \nfor the sums insured of the first policy. Wherever, the sum insured is enhanced, completion \nof sixty continuous months would be applicable from the date of enhancement of sums insured \nonly on the enhanced limits. \nk. Portability \nThe Insured Person will have the option to port the Policy to other insurers by  applying to \nsuch Insurer to port the entire policy along with all the members of the family, if any, at least \n30 days before, but not earlier than 60 days from the policy renewal date as per IRDAI \nguidelines related to Portability. If such person is presently covered and has been continuously \ncovered without any lapses under any health insurance policy with an Indian General/Health",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.6144
+        },
+        {
+          "chunk_id": "health_policy_kotak_231",
+          "text": "11. Portability & Continuity Benefits \nIt is  agreed and understood that , Upon the Insured Person ceasing to \nbe an Employee/member of the Policyholder, such Insured Person shall \nhave the option to migrate to an approved retail health insurance policy \navailable with Us in accordance with the Portability guidelines issued by \nthe IRDAI, provided that: \n(a) Portability benefit will be offered to the extent of sum of previous \nSum Insured (if opted for), and Portability shall not apply to any \nother additional increased Sum Insured  \n(b) All waiting periods under Sections 3 shall be applicable \nindividually for each I nsured Person and claims shall be \nassessed accordingly. \n(c) We should have received Your application for Portability with",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "score": 0.6041
+        }
+      ],
+      "confidence": 0.816,
+      "execution_time_ms": 727,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-13",
+      "query": "The hospital bill seems inflated compared to the procedure cost. Can the insurance company negotiate the bill?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-13-1783338693",
+      "answer_text": "For insurance claim, the retrieved guidance says: vehicle.    The Company shall not be liable for:   a)  Cost of parts or replacement elements or consumables  and their transportation cost to the site of  immobilization due to flat tyre in case repairs are  carried out on the spot of immobilization.    b) ...",
+      "citations": [
+        {
+          "chunk_id": "motor_policy_sbi_private_106",
+          "text": "vehicle. \n  The Company shall not be liable for:\n  a)  Cost of parts or replacement elements or consumables \nand their transportation cost to the site of \nimmobilization due to flat tyre in case repairs are \ncarried out on the spot of immobilization. \n  b)  Entire cost of Tyre Repair shop/Garage's bill, and their \ntransportation cost to and from the site of \nimmobilization if the flat tyre had to be taken to any \nTyre Repair shop/Garage for repairs. \n 4. Dead Battery: In the event, that the engine of the insured \nvehicle fails to start due to a dead / drained battery, the \nCompany shall arrange for a repairer to attend to the \nInsured vehicle on the spot of such event, to help jump start \nthe vehicle so that it can be driven on its own power on self-",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.7065
+        },
+        {
+          "chunk_id": "motor_policy_sbi_private_20",
+          "text": "SBI General Insurance Company Limited\nmaterial cost of total painting charges. In case of a \nconsolidated bill for painting charges, the material \ncomponent shall be considered as 25% of total painting \ncharges for the purpose of applying the depreciation.\n2. The Company shall not be liable to make any payment in respect of:\n (a) consequential loss, depreciation, wear and tear, mechanical \nor electrical breakdown, failures or breakages;\n (b) Damage to tyres and tubes unless the vehicle is damaged at \nthe same time in which case the liability of the Company \nshall be limited to 50% of the cost of replacement. And\n (c) Any accidental loss or damage suffered to the vehicle whilst \nthe insured or any person driving the vehicle with the",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.6468
+        },
+        {
+          "chunk_id": "motor_policy_sbi_private_103",
+          "text": "The Company shall not be liable for:\n  a) Labour charges or Cost of parts or replacement \ncharges or consumables and their transportation cost \nto the site of breakdown in case repairs are carried out \non the spot of breakdown. \n  b) Cost of parts or replacement charges or consumables \nand their transportation cost to the Repair shop/ \nGarage, in case the same is not available with them. \n  c) Entire cost of Repair shop/Garage's bill, whether in part \nor full. \n  d) Cost of towing the damaged vehicle beyond *** kms \nmentioned in the  policy schedule from the spot of \nbreakdown.\n  e) Charges of the repairer, if the vehicle could be \ntransferred on its own power on self-propelled basis to \nthe nearest Repair shop/Garage without his \nintervention.",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.6098
+        }
+      ],
+      "confidence": 0.814,
+      "execution_time_ms": 640,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-14",
+      "query": "My health policy renewal premium has increased by 25% despite no claims. Is this allowed under IRDAI regulations?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-14-1783338694",
+      "answer_text": "For insurance claim, the retrieved guidance says: being issued by Us, provided however benefits payable shall be  subject to the terms contained in such other policy which has  been approved by IRDAI  (d) You shall make a full disclosure to Us in writing of any material  change in the health condition of a...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_kotak_239",
+          "text": "being issued by Us, provided however benefits payable shall be \nsubject to the terms contained in such other policy which has \nbeen approved by IRDAI \n(d) You shall make a full disclosure to Us in writing of any material \nchange in the health condition of any Insured Person at the time \nof seeking Renewal of this Policy, irrespective of any claim \narising or made. The terms and condition of the existing policy \nwill not be altered.  \n(e) We may, revise the Renewal premium payable under the Policy \nor the terms of cover, provided that all such changes are \napproved by IRDAI and in accordance with the IRDAI rules and \nregulations as applicable from time to time. Renewal premium \nwill not alter based on individual claims experience. We will",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "score": 0.7881
+        },
+        {
+          "chunk_id": "health_policy_kotak_227",
+          "text": "8. Cancellation/ termination/ Refund \n(a) For Policyholder\u2019s initiated cancellation, the Company would \ncompute refund amount as pro -rata (for the unexpired \nduration) premium. This would further be deducted by 25% of \ncomputed refundable premium.   \n \n         This is provided no claim has been made under the Policy. \n \n(b) No refund of premium is applicable when policy is cancelled \nby the Insurer on grounds of misrepresentation, fraud, \nnondisclosure or non-cooperation of the Insured ",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "score": 0.663
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_166",
+          "text": "a) Renewal of a health insurance policy shall not be denied on the ground that the insured \nhad made a claim or claims in the preceding policy years, except for benefit based policies \nwhere the policy terminates following payment of the benefit covered under the polic y \nlike critical illness policies. \nb) The company shall condone a delay in renewal up to the grace period from the due date \nof renewal without considering such condonation as a break in policy. \nc) No loading shall apply on renewals based on individual claims experience \nd) The Company shall not resort to fresh underwriting unless there is an increase in sum \ninsured. In case increase in sum insured is requested by the Policyholder, the Insurer \nmay underwrite only to the extent of increased sum insured.",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.6359
+        }
+      ],
+      "confidence": 0.816,
+      "execution_time_ms": 692,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-15",
+      "query": "What are the common fraud patterns in motor insurance claims involving staged accidents?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-15-1783338695",
+      "answer_text": "For insurance claim, the retrieved guidance says: SBI General Insurance Company Limited SBI General Insurance Company Limited,    Corporate & Registered Office: Fulcrum Building, 9th Floor, A & B Wing, Sahar Road, Andheri (East), Mumbai - 400099. | CIN:  U66000MH2009PLC190546 |    Tollfree: 18001021111 |  ...",
+      "citations": [
+        {
+          "chunk_id": "motor_policy_sbi_53",
+          "text": "SBI General Insurance Company Limited\nSBI General Insurance Company Limited,    Corporate & Registered Office: Fulcrum Building, 9th Floor, A & B Wing, Sahar Road, Andheri (East), Mumbai - 400099. | CIN: \nU66000MH2009PLC190546 |    Tollfree: 18001021111 |     customer.care@sbigeneral.in |     www.sbigeneral.in | SBI Logo displayed belongs to State Bank of India and \nused by SBI General Insurance Company Limited under license | IRDAI Reg No: 144 |Motor Act Only- Two Wheeler (5 Years), UIN: IRDAN144RP0003V02201819 | SBI \nGeneral Insurance and SBI are separate legal entities and SBI is working as Corporate Agent of the company for sourcing of insurance products.\nCommon Law and subsequent amendments of these Acts prior to \nthe date of this Endorsement in respect of personal injury to any paid",
+          "source_id": "motor_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_wording.pdf",
+          "score": 0.6779
+        },
+        {
+          "chunk_id": "motor_policy_sbi_private_199",
+          "text": "Specific Conditions:\n \u2022 Claims made by the Insured under this Add-On Cover are \nsubject to the conditions set forth under the Motor \nInsurance Policy\n \u2022 To declare the Insured Vehicle a Total Loss/ Constructive \nLoss, the estimates for the aggregate cost of retrieval \nand/or repair have to be approved by Company's \nauthorized surveyor/workshops.\n \u2022 Any disbursement under this option will be regarded as full \nand final settlement of the liability under Motor Insurance \nPolicy. \n \u2022 No claim of similar nature shall be payable under any other \ncover of this Policy.\n \u2022 Motor Insurance Policy will expire upon settlement of the \nclaim under this cover.\n Specific Exclusions\n Company will not be liable to indemnify for the following events:\n \u2022 Where the Own Damage Claim under the Motor Insurance",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.6419
+        },
+        {
+          "chunk_id": "irda_health_reg_2016_379",
+          "text": "Insurers shall ensure that the \u2018Combi Product\u2019\u00a0is not marketed by those insurance intermediaries who are not authorized to market either of the products of either of the insurers.\u00a0\u00a0\u00a0\n\n\u2018\u00c7ombi Products\u2019 marketed by the Common Service Centres shall comply with IRDAI (Insurance Services by Common Service Centres) Regulations, 2015.",
+          "source_id": "irda_health_reg_2016",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/regulations/irDAI_health_regulations_2016.docx",
+          "score": 0.6227
+        }
+      ],
+      "confidence": 0.813,
+      "execution_time_ms": 602,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-16",
+      "query": "How do I check the status of my claim online? What information do I need to provide?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-16-1783338696",
+      "answer_text": "For insurance claim, the retrieved guidance says: any of our Network Provider based on the list of tests mentioned in  the Policy Schedule / Certificate of Insurance  and provide report  evaluation/ counselling for the test reports    (c) Online customer profile  Based on the HRA taken and the other Check ...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_kotak_147",
+          "text": "any of our Network Provider based on the list of tests mentioned in \nthe Policy Schedule / Certificate of Insurance  and provide report \nevaluation/ counselling for the test reports \n \n(c) Online customer profile \nBased on the HRA taken and the other Check -ups, if any , \nundertaken by the Insured Person,  We will main tain an online \ncustomer profile through Vendor tie-ups which can be accessed by \nthe customer to review his Health status. \n \n(d) Medical Centre Management  \nWe will provide with or arrange for the maintenance of a Medical \nroom equipped with a doctor at the designated work site chosen by \nYou through the Network Provider. \n \n(e) Diet & Nutrition Plans  \nWe will arrange  for dieticians/ nutritionist through our Vendor tie -",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "score": 0.7103
+        },
+        {
+          "chunk_id": "network_agreement_docx_53",
+          "text": "If, during the course of the Clinical Trial, the Sponsor becomes aware of any information relating to the IMP which may impact the Clinical Trial, the Sponsor will notify the Clinical Organisation promptly, and within seven (7) business days of becoming aware of the information, and if requested to do so by the Clinical Organisation, will provide the Clinical Organisation with a report detailing the information.\n\n\t\tThe Sponsor must provide any ongoing safety and toxicology data updates to the Principal Investigator immediately, to ensure the safety of the Clinical Trial Subjects in this Phase I Clinical Trial.\n\n\n\n3.7 Anti-Bribery and Corruption\n\n3.7.1 Each Party warrants and represents to the best of its knowledge, information and belief that:",
+          "source_id": "network_agreement_docx",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement_bopartitemodel.docx",
+          "score": 0.6244
+        },
+        {
+          "chunk_id": "network_agreement_pdf_81",
+          "text": "documents, materials and information relating to Policies and pending claims to the Insurer  \nupon termination , and shall not have the right to retain or withhold any such document, \nmaterial or information by way of lien or for any reason whatsoever. TheTPA shall provide; \n \no Status of cases where pre-authorization has been issued by the TPA \no Status of cases where claim documents have been submitted to them for processing \no Status of cases where claim had been processed and payment by Insurer is pending  \n \n18.4.5 The TPA shall be liable for damages to the Insurer in the event of failure to render Service in \ncases under Clause 18 .4.2 or for neglect, failure, omission or refusal to deliver the required \ndocuments, materials and information.",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "score": 0.6241
+        }
+      ],
+      "confidence": 0.814,
+      "execution_time_ms": 588,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-17",
+      "query": "What happens if I miss the deadline for submitting documents for my insurance claim?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-17-1783338696",
+      "answer_text": "For insurance claim, the retrieved guidance says: documents mentioned above.  3. Certi\ufffded copies of document meaning documents  attested by any vested authority (e.g. Notarized  Documents, attested from Gazetted o\ufffdcer, SBI Branch  Manager, Special Executive o\ufffdcer, any o\ufffdcer who is  having authority of atte...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_sbi_312",
+          "text": "documents mentioned above.\n 3. Certi\ufffded copies of document meaning documents \nattested by any vested authority (e.g. Notarized \nDocuments, attested from Gazetted o\ufffdcer, SBI Branch \nManager, Special Executive o\ufffdcer, any o\ufffdcer who is \nhaving authority of attestation of documents).\n \u2022 Claim Document Submission Address\n  All Claim related documents need to be sent to below \naddress.\n  Please do mention appropriate Claim number on Claim \ndocuments dispatched.\n  Accident & Health Claims team\n  SBI General Insurance Company Limited\n  9th Floor, Westport, Pan Card Club Road, Baner Pune, \nMaharashtra \u2013 411 045\n \u2022 Conditions for obtaining Cashless Facility:\n i. Cashless Facility can be availed only at Our Network \nProviders. The complete list of Network Providers and",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.7065
+        },
+        {
+          "chunk_id": "health_policy_sbi_293",
+          "text": "insu\ufffdcient for us to \nconsider the request in \nPre-de\ufffdned Claim Form, \nWe will request additional \ninformation or \ndocumentation \n2. On receipt of duly \ufffdlled \npreauthorization form \nfrom the Network Provider \nalong with other su\ufffdcient \nNot ApplicableProcess \nfor \nobtaining \nPre-Autho\nrization\n details to assess the \nrequest, We may;\n i. Issue the authorization \nletter specifying the \nsanctioned amount any \nspeci\ufffdc limitation on \nthe Claim and \nnon-payable items, if \napplicable or \n ii. Reject the request for \npreauthorization \nspecifying reasons for \nthe rejection.\nNot Applicable As listed belowList of \nDocuments\nSBI General Insurance Company Limited",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.6997
+        },
+        {
+          "chunk_id": "network_agreement_pdf_47",
+          "text": "claim documents along with the invoice directly to the TPA. If the claim documents are \ncollected by the Insured Person, the Insured Person should submit the same to the \nRegional/nearest office of the TPA as per the terms of the policy. If the Insured Person does not \nopt for a Network Provider, the Insured Person may collect the claim form from eit her \nUnderwriting Office or the TPA or download the form from the website of the TPA. The \ndocuments for claim should be submitted to TPA by the Insured Person. The pre-& post \nhospitalisation claim documents will also be collected by the TPA office. TPA shal l give due \nacknowledgement of collected documents.  \nThe TPA shall also take all steps as may be necessary on receipt of intimation of any claim, either",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "score": 0.6566
+        }
+      ],
+      "confidence": 0.814,
+      "execution_time_ms": 589,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-18",
+      "query": "Are alternative treatments like Ayurveda or Homeopathy covered under standard health insurance policies?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-18-1783338697",
+      "answer_text": "For insurance claim, the retrieved guidance says: treatment was taken. 2.1(d). Authority means the Insurance Regulatory and  Development Authority of India established under the  provisions of section 3 of the Insurance Regulatory and  Development Authority Act, 1999 (41 of 1999). 2.1(e). AYUSH Treatment m...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_sbi_2",
+          "text": "treatment was taken.\n2.1(d). Authority means the Insurance Regulatory and \nDevelopment Authority of India established under the \nprovisions of section 3 of the Insurance Regulatory and \nDevelopment Authority Act, 1999 (41 of 1999).\n2.1(e). AYUSH Treatment means the medical and / or \nHospitalization treatments given under \u2018Ayurveda, Yoga, \nNaturopathy, Unani, Siddha and Homeopathy systems.\n2.1(f). AYUSH Day Care Centre means and includes Community \nHealth Centre (CHC), Primary Health Centre (PHC) \n,Dispensary, Clinic, Polyclinic or any such health centre which \nis registered with the local authorities, wherever applicable \nand having facilities for carrying out treatment procedures \nand medical or surgical/para-surgical interventions or both",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.7353
+        },
+        {
+          "chunk_id": "health_policy_kotak_7",
+          "text": "Where the context so requires, references to the singular shall also include references to the plural and references to any g ender shall include \nreferences to all genders. Further any references to statutory enactment include subsequent changes to the same. \nAccident means sudden, unforeseen and involuntary event caused by external, visible and violent means \nAdmission means the Insured Person\u2019s admission to a Hospital as an inpatient for the purpose of medical treatm ent of \nan Injury and/or Illness \nAlternative Treatments (AYUSH)  refers to the medical and/ or hospitalization treatments given under Ayurveda, Yoga and Naturopathy, Unani, \nSidha and Homeopathy systems \nAmbulance means a road vehicle operated by a healthcare/ ambulance service provider and equipped for the transport",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "score": 0.7065
+        },
+        {
+          "chunk_id": "irda_health_reg_2016_9",
+          "text": "Definitions. In these Regulations, unless the context otherwise requires,--\n\n\u201cAct\u201d means the Insurance Act, 1938.\n\n\"Health Services Agreement\" means an agreement as defined in IRDAI (Third Party Administrators - Health Services) Regulations, 2016.\n\n \u201cAuthority\u201d means the Insurance Regulatory and Development Authority of India established under sub section 1 of section 3 of the IRDA Act 1999.\n\n \u201cAyush Treatment\u201d refers to the medical and / or hospitalization treatments given under \u2018Ayurveda, Yoga and Naturopathy, Unani, Siddha and Homeopathy systems.\n\n\u201cBreak in policy\u201d means the period of gap that occurs at the end of the existing policy term, when the premium due for renewal on a given policy is not paid on or before the premium renewal date or within 30 days thereof.",
+          "source_id": "irda_health_reg_2016",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/regulations/irDAI_health_regulations_2016.docx",
+          "score": 0.7054
+        }
+      ],
+      "confidence": 0.815,
+      "execution_time_ms": 587,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-19",
+      "query": "What is the no-claim bonus in motor insurance and how does it affect my premium?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-19-1783338698",
+      "answer_text": "For insurance claim, the retrieved guidance says: up.     It is hereby understood and agreed that the insurance by  this Policy  in respect of vehicle no. \u2026\u2026\u2026.. insured hereunder is reinstated in full  from  \u2026\u2026./\u2026\u2026/\u2026\u2026 and the Endorsement IMT 11(B) attaching to this  policy shall be deemed to be cancelled. ...",
+      "citations": [
+        {
+          "chunk_id": "motor_policy_sbi_39",
+          "text": "up.  \n  It is hereby understood and agreed that the insurance by  this Policy \nin respect of vehicle no. \u2026\u2026\u2026.. insured hereunder is reinstated in full \nfrom  \u2026\u2026./\u2026\u2026/\u2026\u2026 and the Endorsement IMT 11(B) attaching to this \npolicy shall be deemed to be cancelled. It is further agreed that in \nconsideration of the period during which the  vehicle no.  ..\u2026\u2026\u2026\u2026\u2026\u2026. \nhas been out of use  \na)  #  The insurer will deduct from the next renewal premium the sum \nof Rs\u2026\u2026\u2026* and the No Claim Bonus (if any) shall be calculated on \nthe next renewal premium after deduction of such sum.     \nb)  # the period of insurance by this policy is extended to  \n.\u2026./\u2026../\u2026\u2026. in view of       the payment of an additional premium  of \nRs \u2026\u2026\u2026.**  \nSubject otherwise to the terms exceptions conditions and limitations",
+          "source_id": "motor_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_wording.pdf",
+          "score": 0.7957
+        },
+        {
+          "chunk_id": "motor_policy_sbi_22",
+          "text": "4.   Cancellation\n\u00b7 The insured can cancel the policy at any time during the term, by \ninforming the company. The company can cancel the policy only \non the grounds of established fraud, by giving minimum notice of \n7 days to the retail policyholder.\n\u00b7 Under no circumstances can the company cancel statutory \nMotor Third Party Liability insurance, or any other compulsory \ninsurance mandated by law except in case of double insurance or \ntotal loss subject to ensuring vehicle was not kept uninsured as \nper Motor Vehicle act provisions.\n\u00b7 The Company shall -\n a) refund proportion premium for unexpired policy period, if the \nterm of the policy is up to one year   and there is no claim(s) \nmade during the policy period.\n b) refund premium for the unexpired policy period, in respect of",
+          "source_id": "motor_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_wording.pdf",
+          "score": 0.686
+        },
+        {
+          "chunk_id": "health_policy_sbi_14",
+          "text": "Coverage need not be available during the period for which no \nPremium is received. \n The Grace Period for payment of the Premium for all types of \ninsurance policies shall be: \ufffdfteen days where Premium \npayment mode is monthly and thirty days in all other cases.\n Provided the insurers shall o\ufffder coverage during the Grace \nPeriod, if the Premium is paid in instalments during the Policy \nPeriod.\n For the purpose of this de\ufffdnition, the Insured Person will get \nthe accrued continuity bene\ufffdt in respect of the Sum Insured, \nCumulative Bonus, No Claim Discount, Speci\ufffdc Waiting \nPeriods, Waiting Periods for Pre-existing Diseases, \nMoratorium period etc in the event of payment of premium \nwithin the stipulated Grace Period.\n2.1(x). Home Care Treatment/Home Health Care means treatment",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.6694
+        }
+      ],
+      "confidence": 0.816,
+      "execution_time_ms": 768,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-20",
+      "query": "My treatment required ICU stay for 5 days. What is covered under ICU charges in my health policy?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-20-1783338699",
+      "answer_text": "For insurance claim, the retrieved guidance says: violent, visible and evident means which is veri\ufffded and  certi\ufffded by a Medical Practitioner. 2.1.(ac). In-Patient Care/ In-Patient Treatment means treatment  for which the Insured Person has to stay in a Hospital for more  than 24 hours for a covered event....",
+      "citations": [
+        {
+          "chunk_id": "health_policy_sbi_19",
+          "text": "violent, visible and evident means which is veri\ufffded and \ncerti\ufffded by a Medical Practitioner.\n2.1.(ac). In-Patient Care/ In-Patient Treatment means treatment \nfor which the Insured Person has to stay in a Hospital for more \nthan 24 hours for a covered event.\n2.1.(ad). Intensive / Critical Care Unit (ICU/CCU) means an \nidenti\ufffded section, ward or wing of a Hospital which is under \nthe constant supervision of dedicated Medical Practitioner(s), \nand which is specially equipped for the continuous monitoring \nand treatment of patients who are in a critical condition, or \nrequire life support facilities and where the level of care and \nsupervision is considerably more sophisticated and intensive \nthan in the ordinary and other wards.\n2.1.(ae) ICU (Intensive Care Unit) Charges means the amount",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.7616
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_204",
+          "text": "(if any). Please visit our nearest branch to refer our underwriting guidelines if required. \nWe will provide a Family Discount of 5% if 2 members are covered and 10% if 3 or more \nfamily members are covered under a single Easy Health Individual Health Insurance Plan.  \nAn additional discount of 6% will be provided if insured person is paying two year premium, \nin advance as a single premium.  \nIn case of Family Floater policies Floater discount of 55% will be applied on all the members \nexcept the oldest member. These discounts shall be applicable at inception and renewal of \nthe policy. \nd. Notification of Claim \n Treatment, Consultation or Procedure: We must be notified: \ni. If any treatment for which a claim may be \nmade is to be taken and that treatment \nrequires Hospitalisation:",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.6786
+        },
+        {
+          "chunk_id": "health_policy_sbi_117",
+          "text": "expenses incurred during the Policy Year on vaccination of \nthe child till he/she completes 12 years of age, provided that\n i. The newborn/ child is covered as an Insured Person under \nthe Policy. \n ii. This bene\ufffdt shall cover the charges for the vaccines of the \nInsured child during the Policy Period which are listed by \nthe Ministry of Health and Family welfare under National \nImmunization Schedule.\n iii. The Claim under this bene\ufffdt will fall within the Base Sum \nInsured.\n3.3(d). Assisted Reproduction Treatment\n We will indemnify the Insured Person up to the limit speci\ufffded \nin the Policy Schedule towards Reasonable and Customary \ncharges incurred towards Medically Necessary Treatment \nrelated to Assisted Reproduction, during the Policy Year, \nprovided",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.6256
+        }
+      ],
+      "confidence": 0.815,
+      "execution_time_ms": 628,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-21",
+      "query": "The Third Party Administrator (TPA) is delaying my cashless authorization. What can I do?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-21-1783338700",
+      "answer_text": "For insurance claim, the retrieved guidance says: amount due under Coverage including any reasonable fees incurred for defending any legal  proceedings in furtherance thereof.     27.1.5 Any excess amount processed and recommende d for settlement by the TPA in the Schedule  of Charges other than the charge...",
+      "citations": [
+        {
+          "chunk_id": "network_agreement_pdf_89",
+          "text": "amount due under Coverage including any reasonable fees incurred for defending any legal \nproceedings in furtherance thereof.  \n \n27.1.5 Any excess amount processed and recommende d for settlement by the TPA in the Schedule \nof Charges other than the charges agreed by the Insurer with the Network Provider and the \nTPA. \n \n27.1.6 Any amount paid to other Third Party Administrators during the term of this Agreement if \nthe TPA ceases to hold a li cence as a third-party administrator or is unable to carry on the \nservices of a Third-Party Administrator.  \n \n27.2 The TPA shall be liable and responsible for any commission and/or omission(s) on its part and loss of \nwhatsoever nature that may be caused to the Insurer in case of Planned Hospitalisation by the TPA\u2019s",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "score": 0.6886
+        },
+        {
+          "chunk_id": "network_agreement_pdf_58",
+          "text": "result in the breach of or constitute a default or require any consent under:  \n \n(a) any provision of any agreement or other instrument to which the TPA is a party or \nby which it is bound;   \n(b) any judgement, injunction, order, decree or award which is binding upon the TPA; \nand/ or  \n(c) The TPA\u2019s the memorandum and /or articles of association. \n \n15.1.3 Compliance with Laws \n \nIt has complied with all applicable Laws including but not limited to the Insurance Regulatory \nand Development Authority of India (Third Party Administrators - Health Services) \nRegulations 2016. \n \n15.1.4 Third Party Administrator License \n \nThroughout the term of this Agreement, the TPA shall continue to be licensed with the",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "score": 0.6519
+        },
+        {
+          "chunk_id": "network_agreement_pdf_1",
+          "text": "license number _____, and having its registered office at  \nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX. (hereinafter referred to as the \u201c TPA\u201d which expression \nshall, unless repugnant to the context or meaning thereof, b e deemed to mean and include its successors and \npermitted assigns) of the Second Part. \n \nWHEREAS: \n \n(1) The Insurer has been registered under section 3 of the Insurance Act 1938 (Act 4 of 1938) and is \ncarrying on General Insurance business in India;  \n \n(2) The TPA has obtained license to act as Third Party Administrator under the IRDAI ( Third Party \nAdministrator - Health Services ) Regulations2016 as amended from time to time  framed under \nsections 14 and 26 of the Insurance Regulatory and Development Authorit y of India Act 1999 (Act 41",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "score": 0.6458
+        }
+      ],
+      "confidence": 0.814,
+      "execution_time_ms": 598,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-22",
+      "query": "My car was damaged in a flood. Does my comprehensive motor insurance cover flood damage?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-22-1783338701",
+      "answer_text": "For insurance claim, the retrieved guidance says: cash benefit as specified in the Schedule following an identifiable  and admissible own damage claim under the Private Car Long  Term Package Policy provided always that   a)  Daily cash benefit as prescribed in the Schedule is payable  only for the time ta...",
+      "citations": [
+        {
+          "chunk_id": "motor_policy_sbi_private_191",
+          "text": "cash benefit as specified in the Schedule following an identifiable \nand admissible own damage claim under the Private Car Long \nTerm Package Policy provided always that \n a)  Daily cash benefit as prescribed in the Schedule is payable \nonly for the time taken for repair of the damages caused by \nan accident covered under the Motor Comprehensive Policy \nsubject to a maximum period of 10 days. The time taken for \nrepairs is calculated from the time of starting of accidental \nrepairs allowed by the Company to time of completion of the \nsame. \n b) Such approved repairs should be carried out in a Company \nAuthorised Garage. \n c)  The deductible mentioned in the Schedule shall be reduced \nfrom the eligible days of benefit for each and every claim",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.7078
+        },
+        {
+          "chunk_id": "motor_policy_sbi_private_160",
+          "text": "6.  LOSS OF PERSONAL BELONGINGS\n In consideration of the payment of an additional premium and as \nmentioned in the Schedule, the Company will pay for the \nInsured's loss or damage of his personal belongings caused by \nperils mentioned under Section I of the Motor Policy, which were \npresent in the vehicle at the time of loss or damage to the vehicle \nOR if the vehicle was broken into for the purpose of burglary or \ntheft of those personal belongings. The coverage under this Add \nOn Cover is subject always to the following: \n a) This Endorsement covers the personal belongings of the \ninsured only \n b) Personal Belonging for the purpose of this Add On Cover \nmeans, items limited to clothes and other articles of \npersonal nature likely to be worn by the Insured including",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.6379
+        },
+        {
+          "chunk_id": "motor_policy_sbi_private_199",
+          "text": "Specific Conditions:\n \u2022 Claims made by the Insured under this Add-On Cover are \nsubject to the conditions set forth under the Motor \nInsurance Policy\n \u2022 To declare the Insured Vehicle a Total Loss/ Constructive \nLoss, the estimates for the aggregate cost of retrieval \nand/or repair have to be approved by Company's \nauthorized surveyor/workshops.\n \u2022 Any disbursement under this option will be regarded as full \nand final settlement of the liability under Motor Insurance \nPolicy. \n \u2022 No claim of similar nature shall be payable under any other \ncover of this Policy.\n \u2022 Motor Insurance Policy will expire upon settlement of the \nclaim under this cover.\n Specific Exclusions\n Company will not be liable to indemnify for the following events:\n \u2022 Where the Own Damage Claim under the Motor Insurance",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.637
+        }
+      ],
+      "confidence": 0.814,
+      "execution_time_ms": 605,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-23",
+      "query": "Can I claim medical expenses incurred abroad under my domestic health insurance policy?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-23-1783338701",
+      "answer_text": "For insurance claim, the retrieved guidance says: Refractive Error (Code: Excl15) to the extent mentioned  under this bene\ufffdt. 3.2(i). Endless Sum Insured  We will cover the Medical Expenses incurred in respect of  Hospitalization of the Insured Person for any one Claim during  the lifetime of the Policy wi...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_sbi_108",
+          "text": "Refractive Error (Code: Excl15) to the extent mentioned \nunder this bene\ufffdt.\n3.2(i). Endless Sum Insured\n We will cover the Medical Expenses incurred in respect of \nHospitalization of the Insured Person for any one Claim during \nthe lifetime of the Policy without any limits on the Base Sum \nInsured, provided: \n i. This bene\ufffdt can be opted at the time of Policy inception or \nat the time of \ufffdrst renewal.\n ii. This bene\ufffdt is available only with Sum Insured Rs. 10 Lakhs \nand above.\n iii. This bene\ufffdt shall not be available if Unlimited Sum Insured \nhas been opted under the Policy.\nSBI General Insurance Company Limited\nSBI General Insurance Company Limited,      Corporate & Registered O\ufffdce: Fulcrum Building, 9 th Floor, A & B Wing, Sahar Road, Andheri (East), Mumbai - 400099. |",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.7748
+        },
+        {
+          "chunk_id": "health_policy_sbi_56",
+          "text": "in which case We will pay the Reasonable and Customary \nCharges for the entire period.\n3(e).    Pre-Hospitalization\n We will indemnify the Insured Person for the Medical \nExpenses incurred during the Policy Year, for the period as \nspeci\ufffded in the Policy Schedule, immediately before the \nInsured Person was Hospitalized, provided:\n i. Such Medical Expenses are incurred in respect of the same \ncondition for which Insured Person has taken \nHospitalization, and \n ii. We have accepted a Claim under any of the following \nbene\ufffdts Section 3 Hospitalization Cover, 3.1(d). Organ \nDonor, 3.1(e). Modern Treatments or 3.1(f). Home Health \nCare.\n3(f).     Post-Hospitalization\n We will indemnify the Insured Person for the Medical \nExpenses incurred during the Policy Year, for the period as",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.7697
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_45",
+          "text": "commencement of the policy issued by the insurer; or \nb) for which medical advice or treatment was recommended by, or received from, a physician, \nnot more than 36 months prior to the date of commencement of the policy. \nDef. 38 Pre-Hospitalisation Medical Expenses means the medical expenses incurred during \npredefined number of days preceding the hospitalization of the Insured Person, provided that: \ni. Such Medical Expenses are incurred for the same condition for which the Insured Person\u2019s \nHospitalisation was required, and \nii. The In-patient Hospitalization claim for such Hospitalization is admissible by the Insurance \nCompany \nDef. 39 Post-Hospitalisation Medical Expenses means medical expenses incurred during predefined",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.7485
+        }
+      ],
+      "confidence": 0.814,
+      "execution_time_ms": 610,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-24",
+      "query": "The other party in my motor accident claim is uninsured. Will my own insurance cover the damages?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-24-1783338702",
+      "answer_text": "For insurance claim, the retrieved guidance says: Specific Conditions:  \u2022 Claims made by the Insured under this Add-On Cover are  subject to the conditions set forth under the Motor  Insurance Policy  \u2022 To declare the Insured Vehicle a Total Loss/ Constructive  Loss, the estimates for the aggregate cost of...",
+      "citations": [
+        {
+          "chunk_id": "motor_policy_sbi_private_199",
+          "text": "Specific Conditions:\n \u2022 Claims made by the Insured under this Add-On Cover are \nsubject to the conditions set forth under the Motor \nInsurance Policy\n \u2022 To declare the Insured Vehicle a Total Loss/ Constructive \nLoss, the estimates for the aggregate cost of retrieval \nand/or repair have to be approved by Company's \nauthorized surveyor/workshops.\n \u2022 Any disbursement under this option will be regarded as full \nand final settlement of the liability under Motor Insurance \nPolicy. \n \u2022 No claim of similar nature shall be payable under any other \ncover of this Policy.\n \u2022 Motor Insurance Policy will expire upon settlement of the \nclaim under this cover.\n Specific Exclusions\n Company will not be liable to indemnify for the following events:\n \u2022 Where the Own Damage Claim under the Motor Insurance",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.7528
+        },
+        {
+          "chunk_id": "motor_policy_sbi_22",
+          "text": "4.   Cancellation\n\u00b7 The insured can cancel the policy at any time during the term, by \ninforming the company. The company can cancel the policy only \non the grounds of established fraud, by giving minimum notice of \n7 days to the retail policyholder.\n\u00b7 Under no circumstances can the company cancel statutory \nMotor Third Party Liability insurance, or any other compulsory \ninsurance mandated by law except in case of double insurance or \ntotal loss subject to ensuring vehicle was not kept uninsured as \nper Motor Vehicle act provisions.\n\u00b7 The Company shall -\n a) refund proportion premium for unexpired policy period, if the \nterm of the policy is up to one year   and there is no claim(s) \nmade during the policy period.\n b) refund premium for the unexpired policy period, in respect of",
+          "source_id": "motor_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_wording.pdf",
+          "score": 0.7431
+        },
+        {
+          "chunk_id": "motor_policy_sbi_private_200",
+          "text": "\u2022 Where the Own Damage Claim under the Motor Insurance \nPolicy is not payable.\n \u2022 Where a loss is covered under Motor Insurance Policy or any \nother type of insurance policy with any other insurer or \nmanufacturer's warranty or recall campaign or under any \nother such packages at the same time.\n \u2022 Any consequential loss arising out of claim lodged under \nthis Add-On.\n \u2022 Any claim pertaining to accessories, unless the same are \nadditionally insured and endorsed into the Motor Insurance \nPolicy.\n17. EMERGENCY MEDICAL EXPENSES\n In consideration of payment of additional premium and as \nmentioned in the Schedule, the Company will pay emergency \nmedical expenses incurred by Insured upto the sum insured \nmentioned in the Schedule due to for treatment of bodily",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "score": 0.7429
+        }
+      ],
+      "confidence": 0.815,
+      "execution_time_ms": 635,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-25",
+      "query": "What is the difference between sum insured and reinstatement of cover in health insurance?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-25-1783338703",
+      "answer_text": "For insurance claim, the retrieved guidance says: or extensions attaching to or forming part thereof. The Policy contains details of the extent of cover available  to You, what is excluded from the cover and the terms & conditions on which the Policy is issued to You.  Policy Period  means the period comme...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_kotak_28",
+          "text": "or extensions attaching to or forming part thereof. The Policy contains details of the extent of cover available \nto You, what is excluded from the cover and the terms & conditions on which the Policy is issued to You. \nPolicy Period \nmeans the period commencing from Policy start date and time as specified in Policy Schedule/ Certificate of \nInsurance and terminating at midnight on the Policy End Date as specified in Policy Schedule / Certificate of \nInsurance \nPolicy Schedule   \n \nmeans the schedule attached to and forming part of this Policy mentioning the details of the Insured Persons, \nthe Sum Insured, the period and the limits to which benefits under the Policy are subject to, including any",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "score": 0.8443
+        },
+        {
+          "chunk_id": "health_policy_sbi_224",
+          "text": "Diseases (PED) and its direct complications shall be \nexcluded until the expiry of 24 months of continuous \ncoverage after the date of inception of the \ufffdrst Policy with \nUs.\n ii. In case of enhancement of Sum Insured the exclusion shall \napply afresh to the extent of Sum Insured increase.\n iii. If the Insured Person is continuously covered without any \nbreak as de\ufffdned under the Portability norms of the extant \n  IRDAI (Health Insurance) Regulations, then Waiting Period \n respective Policy section shall remain unaltered.\n9.5. Reduction in Global Cover Waiting Period\n Under this bene\ufffdt, We will reduce the 24 months Waiting \nPeriod for Global Cover speci\ufffded in Section 12, point no.12.6. \nof this document, to the number of months as opted by You.",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.7436
+        },
+        {
+          "chunk_id": "health_policy_sbi_48",
+          "text": "as applicable under the Policy is speci\ufffded in the Policy \nSchedule against the relevant bene\ufffdt in force under the \nPolicy.\n2.2.(ab). Sum Insured means the pre-de\ufffdned limit of each \nSection/Bene\ufffdt speci\ufffded in the Policy Schedule/ Certi\ufffdcate \nof Insurance. Sum Insured represents the maximum, total and \ncumulative liability for any and all claims made under the \nPolicy, in respect of that Insured Person on Individual basis.\n2.2.(ac). Telemedicine means medical consultation service availed \nvia telecommunications and digital communication \ntechnologies by the Insured Person from a Medical \nPractitioner while taking treatment for the health condition \n that has resulted in an admissible Claim under a cover in this \nPolicy. Such Telemedicine services shall be delivered in",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.7339
+        }
+      ],
+      "confidence": 0.817,
+      "execution_time_ms": 601,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-26",
+      "query": "I was diagnosed with COVID-19 and hospitalized. Are home quarantine expenses covered under health insurance?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-26-1783338704",
+      "answer_text": "For insurance claim, the retrieved guidance says: in which case We will pay the Reasonable and Customary  Charges for the entire period. 3(e).    Pre-Hospitalization  We will indemnify the Insured Person for the Medical  Expenses incurred during the Policy Year, for the period as  speci\ufffded in the Policy Sc...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_sbi_56",
+          "text": "in which case We will pay the Reasonable and Customary \nCharges for the entire period.\n3(e).    Pre-Hospitalization\n We will indemnify the Insured Person for the Medical \nExpenses incurred during the Policy Year, for the period as \nspeci\ufffded in the Policy Schedule, immediately before the \nInsured Person was Hospitalized, provided:\n i. Such Medical Expenses are incurred in respect of the same \ncondition for which Insured Person has taken \nHospitalization, and \n ii. We have accepted a Claim under any of the following \nbene\ufffdts Section 3 Hospitalization Cover, 3.1(d). Organ \nDonor, 3.1(e). Modern Treatments or 3.1(f). Home Health \nCare.\n3(f).     Post-Hospitalization\n We will indemnify the Insured Person for the Medical \nExpenses incurred during the Policy Year, for the period as",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.7616
+        },
+        {
+          "chunk_id": "health_policy_sbi_27",
+          "text": "2.1.(ar). Portability means a facility provided to the health \ninsurance Policyholders (including all members under family \ncover), to transfer the credits gained for, Pre-Existing \nDiseases and Speci\ufffdc Waiting Periods from one Insurer to \nanother Insurer.\n2.1.(as). Pre-Existing Disease means any condition, ailment, Injury \nor disease:\n i. That is/are diagnosed by a physician not more than 24 \nmonths prior to the date of commencement of the Policy \nissued by the Insurer; or \n ii. For which Medical Advice or treatment was recommended \nby, or received from, a physician, not more than 24 months \nprior to the date of commencement of the Policy.\n2.1.(at). Pre-Hospitalization Medical Expenses means Medical \nexpenses incurred during pre-de\ufffdned number of days",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.6887
+        },
+        {
+          "chunk_id": "health_policy_kotak_30",
+          "text": "the group health policy to a retail policy of the same insurer when he/ she ceases to be a member of the group.  \nPre-existing Disease \nmeans any condition, ailment or injury or related condition(s) for which there were signs or symptoms, and / \nor were diagnosed, and / or for which medical advice / treatment was received within 48  months prior to the \nfirst policy issued by the insurer and renewed continuously thereafter. \nPre-Hospitalisation Medical \nExpenses \nmeans medical expenses incurred during predefined number of days preceding the hospitalization of the \nInsured Person, provided that: \ni. Such Medical Expenses are incurred for the same condition for which the Insured Person\u2019s Hospitalization \nwas required, and",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "score": 0.6558
+        }
+      ],
+      "confidence": 0.815,
+      "execution_time_ms": 587,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-27",
+      "query": "How do insurance companies verify that a claim is genuine and not fraudulent?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-27-1783338705",
+      "answer_text": "For insurance claim, the retrieved guidance says: Insurer is collectively referred to as the \u201cCashless Access Service\u201d. (Schedule II& III)     10.1 Pre-Authorization for Cashless AccessThe TPA shall, upon getting the related medical  information from the Policy Holder/Network Provider, verify the  admissib...",
+      "citations": [
+        {
+          "chunk_id": "network_agreement_pdf_37",
+          "text": "Insurer is collectively referred to as the \u201cCashless Access Service\u201d. (Schedule II& III)  \n \n10.1 Pre-Authorization for Cashless AccessThe TPA shall, upon getting the related medical \ninformation from the Policy Holder/Network Provider, verify the  admissibility of the claim, \nverify that the person is eligible for the treatment under the policy, and after satisfying itself \nwill issue a preauthorization letter/guarantee of payment letter to the Network Provider",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "score": 0.7078
+        },
+        {
+          "chunk_id": "network_agreement_pdf_44",
+          "text": "submit a daily report to respective Regional Office of the Insurer of claim intimations received. \nThe weekly reports shall be sent by e -mail to each Underwriting Office and where such facility is \nnot available it shall be sent by Post/fax. \n \nTPA must engage technically experienced employees to capture the data and upload to the \nCWISS system (NIA Core IT Program) on daily basis. It is responsibility of TPA to upload the \nchanges in claims processed on day to day basis so that the Insur er shall be able to capture and \nview the status of the claim. \n \nThe TPA shall be responsible to closely verify, monitor and confirm that charges levied by \nHospitals in any claim are reasonable, warranted and necessary to ensure that claim cost is fair",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "score": 0.6842
+        },
+        {
+          "chunk_id": "health_policy_sbi_284",
+          "text": "behalf to obtain any bene\ufffdt under this Policy, all bene\ufffdts \nunder this Policy and the Premium paid shall be forfeited.\n Any amount already paid against Claims made under this \nPolicy but which are found fraudulent later shall be repaid by all \nrecipient(s)/Policyholder(s), who has made that particular \nClaim, who shall be jointly and severally liable for such \nrepayment to the insurer.\n For the purpose of this clause, the expression \"fraud\" means \nany of the following acts committed by the Insured Person or \nby his agent or the Hospital/doctor/any other party acting on \nbehalf of the Insured Person, with intent to deceive the \nInsurer or to induce the Insurer to issue an Insurance Policy:\n i. The suggestion, as a fact of that which is not true and",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.6665
+        }
+      ],
+      "confidence": 0.814,
+      "execution_time_ms": 582,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-28",
+      "query": "My policy covers maternity benefits. What is the waiting period and what expenses are covered?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-28-1783338705",
+      "answer_text": "For insurance claim, the retrieved guidance says: 24 months from the date of inception of the \ufffdrst Policy  with Us.  iv. The payment under this cover is limited to maximum two  deliveries or termination for the female Insured Person  covered under this Policy. Those female Insured Persons  who are already ...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_sbi_114",
+          "text": "24 months from the date of inception of the \ufffdrst Policy \nwith Us.\n iv. The payment under this cover is limited to maximum two \ndeliveries or termination for the female Insured Person \ncovered under this Policy. Those female Insured Persons \nwho are already having two or more children will not be \neligible for this bene\ufffdt.\n v. This bene\ufffdt also covers, covered delivery or termination, \nPre-natal In-Patient Treatment Medical Expenses from \nthe date of conception and up to the childbirth and \nPost-natal Inpatient Treatment Medical Expenses for a \nperiod of one month from the date of childbirth or \ntermination shall be covered within the Maternity limit.\n vi. For an admissible claim, this bene\ufffdt also covers the Pre- \nnatal and Post-natal Medical Expenses maximum up to Rs \n10000 on OPD basis.",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.8292
+        },
+        {
+          "chunk_id": "health_policy_sbi_234",
+          "text": "procedures set out below shall be followed.\n12.3. First Thirty Days Waiting Period (Code-Excl 03):\n i. Expenses related to the treatment of any Illness within 30 \ndays from the \ufffdrst Policy commencement date shall be \nexcluded except Claims arising due to an Accident, \nprovided the same are covered.\n ii. This exclusion shall not, however, apply if the Insured \nPerson has continuous coverage for more than 12 months.\n iii. The within referred Waiting Period is made applicable to \nthe enhanced Sum Insured in the event of granting higher \nSum Insured subsequently.\n Note: The above Waiting Period shall not be applicable for \nClaims arising due to Critical Illness Cover.\n12.4. Maternity and Child Care Cover\n A Waiting Period of 24 months shall apply for all Claims under",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.8035
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_87",
+          "text": "transportation to the insured\u2019s home by \nair ambulance is excluded. \n3) Additional Benefit not related to Sum Insured: The following benefit is available to all Insured \nPersons during the Policy Period. Any claims made under these benefits will not be subject to In -\npatient Sum Insured and will not impact eligibility for a Cumulative Bonus and Health Checkup. These \nbenefits are applicable based on the plan variant selected, as mentioned in the schedule of benefits. \na) Maternity Expenses \ni. Medical Expenses for a delivery (including \ncaesarean section) as mentioned in schedule of \nBenefits while Hospitalised or the lawful \nmedical termination of pregnancy during the \n1) Pre- and post -hospitalisation expenses \nunder 1-b) and 1-c) \n2) Ectopic pregnancy under this benefit",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.7509
+        }
+      ],
+      "confidence": 0.816,
+      "execution_time_ms": 601,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-29",
+      "query": "My claim was settled but the amount seems less than my actual expenses. How is the claim amount calculated?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-29-1783338706",
+      "answer_text": "For insurance claim, the retrieved guidance says: for the duration till which the disablement was temporary  in nature. Once the disablement is established to be  permanent in nature, the Insured Person can no longer  Claim under this bene\ufffdt and further payouts will cease.  v. We will deduct any amounts al...",
+      "citations": [
+        {
+          "chunk_id": "health_policy_sbi_131",
+          "text": "for the duration till which the disablement was temporary \nin nature. Once the disablement is established to be \npermanent in nature, the Insured Person can no longer \nClaim under this bene\ufffdt and further payouts will cease.\n v. We will deduct any amounts already paid under bene\ufffdt 4.2 \nPermanent Total Disablement (PTD) and 4.3 Permanent \nPartial Disablement (PPD) from the amount payable under \nthis bene\ufffdt.\n vi. On exhaustion of opted limit under TTD, this bene\ufffdt shall \nterminate and cease to operate in relation to such Insured \nPerson.\n vii. The compensation shall be paid by Us at quarterly \nintervals, after ascertaining the amount payable. If the \nperiod of Temporary Total Disablement is for less than a \nquarter or three months, the compensation may be paid at",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.6842
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_45",
+          "text": "commencement of the policy issued by the insurer; or \nb) for which medical advice or treatment was recommended by, or received from, a physician, \nnot more than 36 months prior to the date of commencement of the policy. \nDef. 38 Pre-Hospitalisation Medical Expenses means the medical expenses incurred during \npredefined number of days preceding the hospitalization of the Insured Person, provided that: \ni. Such Medical Expenses are incurred for the same condition for which the Insured Person\u2019s \nHospitalisation was required, and \nii. The In-patient Hospitalization claim for such Hospitalization is admissible by the Insurance \nCompany \nDef. 39 Post-Hospitalisation Medical Expenses means medical expenses incurred during predefined",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "score": 0.6759
+        },
+        {
+          "chunk_id": "health_policy_sbi_255",
+          "text": "Treatments received in heath hydros, nature cure clinics, spas \nor similar establishments or private beds registered as a \nnursing home attached to such establishments or where \nadmission is arranged wholly or partly for domestic reasons.\n13.1(k). Dietary Supplements & Substances (Code: Excl14):\n Dietary supplements and substances that can be purchased \nwithout prescription, including but not limited to Vitamins, \nminerals and organic substances unless prescribed by a \nMedical Practitioner as part of Hospitalization Claim or day \ncare procedure.\n13.1(l). Refractive Error (Code: Excl15):\n Expenses related to the treatment for correction of eyesight \ndue to refractive error less than 7.5 dioptres.\n13.1(m). Unproven Treatments-Code (Code: Excl16):",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "score": 0.6472
+        }
+      ],
+      "confidence": 0.813,
+      "execution_time_ms": 593,
+      "chunks_retrieved": 3
+    },
+    {
+      "query_id": "RAG-30",
+      "query": "How does the Insurance Ombudsman handle claim rejection disputes? What is the process?",
+      "status": "success",
+      "trace_id": "ls-rag-rag_pipeline:RAG-30-1783338707",
+      "answer_text": "For insurance claim, the retrieved guidance says: Stage 4 If your grievance remains unresolved from the date of filing your first  complaint or is partially resolved, you may approach the Insurance  Ombudsman falling in your jurisdiction for Redressal of your  Grievance. The details of the Insurance Ombuds...",
+      "citations": [
+        {
+          "chunk_id": "motor_policy_sbi_66",
+          "text": "Stage 4\nIf your grievance remains unresolved from the date of filing your first \ncomplaint or is partially resolved, you may approach the Insurance \nOmbudsman falling in your jurisdiction for Redressal of your \nGrievance. The details of the Insurance Ombudsman can be \naccessed at https://www.cioins.co.in/Ombudsman.\nList of Ombudsman offices with contact details are attached as an \nAnnexure-1. For updated status, Please refer to website \nwww.irdaindia.gov.in\n(b)  This Policy does not cover use for organised racing, pace making, \nor speed testing.\n(c )  During the course of the \u2026\u2026\u2026.*, the Company shall not be liable in \nrespect of death of or bodily injury to any person being   carried in \nor upon or entering or getting on to or alighting from the vehicle",
+          "source_id": "motor_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_wording.pdf",
+          "score": 0.6601
+        },
+        {
+          "chunk_id": "network_agreement_pdf_82",
+          "text": "20 \n \n \n \n19. INSPECTION AUDIT AND ACCESS RIGHTS OF THE TPA ON REGULAR AND ADHOC BASIS  \n \nThe Insurer would conduct audit at frequent intervals and on specific requirement as decided by the \ninsurer from time to time.  \nThe insurer has every right to access the system/records and claim files of TPA pertaining to the \nInsurance Company without any restriction. The insurer would evolve a suitable system to audit the \nprocess and functioning of TPA. \n The TPA should not object to Insurer\u2019s delegation of authority to review/audit the above-mentioned \nactivities affecting the risk of Insurance to any risk sharing partner like Reinsurer.  \n \n20. ARBITRATION AND DISPUTE RESOLUTION \n \n20.1 All disputes or differences between the Parties hereto either during the subsistence of this",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "score": 0.6288
+        },
+        {
+          "chunk_id": "network_agreement_pdf_55",
+          "text": "\uf0b7 PAN card Details of Hospital \n \n \n \n12.2 KNOW YOUR CUSTOMER (KYC) COMPLIANCE: \n \n The TPA shall ensure at the time of claim settlement, necessary verification and receipt of documents \nfrom the Insured Persons to comply with AML guidelines. The AML guidelines shall be made part and \nparcel of the Claim file in respect of each claim handle d by the TPA in accordance with the claim \ndocumentation stipulations in this agreement. \n \n \n \n \n14. LEGAL ASSISTANCE AND OTHERS  \n \nTPA shall have a dedicated team comprising of Legal experts for handling grievance and legal cases. \nTPA shall assist the underwriter concerned in taking necessary and proper defences in \nOmbudsman/Court Cases. TPA shall provide expert medical opinion with supporting documents",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "score": 0.6018
+        }
+      ],
+      "confidence": 0.813,
+      "execution_time_ms": 613,
+      "chunks_retrieved": 3
+    }
+  ],
+  "statistics": {
+    "intents_detected": []
+  }
+}

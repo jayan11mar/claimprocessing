@@ -74,6 +74,37 @@ def render_chat_bubble(role: str, text: str, metadata: Optional[Dict[str, Any]] 
     return
 
 
+def render_citations(citations: list) -> None:
+    """Render clickable source citations below the chat bubble."""
+    if not citations:
+        return
+    
+    st.markdown("<div style='margin-left: 20px; margin-top: 8px;'>", unsafe_allow_html=True)
+    st.markdown("**📚 Sources:**")
+    
+    for idx, citation in enumerate(citations, 1):
+        source_id = citation.get("source_id", "unknown")
+        source_path = citation.get("source_path", "")
+        doc_type = citation.get("doc_type", "document")
+        score = citation.get("score", 0.0)
+        
+        # Create a clickable citation link
+        with st.container():
+            col1, col2 = st.columns([1, 4])
+            with col1:
+                st.markdown(f"**[{idx}]**")
+            with col2:
+                # Make the source path clickable if it's a URL or file path
+                if source_path and (source_path.startswith("http://") or source_path.startswith("https://")):
+                    st.markdown(f"[{source_id}]({source_path}) - *{doc_type}* (score: {score:.2f})")
+                elif source_path:
+                    st.markdown(f"**{source_id}** - `{source_path}` - *{doc_type}* (score: {score:.2f})")
+                else:
+                    st.markdown(f"**{source_id}** - *{doc_type}* (score: {score:.2f})")
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
 def get_backend_health(api_url: str) -> Optional[Dict[str, Any]]:
     try:
         response = requests.get(f"{api_url}/health", timeout=10)
@@ -198,6 +229,8 @@ def main() -> None:
             resp = call_chat_api(st.session_state.session_id, query, api_url)
             structured = resp.get("structured", {})
             chain_metadata = resp.get("chain_metadata", {})
+            citations = resp.get("citations", [])
+            retrieval_trace = resp.get("retrieval_trace", [])
             st.session_state.latest_langsmith_trace_id = chain_metadata.get("langsmith_trace_id")
             st.session_state.history.append(
                 {
@@ -205,8 +238,17 @@ def main() -> None:
                     "answer_text": resp.get("answer_text", ""),
                     "structured": structured,
                     "chain_metadata": chain_metadata,
+                    "citations": citations,
+                    "retrieval_trace": retrieval_trace,
                 }
             )
+            
+            # Display the assistant's response immediately with citations
+            if resp.get("answer_text"):
+                render_chat_bubble("assistant", resp.get("answer_text"), None, len(st.session_state.history) - 1)
+                # Render clickable citations if available
+                if citations:
+                    render_citations(citations)
         except requests.RequestException as exc:
             st.warning(f"Unable to reach backend: {exc}")
             st.session_state.history.append(
@@ -215,6 +257,8 @@ def main() -> None:
                     "answer_text": "Sorry, the backend is not available. Please check the backend URL and try again.",
                     "structured": {},
                     "chain_metadata": {"error": str(exc)},
+                    "citations": [],
+                    "retrieval_trace": [],
                 }
             )
 
@@ -228,9 +272,15 @@ def main() -> None:
             answer_text = item["answer_text"]
             structured = item.get("structured", {})
             chain_metadata = item.get("chain_metadata", {})
+            citations = item.get("citations", [])
 
             render_chat_bubble("user", user_msg)
             render_chat_bubble("assistant", answer_text, None, idx)
+            
+            # Render clickable citations if available
+            if citations:
+                render_citations(citations)
+            
             with st.expander("Response metadata", expanded=False):
                 st.write("**Structured response**")
                 st.json(structured)
@@ -248,6 +298,178 @@ def main() -> None:
             st.warning("Could not reset the session on the backend.")
         st.session_state.history = []
         st.rerun()
+
+    # Document Management Panel
+    st.sidebar.divider()
+    st.sidebar.header("📄 Document Management")
+    
+    # Fetch and display indexed documents
+    try:
+        sources_resp = requests.get(f"{api_url}/sources", timeout=10)
+        if sources_resp.status_code == 200:
+            sources_data = sources_resp.json()
+            documents = sources_data.get("documents", [])
+            doc_count = sources_data.get("count", 0)
+            
+            st.sidebar.write(f"**Indexed Documents:** {doc_count}")
+            
+            if documents:
+                with st.sidebar.expander("View Documents", expanded=False):
+                    for doc in documents:
+                        doc_id = doc.get("doc_id", "unknown")
+                        doc_type = doc.get("doc_type", "document")
+                        source_path = doc.get("source_path", "")
+                        
+                        st.write(f"**{doc_id}**")
+                        st.caption(f"Type: {doc_type}")
+                        if source_path:
+                            st.caption(f"Path: `{source_path}`")
+                        
+                        # Delete button for each document
+                        if st.button(f"🗑️ Delete", key=f"del_{doc_id}"):
+                            try:
+                                del_resp = requests.delete(f"{api_url}/sources/{doc_id}", timeout=10)
+                                if del_resp.status_code == 200:
+                                    st.sidebar.success(f"Deleted {doc_id}")
+                                    st.rerun()
+                                else:
+                                    st.sidebar.error(f"Failed to delete {doc_id}")
+                            except requests.RequestException as e:
+                                st.sidebar.error(f"Error: {e}")
+                        
+                        st.divider()
+            else:
+                st.sidebar.info("No documents indexed yet.")
+    except requests.RequestException:
+        st.sidebar.warning("Unable to fetch document list.")
+    
+    # Load document from file path
+    with st.sidebar.expander("📂 Load Document from Path", expanded=False):
+        st.write("Load a document from the server filesystem:")
+        
+        file_path = st.text_input(
+            "File Path",
+            placeholder="/path/to/document.pdf or data/knowledge_base/policies/...",
+            help="Enter the absolute or relative path to the document file"
+        )
+        
+        if st.button("Load Document", type="primary"):
+            if file_path.strip():
+                try:
+                    # Read the file from the path
+                    path = Path(file_path.strip())
+                    if not path.exists():
+                        st.sidebar.error(f"File not found: {file_path}")
+                    else:
+                        # Determine document type from extension
+                        file_extension = path.suffix.lower()
+                        if file_extension == ".pdf":
+                            doc_type = "policy_wording"
+                        elif file_extension in [".docx", ".doc"]:
+                            doc_type = "policy_wording"
+                        elif file_extension == ".txt":
+                            doc_type = "memo"
+                        elif file_extension == ".md":
+                            doc_type = "memo"
+                        elif file_extension == ".csv":
+                            doc_type = "memo"
+                        elif file_extension == ".json":
+                            doc_type = "memo"
+                        else:
+                            doc_type = "document"
+                        
+                        # Read file content
+                        try:
+                            if file_extension == ".pdf":
+                                # For PDF files, we'll need to use a PDF loader
+                                # For now, show a message that PDF needs special handling
+                                st.sidebar.warning("PDF files require the backend to handle loading. Use the ingest endpoint with extracted text.")
+                            else:
+                                # Read text-based files
+                                content = path.read_text(encoding="utf-8")
+                                doc_id = path.stem
+                                
+                                # Ingest the document
+                                ingest_payload = {
+                                    "documents": [
+                                        {
+                                            "id": doc_id,
+                                            "content": content,
+                                            "doc_type": doc_type,
+                                            "path": str(path.absolute()),
+                                        }
+                                    ]
+                                }
+                                
+                                ingest_resp = requests.post(
+                                    f"{api_url}/ingest",
+                                    json=ingest_payload,
+                                    timeout=30,
+                                )
+                                
+                                if ingest_resp.status_code == 200:
+                                    result = ingest_resp.json()
+                                    job_id = result.get("job_id", "unknown")
+                                    st.sidebar.success(f"Loaded {doc_id}! Job ID: {job_id}")
+                                    st.rerun()
+                                else:
+                                    st.sidebar.error("Failed to load document")
+                        except UnicodeDecodeError:
+                            st.sidebar.error("Unable to read file. Please ensure it's a text-based file (PDF requires special handling).")
+                        except Exception as e:
+                            st.sidebar.error(f"Error reading file: {e}")
+                except Exception as e:
+                    st.sidebar.error(f"Error: {e}")
+            else:
+                st.sidebar.warning("Please enter a file path")
+    
+    # Upload new documents
+    with st.sidebar.expander("📝 Upload Text Content", expanded=False):
+        st.write("Upload text content to add to the knowledge base:")
+        
+        uploaded_content = st.text_area(
+            "Document Content",
+            height=200,
+            placeholder="Paste your document content here..."
+        )
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            doc_id = st.text_input("Document ID", placeholder="my_document")
+        with col2:
+            doc_type = st.selectbox("Type", ["policy_wording", "memo", "document", "regulation"])
+        
+        if st.button("Ingest Document", type="primary"):
+            if uploaded_content.strip():
+                try:
+                    ingest_payload = {
+                        "documents": [
+                            {
+                                "id": doc_id if doc_id else f"doc_{uuid4().hex[:8]}",
+                                "content": uploaded_content,
+                                "doc_type": doc_type,
+                                "path": f"uploaded_{doc_id if doc_id else 'document'}",
+                            }
+                        ]
+                    }
+                    
+                    ingest_resp = requests.post(
+                        f"{api_url}/ingest",
+                        json=ingest_payload,
+                        timeout=30,
+                    )
+                    
+                    if ingest_resp.status_code == 200:
+                        result = ingest_resp.json()
+                        job_id = result.get("job_id", "unknown")
+                        st.sidebar.success(f"Document ingested! Job ID: {job_id}")
+                        st.rerun()
+                    else:
+                        st.sidebar.error("Failed to ingest document")
+                except requests.RequestException as e:
+                    st.sidebar.error(f"Error: {e}")
+            else:
+                st.sidebar.warning("Please enter document content")
 
 
 if __name__ == "__main__":

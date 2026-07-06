@@ -10,6 +10,7 @@ from app.models.faq import FAQIntent, FAQResponse
 from app.tools.claim_status_checker import check_claim_status
 from app.tools.claims_intake import register_and_validate_claim
 from app.tools.fraud_detector import compute_fraud_score
+from app.tools.knowledge_retrieval import knowledge_retrieval
 from app.tools.policy_checker import check_policy_status
 from app.tools.settlement_calculator import calculate_settlement
 
@@ -46,6 +47,11 @@ class AgentChain:
                 "name": "claim_status_checker",
                 "func": check_claim_status,
                 "description": "Look up the status and details of an existing claim from the claims database by claim ID.",
+            },
+            {
+                "name": "knowledge_retrieval",
+                "func": knowledge_retrieval,
+                "description": "Search the knowledge base for policy terms, coverage details, exclusions, and regulatory information. Use this for questions about policy coverage, exclusions, waiting periods, and specific policy wordings.",
             },
         ]
 
@@ -586,6 +592,61 @@ class AgentChain:
         self._record_tool_timing("claim_status_checker", start, timings, trace_id)
         return self._format_claim_status_answer(intent, result)
 
+    def _handle_knowledge_retrieval(
+        self,
+        intent: FAQResponse,
+        message: str,
+        timings: Dict[str, Any],
+        trace_id: Optional[str],
+    ) -> FAQResponse:
+        """Handle knowledge base retrieval queries using RAG."""
+        start = time.time()
+        
+        # Extract insurance type from message if mentioned
+        insurance_type = None
+        message_lower = message.lower()
+        if "health" in message_lower or "medical" in message_lower:
+            insurance_type = "health"
+        elif "motor" in message_lower or "car" in message_lower or "vehicle" in message_lower:
+            insurance_type = "motor"
+        
+        # Build metadata filter if insurance type detected
+        metadata_filter = None
+        if insurance_type:
+            metadata_filter = {"insurance_type": insurance_type}
+        
+        # Call knowledge retrieval tool
+        result = knowledge_retrieval(
+            query=message,
+            top_k=3,
+            claim_context=None,
+            metadata_filter=metadata_filter,
+        )
+        
+        self._record_tool_timing("knowledge_retrieval", start, timings, trace_id)
+        
+        # Extract answer and citations
+        answer_text = result.get("answer_text", "No relevant information found in the knowledge base.")
+        citations = result.get("citations", [])
+        confidence = result.get("confidence", 0.5)
+        
+        # Build metadata with citations
+        metadata = {
+            **intent.metadata,
+            "tool": "knowledge_retrieval",
+            "tool_output": result,
+            "citations": citations,
+        }
+        
+        return FAQResponse(
+            intent=intent.intent,
+            category=intent.category,
+            confidence=confidence,
+            answer_text=answer_text,
+            reasoning=intent.reasoning or "Retrieved from knowledge base using RAG",
+            metadata=metadata,
+        )
+
     def _handle_escalation(
         self,
         intent: FAQResponse,
@@ -675,6 +736,8 @@ class AgentChain:
             response = self._handle_fraud_check(response, user_message, timings, trace_id, session_id)
         elif response.intent == FAQIntent.SETTLEMENT_QUERY:
             response = self._handle_settlement_query(response, user_message, timings, trace_id)
+        elif response.intent == FAQIntent.KNOWLEDGE_RETRIEVAL:
+            response = self._handle_knowledge_retrieval(response, user_message, timings, trace_id)
         elif response.intent == FAQIntent.ESCALATION:
             response = self._handle_escalation(response, user_message, timings, trace_id, session_id)
 

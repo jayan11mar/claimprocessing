@@ -1,0 +1,346 @@
+{
+  "timestamp": "2026-07-06 11:41:47 UTC",
+  "summary": {
+    "total_queries": 30,
+    "successful_queries": 30,
+    "failed_queries": 0,
+    "queries_with_trace_id": 30,
+    "queries_without_trace_id": 0,
+    "meets_minimum_requirement": true,
+    "langsmith_tracing_enabled": true
+  },
+  "langsmith_verification": {
+    "langsmith_available": true,
+    "verified_count": 0,
+    "failed_count": 30,
+    "total_traces": 30,
+    "verified": [],
+    "failed": [
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-RAG-01-1783338032",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-RAG-01-1783338032"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-RAG-02-1783338035",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-RAG-02-1783338035"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-RAG-03-1783338037",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-RAG-03-1783338037"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-RAG-04-1783338040",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-RAG-04-1783338040"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-RAG-05-1783338042",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-RAG-05-1783338042"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-RAG-06-1783338045",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-RAG-06-1783338045"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-RAG-07-1783338049",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-RAG-07-1783338049"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-RAG-08-1783338051",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-RAG-08-1783338051"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-RAG-09-1783338053",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-RAG-09-1783338053"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-RAG-10-1783338056",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-RAG-10-1783338056"
+      }
+    ]
+  },
+  "query_results": [
+    {
+      "query_id": "RAG-01",
+      "query": "Is pre-hospitalization medical expense covered under my health policy? What documents do I need to submit for reimbursement?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-01-1783338032",
+      "response_length": 85,
+      "intent": "DOCUMENTS_REQUIRED",
+      "confidence": 0.9
+    },
+    {
+      "query_id": "RAG-02",
+      "query": "My claim was rejected because the hospital is not in the network. What are my options? Can I still get partial reimbursement?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-02-1783338035",
+      "response_length": 62,
+      "intent": "CLAIM_STATUS",
+      "confidence": 0.9
+    },
+    {
+      "query_id": "RAG-03",
+      "query": "Are there any exclusions for knee replacement surgery? I have a health insurance policy from SBI.",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-03-1783338037",
+      "response_length": 89,
+      "intent": "OTHER",
+      "confidence": 0.8
+    },
+    {
+      "query_id": "RAG-04",
+      "query": "How long does it take to settle a motor insurance claim after submitting all documents?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-04-1783338040",
+      "response_length": 148,
+      "intent": "ESCALATION",
+      "confidence": 0.95
+    },
+    {
+      "query_id": "RAG-05",
+      "query": "What are the red flags for fraudulent health insurance claims that adjudicators look for?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-05-1783338042",
+      "response_length": 122,
+      "intent": "OTHER",
+      "confidence": 0.75
+    },
+    {
+      "query_id": "RAG-06",
+      "query": "My policy says 'cashless hospitalization' but the hospital asked for a deposit. Is that allowed?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-06-1783338045",
+      "response_length": 81,
+      "intent": "CLAIM_STATUS",
+      "confidence": 0.75
+    },
+    {
+      "query_id": "RAG-07",
+      "query": "What documents are required for filing a health insurance claim for day care procedures?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-07-1783338049",
+      "response_length": 104,
+      "intent": "DOCUMENTS_REQUIRED",
+      "confidence": 0.9
+    },
+    {
+      "query_id": "RAG-08",
+      "query": "Can I add my parents to my existing health insurance policy as dependents?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-08-1783338051",
+      "response_length": 82,
+      "intent": "OTHER",
+      "confidence": 0.75
+    },
+    {
+      "query_id": "RAG-09",
+      "query": "What is the settlement process for a total loss claim in motor insurance?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-09-1783338053",
+      "response_length": 81,
+      "intent": "CLAIM_STATUS",
+      "confidence": 0.75
+    },
+    {
+      "query_id": "RAG-10",
+      "query": "I have a pre-existing condition (diabetes) and need to file a claim for hospitalization. Will it be covered?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-10-1783338056",
+      "response_length": 62,
+      "intent": "CLAIM_STATUS",
+      "confidence": 0.7
+    },
+    {
+      "query_id": "RAG-11",
+      "query": "How does the deductible work in my motor insurance policy? If my deductible is Rs 5000 and repair costs are Rs 30000, how much do I get?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-11-1783338059",
+      "response_length": 74,
+      "intent": "SETTLEMENT_QUERY",
+      "confidence": 0.9
+    },
+    {
+      "query_id": "RAG-12",
+      "query": "What is the IRDAI regulation on portability of health insurance policies? Can I switch to another insurer without losing benefits?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-12-1783338062",
+      "response_length": 118,
+      "intent": "OTHER",
+      "confidence": 0.75
+    },
+    {
+      "query_id": "RAG-13",
+      "query": "The hospital bill seems inflated compared to the procedure cost. Can the insurance company negotiate the bill?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-13-1783338064",
+      "response_length": 74,
+      "intent": "SETTLEMENT_QUERY",
+      "confidence": 0.9
+    },
+    {
+      "query_id": "RAG-14",
+      "query": "My health policy renewal premium has increased by 25% despite no claims. Is this allowed under IRDAI regulations?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-14-1783338067",
+      "response_length": 135,
+      "intent": "OTHER",
+      "confidence": 0.8
+    },
+    {
+      "query_id": "RAG-15",
+      "query": "What are the common fraud patterns in motor insurance claims involving staged accidents?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-15-1783338069",
+      "response_length": 82,
+      "intent": "FRAUD_CHECK",
+      "confidence": 0.9
+    },
+    {
+      "query_id": "RAG-16",
+      "query": "How do I check the status of my claim online? What information do I need to provide?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-16-1783338072",
+      "response_length": 65,
+      "intent": "CLAIM_STATUS",
+      "confidence": 0.9
+    },
+    {
+      "query_id": "RAG-17",
+      "query": "What happens if I miss the deadline for submitting documents for my insurance claim?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-17-1783338074",
+      "response_length": 81,
+      "intent": "CLAIM_STATUS",
+      "confidence": 0.9
+    },
+    {
+      "query_id": "RAG-18",
+      "query": "Are alternative treatments like Ayurveda or Homeopathy covered under standard health insurance policies?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-18-1783338077",
+      "response_length": 81,
+      "intent": "CLAIM_STATUS",
+      "confidence": 0.75
+    },
+    {
+      "query_id": "RAG-19",
+      "query": "What is the no-claim bonus in motor insurance and how does it affect my premium?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-19-1783338078",
+      "response_length": 64,
+      "intent": "CLAIM_STATUS",
+      "confidence": 0.9
+    },
+    {
+      "query_id": "RAG-20",
+      "query": "My treatment required ICU stay for 5 days. What is covered under ICU charges in my health policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-20-1783338080",
+      "response_length": 74,
+      "intent": "SETTLEMENT_QUERY",
+      "confidence": 0.85
+    },
+    {
+      "query_id": "RAG-21",
+      "query": "The Third Party Administrator (TPA) is delaying my cashless authorization. What can I do?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-21-1783338083",
+      "response_length": 81,
+      "intent": "CLAIM_STATUS",
+      "confidence": 0.9
+    },
+    {
+      "query_id": "RAG-22",
+      "query": "My car was damaged in a flood. Does my comprehensive motor insurance cover flood damage?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-22-1783338085",
+      "response_length": 103,
+      "intent": "OTHER",
+      "confidence": 0.8
+    },
+    {
+      "query_id": "RAG-23",
+      "query": "Can I claim medical expenses incurred abroad under my domestic health insurance policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-23-1783338087",
+      "response_length": 66,
+      "intent": "CLAIM_STATUS",
+      "confidence": 0.8
+    },
+    {
+      "query_id": "RAG-24",
+      "query": "The other party in my motor accident claim is uninsured. Will my own insurance cover the damages?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-24-1783338089",
+      "response_length": 81,
+      "intent": "CLAIM_STATUS",
+      "confidence": 0.75
+    },
+    {
+      "query_id": "RAG-25",
+      "query": "What is the difference between sum insured and reinstatement of cover in health insurance?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-25-1783338092",
+      "response_length": 74,
+      "intent": "SETTLEMENT_QUERY",
+      "confidence": 0.9
+    },
+    {
+      "query_id": "RAG-26",
+      "query": "I was diagnosed with COVID-19 and hospitalized. Are home quarantine expenses covered under health insurance?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-26-1783338095",
+      "response_length": 124,
+      "intent": "OTHER",
+      "confidence": 0.75
+    },
+    {
+      "query_id": "RAG-27",
+      "query": "How do insurance companies verify that a claim is genuine and not fraudulent?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-27-1783338097",
+      "response_length": 82,
+      "intent": "FRAUD_CHECK",
+      "confidence": 0.95
+    },
+    {
+      "query_id": "RAG-28",
+      "query": "My policy covers maternity benefits. What is the waiting period and what expenses are covered?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-28-1783338099",
+      "response_length": 99,
+      "intent": "CLAIM_REGISTRATION",
+      "confidence": 0.95
+    },
+    {
+      "query_id": "RAG-29",
+      "query": "My claim was settled but the amount seems less than my actual expenses. How is the claim amount calculated?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-29-1783338102",
+      "response_length": 52,
+      "intent": "SETTLEMENT_QUERY",
+      "confidence": 0.85
+    },
+    {
+      "query_id": "RAG-30",
+      "query": "How does the Insurance Ombudsman handle claim rejection disputes? What is the process?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-RAG-30-1783338104",
+      "response_length": 164,
+      "intent": "OTHER",
+      "confidence": 0.75
+    }
+  ],
+  "statistics": {
+    "avg_response_length": 97.0,
+    "intents_detected": [
+      "CLAIM_STATUS",
+      "OTHER",
+      "DOCUMENTS_REQUIRED",
+      "CLAIM_REGISTRATION",
+      "FRAUD_CHECK",
+      "ESCALATION",
+      "SETTLEMENT_QUERY"
+    ],
+    "avg_confidence": 0.8366666666666667
+  }
+}

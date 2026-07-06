@@ -207,11 +207,17 @@ class TestFAQChainCallLlm:
 
     def test_call_llm_with_invoke_method(self):
         chain = FAQChain()
-        # Remove generate and predict_messages from the mock so hasattr returns False
-        chain.model = MagicMock(spec=[])
-        mock_result = MagicMock()
-        mock_result.content = '{"intent": "CLAIM_REGISTRATION", "category": "claim", "confidence": 0.9, "answer_text": "Claim registered"}'
-        chain.model.invoke.return_value = mock_result
+        # Use a simple class instead of MagicMock so hasattr works correctly
+        # (MagicMock returns True for all hasattr checks, which breaks the
+        #  generate → predict_messages → invoke fallback logic)
+        class _InvokeOnlyModel:
+            def invoke(self, messages):
+                return _InvokeOnlyResult()
+        class _InvokeOnlyResult:
+            def __init__(self):
+                self.content = '{"intent": "CLAIM_REGISTRATION", "category": "claim", "confidence": 0.9, "answer_text": "Claim registered"}'
+                self.generations = []
+        chain.model = _InvokeOnlyModel()
 
         messages = [HumanMessage(content="Test")]
         response = chain._call_llm(messages)

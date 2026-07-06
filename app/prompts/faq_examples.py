@@ -48,7 +48,7 @@ def get_faq_examples() -> List[Dict[str, str]]:
         {
             "user": "Show me the claim history for policyholder ID P-3321.",
             "assistant": "Claim history summaries include filed claims, statuses, settled amounts, and pending actions. Provide your policyholder ID and I can look up the relevant history records.",
-            "intent": "POLICY_STATUS",
+            "intent": "CLAIM_STATUS",
             "category": "history",
         },
         {
@@ -77,8 +77,14 @@ def get_faq_examples() -> List[Dict[str, str]]:
         },
         {
             "user": "Draft a claim rejection letter with reasons.",
-            "assistant": "A rejection letter should clearly state the claim number, the policy provisions relied on, the specific reasons for rejection, and any next steps for appeal or additional documentation.",
+            "assistant": "A claim rejection letter should clearly state the claim number, the reasons for rejection such as coverage exclusion or missing documents, and the next steps for appeal or additional submission. It should remain professional and reference the relevant policy terms.",
             "intent": "OTHER",
             "category": "claims",
+        },
+        {
+            "user": "Escalate claim C2001 — it's been pending 20 days.",
+            "assistant": "I've escalated claim C2001 for priority review. The claim has been flagged as high priority due to the extended pending duration. A senior claims officer will review it within 24 hours.",
+            "intent": "ESCALATION",
+            "category": "escalation",
         },
     ]

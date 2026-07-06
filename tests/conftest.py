@@ -24,7 +24,8 @@ if not getattr(mock.MagicMock, "_copilot_empty_spec_patch", False):
         try:
             return _original_magicmock_getattr(self, name)
         except AttributeError:
-            if getattr(self, "_mock_methods", None) == []:
+            # Use __dict__ directly to avoid infinite recursion when checking _mock_methods
+            if self.__dict__.get("_mock_methods") == []:
                 child = mock.MagicMock(name=name)
                 setattr(self, name, child)
                 return child

@@ -77,6 +77,20 @@ class AgentChain:
                 return policy_number
         return ""
 
+    def _extract_claim_id_from_history(self, session_id: str) -> str:
+        """Extract the most recent claim ID from conversation history."""
+        if not self.memory:
+            return ""
+        
+        history = self.memory.get_history(session_id)
+        # Search from most recent to oldest
+        for message in reversed(history):
+            content = message.content if hasattr(message, "content") else str(message)
+            claim_id = self._extract_claim_id(content)
+            if claim_id:
+                return claim_id
+        return ""
+
     def _extract_incident_date(self, text: str) -> str:
         patterns = [
             r"(?:incident|loss|admission|treatment) date\s*(?:is|was|:)\s*([0-9]{4}-[0-9]{2}-[0-9]{2})",
@@ -276,27 +290,12 @@ class AgentChain:
         )
 
     def _format_policy_status_answer(self, base: FAQResponse, result: Any) -> FAQResponse:
-        """Format the policy status response, including key policy details
-        (copay, deductible, sum insured) so that the answer directly addresses
-        specific questions like "What is the co-pay percentage?" rather than
-        only returning the generic status message.
+        """Format the policy status response.
+        
+        Returns only the policy status message without additional details.
+        Details are available in metadata for follow-up questions.
         """
         answer_text = result.message
-        # Enrich the answer text with policy details from the tool output
-        # so that specific questions (copay, deductible, sum insured) are answered directly.
-        if result.details:
-            copay = result.details.get("copay_percent")
-            deductible = result.details.get("deductible")
-            sum_insured = result.details.get("sum_insured")
-            if copay is not None or deductible is not None or sum_insured is not None:
-                details_parts = []
-                if copay is not None:
-                    details_parts.append(f"Co-pay: {copay}%")
-                if deductible is not None:
-                    details_parts.append(f"Deductible: ${deductible}")
-                if sum_insured is not None:
-                    details_parts.append(f"Sum insured: ${sum_insured}")
-                answer_text += " " + " | ".join(details_parts) + "."
 
         return FAQResponse(
             intent=base.intent,
@@ -399,10 +398,16 @@ class AgentChain:
         message: str,
         timings: Dict[str, Any],
         trace_id: Optional[str],
+        session_id: Optional[str] = None,
     ) -> FAQResponse:
         # Prefer regex extraction from the raw message text over LLM metadata,
         # because the LLM may hallucinate claim_id values.
-        claim_id = self._extract_claim_id(message) or intent.metadata.get("claim_id")
+        # Fall back to session context if not found in current message.
+        claim_id = (
+            self._extract_claim_id(message)
+            or intent.metadata.get("claim_id")
+            or self._extract_claim_id_from_history(session_id or "")
+        )
         if not claim_id:
             return FAQResponse(
                 intent=intent.intent,
@@ -507,6 +512,46 @@ class AgentChain:
         self._record_tool_timing("claim_status_checker", start, timings, trace_id)
         return self._format_claim_status_answer(intent, result)
 
+    def _handle_escalation(
+        self,
+        intent: FAQResponse,
+        message: str,
+        timings: Dict[str, Any],
+        trace_id: Optional[str],
+        session_id: Optional[str] = None,
+    ) -> FAQResponse:
+        # Extract claim ID from message or session context
+        claim_id = (
+            self._extract_claim_id(message)
+            or intent.metadata.get("claim_id")
+            or self._extract_claim_id_from_history(session_id or "")
+        )
+        
+        if claim_id:
+            answer_text = (
+                f"I've escalated claim {claim_id} for priority review. "
+                f"The claim has been flagged as high priority. "
+                f"A senior claims officer will review it within 24 hours."
+            )
+        else:
+            answer_text = (
+                "I've escalated your claim for priority review. "
+                "A senior claims officer will review it within 24 hours."
+            )
+
+        return FAQResponse(
+            intent=intent.intent,
+            category=intent.category,
+            confidence=intent.confidence,
+            answer_text=answer_text,
+            reasoning="Claim escalation request processed.",
+            metadata={
+                **intent.metadata,
+                "tool": "escalation",
+                "claim_id": claim_id,
+            },
+        )
+
     def invoke(self, session_id: str, user_message: str, context: dict = None) -> FAQResponse:
         context = context or {}
         timings = context.get("timings") if isinstance(context.get("timings"), dict) else {"llm_ms": 0, "tools": []}
@@ -553,9 +598,11 @@ class AgentChain:
         elif response.intent == FAQIntent.CLAIM_STATUS:
             response = self._handle_claim_status(response, user_message, timings, trace_id)
         elif response.intent == FAQIntent.FRAUD_CHECK:
-            response = self._handle_fraud_check(response, user_message, timings, trace_id)
+            response = self._handle_fraud_check(response, user_message, timings, trace_id, session_id)
         elif response.intent == FAQIntent.SETTLEMENT_QUERY:
             response = self._handle_settlement_query(response, user_message, timings, trace_id)
+        elif response.intent == FAQIntent.ESCALATION:
+            response = self._handle_escalation(response, user_message, timings, trace_id, session_id)
 
         if isinstance(response.metadata, dict):
             response.metadata["timings"] = timings

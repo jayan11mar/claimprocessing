@@ -74,8 +74,13 @@ def render_chat_bubble(role: str, text: str, metadata: Optional[Dict[str, Any]] 
     return
 
 
-def render_citations(citations: list) -> None:
-    """Render clickable source citations below the chat bubble."""
+def render_citations(citations: list, message_index: str = "0") -> None:
+    """Render clickable source citations below the chat bubble with expandable chunk details.
+    
+    Args:
+        citations: List of citation dictionaries
+        message_index: Index of the message in conversation history for unique key generation (can include prefix like 'live_')
+    """
     if not citations:
         return
     
@@ -87,6 +92,8 @@ def render_citations(citations: list) -> None:
         source_path = citation.get("source_path", "")
         doc_type = citation.get("doc_type", "document")
         score = citation.get("score", 0.0)
+        chunk_id = citation.get("chunk_id", "N/A")
+        chunk_text = citation.get("text", "")
         
         # Create a clickable citation link
         with st.container():
@@ -101,6 +108,22 @@ def render_citations(citations: list) -> None:
                     st.markdown(f"**{source_id}** - `{source_path}` - *{doc_type}* (score: {score:.2f})")
                 else:
                     st.markdown(f"**{source_id}** - *{doc_type}* (score: {score:.2f})")
+            
+            # Add expandable panel for chunk details with unique key
+            with st.expander(f"📄 View Chunk Details [{idx}]", expanded=False):
+                st.markdown(f"**Chunk ID:** `{chunk_id}`")
+                st.markdown(f"**Source ID:** {source_id}")
+                st.markdown(f"**Relevance Score:** {score:.4f}")
+                
+                if chunk_text:
+                    st.markdown("**Chunk Text:**")
+                    st.text_area(
+                        "Chunk content",
+                        value=chunk_text,
+                        height=200,
+                        key=f"chunk_text_{message_index}_cit{idx}_{chunk_id}",
+                        label_visibility="collapsed"
+                    )
     
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -246,9 +269,9 @@ def main() -> None:
             # Display the assistant's response immediately with citations
             if resp.get("answer_text"):
                 render_chat_bubble("assistant", resp.get("answer_text"), None, len(st.session_state.history) - 1)
-                # Render clickable citations if available
+                # Render clickable citations if available (use 'live' prefix to distinguish from history)
                 if citations:
-                    render_citations(citations)
+                    render_citations(citations, f"live_{len(st.session_state.history) - 1}")
         except requests.RequestException as exc:
             st.warning(f"Unable to reach backend: {exc}")
             st.session_state.history.append(
@@ -279,7 +302,7 @@ def main() -> None:
             
             # Render clickable citations if available
             if citations:
-                render_citations(citations)
+                render_citations(citations, idx)
             
             with st.expander("Response metadata", expanded=False):
                 st.write("**Structured response**")

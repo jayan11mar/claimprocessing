@@ -1,0 +1,118 @@
+{
+  "project": "failure_analysis_test_cases",
+  "source": "Intentionally failing test cases to validate failure analysis infrastructure and generate comprehensive failure analysis document",
+  "threshold_metrics": {
+    "hit_rate_at_5": 0.85,
+    "mrr": 0.65,
+    "faithfulness": 0.9,
+    "answer_correctness": 0.8,
+    "llm_judge_avg": 4.0,
+    "citation_coverage": 1.0
+  },
+  "items": [
+    {
+      "id": "FAIL-01",
+      "query": "What is the claim settlement time for motor insurance?",
+      "expected_answer": "Motor insurance claims are typically settled within 5-7 business days after submission of all required documents including the FIR, RC copy, driving license, and repair estimate.",
+      "expected_chunks": ["settlement", "motor", "claim", "documents"],
+      "retrieved_chunks": ["completely irrelevant document about life insurance", "random text about banking"],
+      "difficulty": "easy",
+      "failure_reason": "missing evidence - retrieval system returned completely irrelevant documents",
+      "source": "synthetic failure case - retrieval failure"
+    },
+    {
+      "id": "FAIL-02",
+      "query": "Is pre-existing diabetes covered immediately in health insurance?",
+      "expected_answer": "Pre-existing conditions typically have a waiting period of 48 months as per IRDAI regulations. Diabetes would not be covered immediately unless the policy has a specific clause reducing this waiting period.",
+      "expected_chunks": ["pre-existing", "diabetes", "waiting period", "IRDAI"],
+      "retrieved_chunks": ["pre-existing"],
+      "difficulty": "medium",
+      "failure_reason": "missing evidence - only 1 of 4 expected chunks retrieved",
+      "source": "synthetic failure case - partial retrieval"
+    },
+    {
+      "id": "FAIL-03",
+      "query": "What documents are needed for cashless hospitalization?",
+      "expected_answer": "For cashless hospitalization, you need: health insurance card, policy document, valid photo ID, pre-authorization form from hospital, and the hospital should be in the insurer's network.",
+      "expected_chunks": ["cashless", "hospitalization", "documents", "network"],
+      "retrieved_chunks": [],
+      "difficulty": "easy",
+      "failure_reason": "missing evidence - no chunks retrieved (empty retrieval)",
+      "source": "synthetic failure case - empty retrieval"
+    },
+    {
+      "id": "FAIL-04",
+      "query": "How much does a no-claim bonus reduce my motor insurance premium?",
+      "expected_answer": "No-claim bonus (NCB) provides discounts ranging from 20% for one claim-free year to 50% for five consecutive claim-free years on the own-damage premium component.",
+      "expected_chunks": ["no-claim bonus", "NCB", "motor", "premium discount"],
+      "answer_override": "No-claim bonus increases your premium by 30% if you have no claims.",
+      "difficulty": "easy",
+      "failure_reason": "answer quality - completely incorrect information about NCB",
+      "source": "synthetic failure case - wrong answer"
+    },
+    {
+      "id": "FAIL-05",
+      "query": "What is the IRDAI regulation on health insurance portability?",
+      "expected_answer": "Under IRDAI Health Insurance Regulations 2016, policyholders can port their health insurance to another insurer. All accumulated benefits including no-claim bonus and waiting period credits are transferable. Request portability at least 45 days before renewal.",
+      "expected_chunks": ["IRDAI", "portability", "regulation", "health insurance"],
+      "answer_override": "IRDAI allows health insurance portability but only for the sum insured amount. No-claim bonus and waiting period credits are not transferable between insurers.",
+      "difficulty": "hard",
+      "failure_reason": "answer quality - partially correct but contains critical misinformation about portability benefits",
+      "source": "synthetic failure case - partially incorrect answer"
+    },
+    {
+      "id": "FAIL-06",
+      "query": "What are the fraud indicators in motor insurance claims?",
+      "expected_answer": "Fraud indicators include: claims submitted shortly after policy issuance, unusually high bills for routine procedures, mismatch between diagnosis and treatment, multiple claims from the same patient across insurers, and billing for services not documented in medical records.",
+      "expected_chunks": ["fraud", "red flags", "adjudicator", "claim"],
+      "answer_override": "Common fraud indicators are: claims filed more than 2 years after policy issuance, unusually low bills for major procedures, perfect match between diagnosis and treatment, single claim per patient per lifetime, and all services fully documented in medical records.",
+      "difficulty": "medium",
+      "failure_reason": "answer quality - answer contradicts expected fraud indicators (inverted logic)",
+      "source": "synthetic failure case - hallucinated/contradictory answer"
+    },
+    {
+      "id": "FAIL-07",
+      "query": "Can I get reimbursement for treatment at a non-network hospital?",
+      "expected_answer": "Non-network hospital claims may be covered at a reduced rate (usually 60-70% of eligible expenses). You can file a reimbursement claim with all original bills, discharge summary, and a reason for choosing a non-network hospital.",
+      "expected_chunks": ["network", "non-network", "reimbursement", "claim"],
+      "retrieved_chunks": ["network hospitals provide cashless treatment", "non-network hospitals are never covered"],
+      "answer_override": "Non-network hospitals are never covered under any circumstances. You will get zero reimbursement regardless of the situation.",
+      "difficulty": "medium",
+      "failure_reason": "citations - answer contradicts retrieved context which mentions non-network coverage",
+      "source": "synthetic failure case - answer contradicts evidence"
+    },
+    {
+      "id": "FAIL-08",
+      "query": "What is the waiting period for maternity benefits in health insurance?",
+      "expected_answer": "Maternity coverage typically has a waiting period of 9-24 months depending on the policy. Covered expenses include delivery charges (normal and C-section), hospitalization for delivery, and newborn care for up to 90 days.",
+      "expected_chunks": ["maternity", "waiting period", "delivery", "coverage"],
+      "retrieved_chunks": ["maternity benefits have no waiting period", "all maternity expenses are covered from day one"],
+      "answer_override": "Maternity benefits have no waiting period and all expenses are covered immediately from the first day of the policy.",
+      "difficulty": "hard",
+      "failure_reason": "citations - answer not grounded in retrieved context which mentions waiting period",
+      "source": "synthetic failure case - answer not supported by evidence"
+    },
+    {
+      "id": "FAIL-09",
+      "query": "How does the deductible work in motor insurance claims?",
+      "expected_answer": "The deductible is the amount you pay before the insurer covers the rest. For Rs 30000 repairs with Rs 5000 deductible, the insurer pays Rs 25000. Deductibles apply per claim and reduce premium costs.",
+      "expected_chunks": ["deductible", "motor", "claim", "premium"],
+      "retrieved_chunks": ["deductible"],
+      "answer_override": "The deductible is the amount the insurer pays before you contribute. For Rs 30000 repairs with Rs 5000 deductible, you pay Rs 25000 and the insurer pays Rs 5000.",
+      "difficulty": "medium",
+      "failure_reason": "missing evidence - poor retrieval combined with incorrect answer (inverted deductible explanation)",
+      "source": "synthetic failure case - combined retrieval and answer failure"
+    },
+    {
+      "id": "FAIL-10",
+      "query": "What should I do if the TPA delays my cashless authorization?",
+      "expected_answer": "If TPA is delaying pre-authorization beyond 4 hours for emergency or 24 hours for planned procedures, escalate to the insurer's grievance officer. IRDAI has mandated timelines for TPA responses. You can also file a complaint with the Insurance Ombudsman.",
+      "expected_chunks": ["TPA", "cashless", "authorization", "IRDAI"],
+      "retrieved_chunks": ["TPA processes all requests within 24 hours", "no escalation is ever needed"],
+      "answer_override": "TPA delays are normal and you should wait patiently. There is no escalation process and IRDAI has no regulations on TPA response times.",
+      "difficulty": "hard",
+      "failure_reason": "missing evidence - poor retrieval plus completely wrong answer denying escalation options",
+      "source": "synthetic failure case - combined retrieval and answer failure"
+    }
+  ]
+}

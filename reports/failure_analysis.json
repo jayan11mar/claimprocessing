@@ -1,6 +1,204 @@
 {
-  "retrieval": [],
-  "answer_quality": [],
-  "citations": [],
-  "other": []
+  "summary": {
+    "projects_evaluated": 1,
+    "cases_evaluated": 10,
+    "passed_cases": 1,
+    "failed_cases": 9,
+    "failure_buckets": {
+      "retrieval": [
+        "missing evidence - retrieval system returned completely irrelevant documents",
+        "missing evidence - no chunks retrieved (empty retrieval)",
+        "missing evidence - poor retrieval combined with incorrect answer (inverted deductible explanation)",
+        "missing evidence - poor retrieval plus completely wrong answer denying escalation options"
+      ],
+      "answer_quality": [
+        "answer quality - completely incorrect information about ncb",
+        "answer quality - partially correct but contains critical misinformation about portability benefits",
+        "answer quality - answer contradicts expected fraud indicators (inverted logic)",
+        "citations - answer contradicts retrieved context which mentions non-network coverage",
+        "citations - answer not grounded in retrieved context which mentions waiting period"
+      ],
+      "citations": [],
+      "other": []
+    }
+  },
+  "failed_queries": [
+    {
+      "id": "FAIL-01",
+      "query": "What is the claim settlement time for motor insurance?",
+      "reason": "missing evidence - retrieval system returned completely irrelevant documents",
+      "metrics": {
+        "hit_at_k": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 1.0,
+        "answer_correctness": 1.0,
+        "llm_judge_score": 5.0
+      },
+      "difficulty": "easy",
+      "source": "synthetic failure case - retrieval failure"
+    },
+    {
+      "id": "FAIL-03",
+      "query": "What documents are needed for cashless hospitalization?",
+      "reason": "missing evidence - no chunks retrieved (empty retrieval)",
+      "metrics": {
+        "hit_at_k": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 1.0,
+        "answer_correctness": 1.0,
+        "llm_judge_score": 3.75
+      },
+      "difficulty": "easy",
+      "source": "synthetic failure case - empty retrieval"
+    },
+    {
+      "id": "FAIL-04",
+      "query": "How much does a no-claim bonus reduce my motor insurance premium?",
+      "reason": "answer quality - completely incorrect information about NCB",
+      "metrics": {
+        "hit_at_k": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 0.136,
+        "answer_correctness": 0.136,
+        "llm_judge_score": 1.715
+      },
+      "difficulty": "easy",
+      "source": "synthetic failure case - wrong answer"
+    },
+    {
+      "id": "FAIL-05",
+      "query": "What is the IRDAI regulation on health insurance portability?",
+      "reason": "answer quality - partially correct but contains critical misinformation about portability benefits",
+      "metrics": {
+        "hit_at_k": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 0.333,
+        "answer_correctness": 0.333,
+        "llm_judge_score": 2.208
+      },
+      "difficulty": "hard",
+      "source": "synthetic failure case - partially incorrect answer"
+    },
+    {
+      "id": "FAIL-06",
+      "query": "What are the fraud indicators in motor insurance claims?",
+      "reason": "answer quality - answer contradicts expected fraud indicators (inverted logic)",
+      "metrics": {
+        "hit_at_k": 0.0,
+        "mrr": 0.0,
+        "faithfulness": 0.588,
+        "answer_correctness": 0.588,
+        "llm_judge_score": 2.845
+      },
+      "difficulty": "medium",
+      "source": "synthetic failure case - hallucinated/contradictory answer"
+    },
+    {
+      "id": "FAIL-07",
+      "query": "Can I get reimbursement for treatment at a non-network hospital?",
+      "reason": "citations - answer contradicts retrieved context which mentions non-network coverage",
+      "metrics": {
+        "hit_at_k": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 0.556,
+        "answer_correctness": 0.161,
+        "llm_judge_score": 3.027
+      },
+      "difficulty": "medium",
+      "source": "synthetic failure case - answer contradicts evidence"
+    },
+    {
+      "id": "FAIL-08",
+      "query": "What is the waiting period for maternity benefits in health insurance?",
+      "reason": "citations - answer not grounded in retrieved context which mentions waiting period",
+      "metrics": {
+        "hit_at_k": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 0.923,
+        "answer_correctness": 0.29,
+        "llm_judge_score": 3.35
+      },
+      "difficulty": "hard",
+      "source": "synthetic failure case - answer not supported by evidence"
+    },
+    {
+      "id": "FAIL-09",
+      "query": "How does the deductible work in motor insurance claims?",
+      "reason": "missing evidence - poor retrieval combined with incorrect answer (inverted deductible explanation)",
+      "metrics": {
+        "hit_at_k": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 1.0,
+        "answer_correctness": 0.63,
+        "llm_judge_score": 4.2
+      },
+      "difficulty": "medium",
+      "source": "synthetic failure case - combined retrieval and answer failure"
+    },
+    {
+      "id": "FAIL-10",
+      "query": "What should I do if the TPA delays my cashless authorization?",
+      "reason": "missing evidence - poor retrieval plus completely wrong answer denying escalation options",
+      "metrics": {
+        "hit_at_k": 1.0,
+        "mrr": 1.0,
+        "faithfulness": 0.333,
+        "answer_correctness": 0.147,
+        "llm_judge_score": 2.993
+      },
+      "difficulty": "hard",
+      "source": "synthetic failure case - combined retrieval and answer failure"
+    }
+  ],
+  "failure_buckets": {
+    "retrieval": [
+      "missing evidence - retrieval system returned completely irrelevant documents",
+      "missing evidence - no chunks retrieved (empty retrieval)",
+      "missing evidence - poor retrieval combined with incorrect answer (inverted deductible explanation)",
+      "missing evidence - poor retrieval plus completely wrong answer denying escalation options"
+    ],
+    "answer_quality": [
+      "answer quality - completely incorrect information about ncb",
+      "answer quality - partially correct but contains critical misinformation about portability benefits",
+      "answer quality - answer contradicts expected fraud indicators (inverted logic)",
+      "citations - answer contradicts retrieved context which mentions non-network coverage",
+      "citations - answer not grounded in retrieved context which mentions waiting period"
+    ],
+    "citations": [],
+    "other": []
+  },
+  "root_causes": {
+    "retrieval": "RAG system failed to retrieve relevant context chunks for the query",
+    "answer_quality": "Generated answer was incorrect, incomplete, or hallucinated",
+    "citations": "Answer was not properly grounded in the retrieved context",
+    "other": "Other failure modes not categorized above"
+  },
+  "proposed_fixes": {
+    "retrieval": [
+      "Improve embedding model for better semantic matching",
+      "Add query expansion techniques",
+      "Implement hybrid search (BM25 + vector)",
+      "Tune chunk size and overlap parameters",
+      "Add metadata filtering for domain-specific retrieval"
+    ],
+    "answer_quality": [
+      "Fine-tune LLM on domain-specific Q&A pairs",
+      "Add answer validation against retrieved context",
+      "Implement chain-of-thought prompting",
+      "Add post-processing to verify factual accuracy",
+      "Use larger or more capable LLM for generation"
+    ],
+    "citations": [
+      "Implement stricter grounding checks",
+      "Add citation verification step",
+      "Use extractive QA for factual claims",
+      "Implement fact-checking against retrieved context",
+      "Add penalties for unsupported claims in training"
+    ],
+    "other": [
+      "Review edge cases and add specific handling",
+      "Improve error handling and fallback mechanisms",
+      "Add human-in-the-loop for ambiguous queries"
+    ]
+  }
 }

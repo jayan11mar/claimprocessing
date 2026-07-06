@@ -1,11 +1,22 @@
 {
-  "projects_evaluated": 4,
-  "cases_evaluated": 200,
-  "passed_cases": 200,
-  "failed_cases": 0,
+  "projects_evaluated": 1,
+  "cases_evaluated": 10,
+  "passed_cases": 1,
+  "failed_cases": 9,
   "failure_buckets": {
-    "retrieval": [],
-    "answer_quality": [],
+    "retrieval": [
+      "missing evidence - retrieval system returned completely irrelevant documents",
+      "missing evidence - no chunks retrieved (empty retrieval)",
+      "missing evidence - poor retrieval combined with incorrect answer (inverted deductible explanation)",
+      "missing evidence - poor retrieval plus completely wrong answer denying escalation options"
+    ],
+    "answer_quality": [
+      "answer quality - completely incorrect information about ncb",
+      "answer quality - partially correct but contains critical misinformation about portability benefits",
+      "answer quality - answer contradicts expected fraud indicators (inverted logic)",
+      "citations - answer contradicts retrieved context which mentions non-network coverage",
+      "citations - answer not grounded in retrieved context which mentions waiting period"
+    ],
     "citations": [],
     "other": []
   }

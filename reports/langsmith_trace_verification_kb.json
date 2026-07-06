@@ -1,0 +1,340 @@
+{
+  "timestamp": "2026-07-06 14:04:37 UTC",
+  "summary": {
+    "total_queries": 30,
+    "successful_queries": 30,
+    "failed_queries": 0,
+    "queries_with_trace_id": 30,
+    "queries_without_trace_id": 0,
+    "meets_minimum_requirement": true,
+    "langsmith_tracing_enabled": true
+  },
+  "langsmith_verification": {
+    "langsmith_available": true,
+    "verified_count": 0,
+    "failed_count": 30,
+    "total_traces": 30,
+    "verified": [],
+    "failed": [
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-001-1783346241",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-GOLDEN-001-1783346241"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-002-1783346257",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-GOLDEN-002-1783346257"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-003-1783346271",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-GOLDEN-003-1783346271"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-004-1783346287",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-GOLDEN-004-1783346287"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-005-1783346301",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-GOLDEN-005-1783346301"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-006-1783346316",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-GOLDEN-006-1783346316"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-007-1783346330",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-GOLDEN-007-1783346330"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-008-1783346345",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-GOLDEN-008-1783346345"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-009-1783346359",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-GOLDEN-009-1783346359"
+      },
+      {
+        "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-010-1783346374",
+        "error": "run_id must be a valid UUID or UUID string. Got ls-agent_invoke:langsmith-verify-GOLDEN-010-1783346374"
+      }
+    ]
+  },
+  "query_results": [
+    {
+      "query_id": "GOLDEN-001",
+      "query": "What is covered under pre-existing diseases in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-001-1783346241",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.816
+    },
+    {
+      "query_id": "GOLDEN-002",
+      "query": "Are there any exclusions for pre-existing diseases?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-002-1783346257",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-003",
+      "query": "What is covered under day care procedures in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-003-1783346271",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.818
+    },
+    {
+      "query_id": "GOLDEN-004",
+      "query": "Are there any exclusions for day care procedures?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-004-1783346287",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.815
+    },
+    {
+      "query_id": "GOLDEN-005",
+      "query": "What is covered under pre-hospitalization in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-005-1783346301",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.819
+    },
+    {
+      "query_id": "GOLDEN-006",
+      "query": "Are there any exclusions for pre-hospitalization?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-006-1783346316",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-007",
+      "query": "What is covered under post-hospitalization in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-007-1783346330",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.819
+    },
+    {
+      "query_id": "GOLDEN-008",
+      "query": "Are there any exclusions for post-hospitalization?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-008-1783346345",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-009",
+      "query": "What is covered under senior citizen in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-009-1783346359",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.812
+    },
+    {
+      "query_id": "GOLDEN-010",
+      "query": "Are there any exclusions for senior citizen?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-010-1783346374",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-011",
+      "query": "What is covered under pre-existing diseases in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-011-1783346388",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.816
+    },
+    {
+      "query_id": "GOLDEN-012",
+      "query": "Are there any exclusions for pre-existing diseases?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-012-1783346403",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-013",
+      "query": "What is covered under senior citizen in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-013-1783346417",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.812
+    },
+    {
+      "query_id": "GOLDEN-014",
+      "query": "Are there any exclusions for senior citizen?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-014-1783346431",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-015",
+      "query": "What is covered under pre-existing diseases in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-015-1783346446",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.816
+    },
+    {
+      "query_id": "GOLDEN-016",
+      "query": "Are there any exclusions for pre-existing diseases?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-016-1783346460",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-017",
+      "query": "What is covered under pre-hospitalization in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-017-1783346474",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.819
+    },
+    {
+      "query_id": "GOLDEN-018",
+      "query": "Are there any exclusions for pre-hospitalization?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-018-1783346489",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-019",
+      "query": "What is covered under post-hospitalization in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-019-1783346503",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.819
+    },
+    {
+      "query_id": "GOLDEN-020",
+      "query": "Are there any exclusions for post-hospitalization?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-020-1783346517",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-021",
+      "query": "What is covered under senior citizen in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-021-1783346532",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.812
+    },
+    {
+      "query_id": "GOLDEN-022",
+      "query": "Are there any exclusions for senior citizen?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-022-1783346547",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-023",
+      "query": "What is covered under total loss in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-023-1783346562",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.82
+    },
+    {
+      "query_id": "GOLDEN-024",
+      "query": "Are there any exclusions for total loss?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-024-1783346576",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.818
+    },
+    {
+      "query_id": "GOLDEN-025",
+      "query": "What is covered under third party liability in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-025-1783346591",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-026",
+      "query": "Are there any exclusions for third party liability?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-026-1783346605",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.816
+    },
+    {
+      "query_id": "GOLDEN-027",
+      "query": "What is covered under own damage in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-027-1783346619",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-028",
+      "query": "Are there any exclusions for own damage?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-028-1783346634",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.815
+    },
+    {
+      "query_id": "GOLDEN-029",
+      "query": "What is covered under deductible in this policy?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-029-1783346648",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.817
+    },
+    {
+      "query_id": "GOLDEN-030",
+      "query": "Are there any exclusions for deductible?",
+      "status": "success",
+      "trace_id": "ls-agent_invoke:langsmith-verify-GOLDEN-030-1783346662",
+      "response_length": 289,
+      "intent": "KNOWLEDGE_RETRIEVAL",
+      "confidence": 0.816
+    }
+  ],
+  "statistics": {
+    "avg_response_length": 50.86666666666667,
+    "intents_detected": [
+      "KNOWLEDGE_RETRIEVAL"
+    ],
+    "avg_confidence": 0.8166333333333334
+  }
+}

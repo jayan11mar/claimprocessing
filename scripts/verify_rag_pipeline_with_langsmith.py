@@ -30,8 +30,8 @@ from app.rag.chunkers import ChunkConfig, chunk_document
 from app.langsmith_integration import init_langsmith, _LS_AVAILABLE
 
 # Configuration
-GOLDEN_DATASET_PATH = project_root / "data" / "golden_dataset" / "rag_claims_insurance.json"
-REPORT_OUTPUT_PATH = project_root / "reports" / "rag_pipeline_langsmith_verification.json"
+GOLDEN_DATASET_PATH = project_root / "data" / "golden_dataset" / "rag_knowledge_base_golden.json"
+REPORT_OUTPUT_PATH = project_root / "reports" / "rag_pipeline_langsmith_verification_kb.json"
 MIN_QUERIES = 30
 
 

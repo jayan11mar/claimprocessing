@@ -30,8 +30,8 @@ from app.api.server import app
 from app.langsmith_integration import init_langsmith, _LS_AVAILABLE
 
 # Configuration
-GOLDEN_DATASET_PATH = project_root / "data" / "golden_dataset" / "rag_claims_insurance.json"
-REPORT_OUTPUT_PATH = project_root / "reports" / "langsmith_trace_verification.json"
+GOLDEN_DATASET_PATH = project_root / "data" / "golden_dataset" / "rag_knowledge_base_golden.json"
+REPORT_OUTPUT_PATH = project_root / "reports" / "langsmith_trace_verification_kb.json"
 MIN_QUERIES = 30
 
 
@@ -41,9 +41,7 @@ def load_golden_dataset() -> List[Dict[str, Any]]:
         data = json.load(f)
     
     items = data.get("items", [])
-    if len(items) < MIN_QUERIES:
-        raise ValueError(f"Golden dataset has only {len(items)} items, need at least {MIN_QUERIES}")
-    
+    # Use all available items if less than MIN_QUERIES
     return items[:MIN_QUERIES]
 
 

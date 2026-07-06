@@ -1,0 +1,844 @@
+{
+  "project": "claims / insurance",
+  "source": "Generated from knowledge base documents in data/knowledge_base",
+  "description": "Golden set with expected answers for RAG evaluation",
+  "threshold_metrics": {
+    "hit_rate_at_5": 0.85,
+    "mrr": 0.65,
+    "faithfulness": 0.9,
+    "answer_correctness": 0.8,
+    "llm_judge_avg": 4.0,
+    "citation_coverage": 1.0
+  },
+  "total_items": 46,
+  "items": [
+    {
+      "id": "GOLDEN-001",
+      "query": "What is covered under pre-existing diseases in this policy?",
+      "expected_answer": "Pre-existing diseases are typically covered after a waiting period of 48 months as per IRDAI regulations. Some policies may offer shorter waiting periods. Check the policy schedule for the specific waiting period applicable.",
+      "expected_chunks": [
+        "pre-existing diseases",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "pre-existing diseases"
+      }
+    },
+    {
+      "id": "GOLDEN-002",
+      "query": "Are there any exclusions for pre-existing diseases?",
+      "expected_answer": "Pre-existing diseases are typically covered after a waiting period of 48 months as per IRDAI regulations. Some policies may offer shorter waiting periods. Check the policy schedule for the specific waiting period applicable.",
+      "expected_chunks": [
+        "pre-existing diseases",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "pre-existing diseases"
+      }
+    },
+    {
+      "id": "GOLDEN-003",
+      "query": "What is covered under day care procedures in this policy?",
+      "expected_answer": "Day care procedures (less than 24 hours hospitalization) are covered. Required documents include claim form, doctor's certificate, investigation reports, and hospital authorization.",
+      "expected_chunks": [
+        "day care procedures",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "day care procedures"
+      }
+    },
+    {
+      "id": "GOLDEN-004",
+      "query": "Are there any exclusions for day care procedures?",
+      "expected_answer": "Day care procedures (less than 24 hours hospitalization) are covered. Required documents include claim form, doctor's certificate, investigation reports, and hospital authorization.",
+      "expected_chunks": [
+        "day care procedures",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "day care procedures"
+      }
+    },
+    {
+      "id": "GOLDEN-005",
+      "query": "What is covered under pre-hospitalization in this policy?",
+      "expected_answer": "Based on the policy_wording, by medical societies like cardiological society of India, neurological society of India etc. b) Pre-Hospitalization Medical Expenses for consultations...",
+      "expected_chunks": [
+        "pre-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "pre-hospitalization"
+      }
+    },
+    {
+      "id": "GOLDEN-006",
+      "query": "Are there any exclusions for pre-hospitalization?",
+      "expected_answer": "Based on the policy_wording, by medical societies like cardiological society of India, neurological society of India etc. b) Pre-Hospitalization Medical Expenses for consultations...",
+      "expected_chunks": [
+        "pre-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "pre-hospitalization"
+      }
+    },
+    {
+      "id": "GOLDEN-007",
+      "query": "What is covered under post-hospitalization in this policy?",
+      "expected_answer": "Based on the policy_wording, before the date of admission to the Hospital (Inpatient or Day Care or Domiciliary treatment) c) Post-Hospitalization Medical Expenses for consultatio...",
+      "expected_chunks": [
+        "post-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "post-hospitalization"
+      }
+    },
+    {
+      "id": "GOLDEN-008",
+      "query": "Are there any exclusions for post-hospitalization?",
+      "expected_answer": "Based on the policy_wording, before the date of admission to the Hospital (Inpatient or Day Care or Domiciliary treatment) c) Post-Hospitalization Medical Expenses for consultatio...",
+      "expected_chunks": [
+        "post-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "post-hospitalization"
+      }
+    },
+    {
+      "id": "GOLDEN-009",
+      "query": "What is covered under senior citizen in this policy?",
+      "expected_answer": "Based on the policy_wording, r Insurance Ombudsmen (CIO) www.cioins.co.in Dedicated Helpline For Email ID Contact Number Senior Citizen seniorcitizen@hdfcergo.com 022 6158 2026 HD...",
+      "expected_chunks": [
+        "senior citizen",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "senior citizen"
+      }
+    },
+    {
+      "id": "GOLDEN-010",
+      "query": "Are there any exclusions for senior citizen?",
+      "expected_answer": "Based on the policy_wording, r Insurance Ombudsmen (CIO) www.cioins.co.in Dedicated Helpline For Email ID Contact Number Senior Citizen seniorcitizen@hdfcergo.com 022 6158 2026 HD...",
+      "expected_chunks": [
+        "senior citizen",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "senior citizen"
+      }
+    },
+    {
+      "id": "GOLDEN-011",
+      "query": "What is covered under pre-existing diseases in this policy?",
+      "expected_answer": "Pre-existing diseases are typically covered after a waiting period of 48 months as per IRDAI regulations. Some policies may offer shorter waiting periods. Check the policy schedule for the specific waiting period applicable.",
+      "expected_chunks": [
+        "pre-existing diseases",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_kotak",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "pre-existing diseases"
+      }
+    },
+    {
+      "id": "GOLDEN-012",
+      "query": "Are there any exclusions for pre-existing diseases?",
+      "expected_answer": "Pre-existing diseases are typically covered after a waiting period of 48 months as per IRDAI regulations. Some policies may offer shorter waiting periods. Check the policy schedule for the specific waiting period applicable.",
+      "expected_chunks": [
+        "pre-existing diseases",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_kotak",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "pre-existing diseases"
+      }
+    },
+    {
+      "id": "GOLDEN-013",
+      "query": "What is covered under senior citizen in this policy?",
+      "expected_answer": "Based on the policy_wording, ior to date of such revision or modification. 15. Special Provision for Insured Person who are Senior citizen The premium charged for health Insurance...",
+      "expected_chunks": [
+        "senior citizen",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_kotak",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "senior citizen"
+      }
+    },
+    {
+      "id": "GOLDEN-014",
+      "query": "Are there any exclusions for senior citizen?",
+      "expected_answer": "Based on the policy_wording, ior to date of such revision or modification. 15. Special Provision for Insured Person who are Senior citizen The premium charged for health Insurance...",
+      "expected_chunks": [
+        "senior citizen",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_kotak",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "senior citizen"
+      }
+    },
+    {
+      "id": "GOLDEN-015",
+      "query": "What is covered under pre-existing diseases in this policy?",
+      "expected_answer": "Pre-existing diseases are typically covered after a waiting period of 48 months as per IRDAI regulations. Some policies may offer shorter waiting periods. Check the policy schedule for the specific waiting period applicable.",
+      "expected_chunks": [
+        "pre-existing diseases",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "pre-existing diseases"
+      }
+    },
+    {
+      "id": "GOLDEN-016",
+      "query": "Are there any exclusions for pre-existing diseases?",
+      "expected_answer": "Pre-existing diseases are typically covered after a waiting period of 48 months as per IRDAI regulations. Some policies may offer shorter waiting periods. Check the policy schedule for the specific waiting period applicable.",
+      "expected_chunks": [
+        "pre-existing diseases",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "pre-existing diseases"
+      }
+    },
+    {
+      "id": "GOLDEN-017",
+      "query": "What is covered under pre-hospitalization in this policy?",
+      "expected_answer": "Based on the policy_wording, m, a physician, not more than 24 months prior to the date of commencement of the Policy. 2.1.(at). Pre-Hospitalization Medical Expenses means Medical ...",
+      "expected_chunks": [
+        "pre-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "pre-hospitalization"
+      }
+    },
+    {
+      "id": "GOLDEN-018",
+      "query": "Are there any exclusions for pre-hospitalization?",
+      "expected_answer": "Based on the policy_wording, m, a physician, not more than 24 months prior to the date of commencement of the Policy. 2.1.(at). Pre-Hospitalization Medical Expenses means Medical ...",
+      "expected_chunks": [
+        "pre-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "pre-hospitalization"
+      }
+    },
+    {
+      "id": "GOLDEN-019",
+      "query": "What is covered under post-hospitalization in this policy?",
+      "expected_answer": "Based on the policy_wording, tion Cover, 3.1(d). Organ Donor, 3.1(e). Modern Treatments or 3.1(f). Home Health Care. 3(f). Post-Hospitalization We will indemnify the Insured Perso...",
+      "expected_chunks": [
+        "post-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "post-hospitalization"
+      }
+    },
+    {
+      "id": "GOLDEN-020",
+      "query": "Are there any exclusions for post-hospitalization?",
+      "expected_answer": "Based on the policy_wording, tion Cover, 3.1(d). Organ Donor, 3.1(e). Modern Treatments or 3.1(f). Home Health Care. 3(f). Post-Hospitalization We will indemnify the Insured Perso...",
+      "expected_chunks": [
+        "post-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "post-hospitalization"
+      }
+    },
+    {
+      "id": "GOLDEN-021",
+      "query": "What is covered under senior citizen in this policy?",
+      "expected_answer": "Based on the policy_wording, l towards Room and Boarding expenses and shall include the associated Medical Expenses. 2.1.(az). Senior Citizen means any person, who has attained th...",
+      "expected_chunks": [
+        "senior citizen",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "senior citizen"
+      }
+    },
+    {
+      "id": "GOLDEN-022",
+      "query": "Are there any exclusions for senior citizen?",
+      "expected_answer": "Based on the policy_wording, l towards Room and Boarding expenses and shall include the associated Medical Expenses. 2.1.(az). Senior Citizen means any person, who has attained th...",
+      "expected_chunks": [
+        "senior citizen",
+        "policy_wording",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "senior citizen"
+      }
+    },
+    {
+      "id": "GOLDEN-023",
+      "query": "What is covered under total loss in this policy?",
+      "expected_answer": "For total loss claims, the insurer assesses the pre-accident value (IDV) of the vehicle. Settlement is the IDV minus deductible. Required documents: FIR, vehicle RC, insurance policy copy, and salvage certificate.",
+      "expected_chunks": [
+        "total loss",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "total loss"
+      }
+    },
+    {
+      "id": "GOLDEN-024",
+      "query": "Are there any exclusions for total loss?",
+      "expected_answer": "For total loss claims, the insurer assesses the pre-accident value (IDV) of the vehicle. Settlement is the IDV minus deductible. Required documents: FIR, vehicle RC, insurance policy copy, and salvage certificate.",
+      "expected_chunks": [
+        "total loss",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "total loss"
+      }
+    },
+    {
+      "id": "GOLDEN-025",
+      "query": "What is covered under third party liability in this policy?",
+      "expected_answer": "Based on the policy_wording, d shall be made to the Insured. Under no circumstances, the Company will cancel statutory Motor Third Party Liability insurance or any other compulsor...",
+      "expected_chunks": [
+        "third party liability",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "third party liability"
+      }
+    },
+    {
+      "id": "GOLDEN-026",
+      "query": "Are there any exclusions for third party liability?",
+      "expected_answer": "Based on the policy_wording, d shall be made to the Insured. Under no circumstances, the Company will cancel statutory Motor Third Party Liability insurance or any other compulsor...",
+      "expected_chunks": [
+        "third party liability",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "third party liability"
+      }
+    },
+    {
+      "id": "GOLDEN-027",
+      "query": "What is covered under own damage in this policy?",
+      "expected_answer": "Based on the policy_wording, been incorporated in the Registration Book by the Registering Authority, a discount of 50% on the Own Damage premium for the vehicle insured is hereby...",
+      "expected_chunks": [
+        "own damage",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "own damage"
+      }
+    },
+    {
+      "id": "GOLDEN-028",
+      "query": "Are there any exclusions for own damage?",
+      "expected_answer": "Based on the policy_wording, been incorporated in the Registration Book by the Registering Authority, a discount of 50% on the Own Damage premium for the vehicle insured is hereby...",
+      "expected_chunks": [
+        "own damage",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "own damage"
+      }
+    },
+    {
+      "id": "GOLDEN-029",
+      "query": "What is covered under deductible in this policy?",
+      "expected_answer": "Based on the policy_wording, aim under Section - I (loss of or damage to the vehicle insured) of this policy in respect of the Deductible stated in the Schedule. This Policy and t...",
+      "expected_chunks": [
+        "deductible",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "deductible"
+      }
+    },
+    {
+      "id": "GOLDEN-030",
+      "query": "Are there any exclusions for deductible?",
+      "expected_answer": "Based on the policy_wording, aim under Section - I (loss of or damage to the vehicle insured) of this policy in respect of the Deductible stated in the Schedule. This Policy and t...",
+      "expected_chunks": [
+        "deductible",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "deductible"
+      }
+    },
+    {
+      "id": "GOLDEN-031",
+      "query": "What is covered under no claim bonus in this policy?",
+      "expected_answer": "No-claim bonus (NCB) is a discount on the own-damage premium for claim-free years. Discounts range from 20% for one year to 50% for five consecutive claim-free years. NCB is transferable between insurers and vehicles.",
+      "expected_chunks": [
+        "no claim bonus",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "no claim bonus"
+      }
+    },
+    {
+      "id": "GOLDEN-032",
+      "query": "Are there any exclusions for no claim bonus?",
+      "expected_answer": "No-claim bonus (NCB) is a discount on the own-damage premium for claim-free years. Discounts range from 20% for one year to 50% for five consecutive claim-free years. NCB is transferable between insurers and vehicles.",
+      "expected_chunks": [
+        "no claim bonus",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "no claim bonus"
+      }
+    },
+    {
+      "id": "GOLDEN-033",
+      "query": "What is covered under total loss in this policy?",
+      "expected_answer": "For total loss claims, the insurer assesses the pre-accident value (IDV) of the vehicle. Settlement is the IDV minus deductible. Required documents: FIR, vehicle RC, insurance policy copy, and salvage certificate.",
+      "expected_chunks": [
+        "total loss",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "total loss"
+      }
+    },
+    {
+      "id": "GOLDEN-034",
+      "query": "Are there any exclusions for total loss?",
+      "expected_answer": "For total loss claims, the insurer assesses the pre-accident value (IDV) of the vehicle. Settlement is the IDV minus deductible. Required documents: FIR, vehicle RC, insurance policy copy, and salvage certificate.",
+      "expected_chunks": [
+        "total loss",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "total loss"
+      }
+    },
+    {
+      "id": "GOLDEN-035",
+      "query": "What is covered under third party liability in this policy?",
+      "expected_answer": "Based on the policy_wording, 7 days to the retail policyholder. · Under no circumstances can the company cancel statutory Motor Third Party Liability insurance, or any other compu...",
+      "expected_chunks": [
+        "third party liability",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "third party liability"
+      }
+    },
+    {
+      "id": "GOLDEN-036",
+      "query": "Are there any exclusions for third party liability?",
+      "expected_answer": "Based on the policy_wording, 7 days to the retail policyholder. · Under no circumstances can the company cancel statutory Motor Third Party Liability insurance, or any other compu...",
+      "expected_chunks": [
+        "third party liability",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "third party liability"
+      }
+    },
+    {
+      "id": "GOLDEN-037",
+      "query": "What is covered under deductible in this policy?",
+      "expected_answer": "Based on the policy_wording, 5000/- for Private Cars or Rs 2500/- for motorised two-wheelers. For the duration of the event the deductible under Section 1 of this Policy for the p...",
+      "expected_chunks": [
+        "deductible",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "deductible"
+      }
+    },
+    {
+      "id": "GOLDEN-038",
+      "query": "Are there any exclusions for deductible?",
+      "expected_answer": "Based on the policy_wording, 5000/- for Private Cars or Rs 2500/- for motorised two-wheelers. For the duration of the event the deductible under Section 1 of this Policy for the p...",
+      "expected_chunks": [
+        "deductible",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "deductible"
+      }
+    },
+    {
+      "id": "GOLDEN-039",
+      "query": "What is covered under no claim bonus in this policy?",
+      "expected_answer": "No-claim bonus (NCB) is a discount on the own-damage premium for claim-free years. Discounts range from 20% for one year to 50% for five consecutive claim-free years. NCB is transferable between insurers and vehicles.",
+      "expected_chunks": [
+        "no claim bonus",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "no claim bonus"
+      }
+    },
+    {
+      "id": "GOLDEN-040",
+      "query": "Are there any exclusions for no claim bonus?",
+      "expected_answer": "No-claim bonus (NCB) is a discount on the own-damage premium for claim-free years. Discounts range from 20% for one year to 50% for five consecutive claim-free years. NCB is transferable between insurers and vehicles.",
+      "expected_chunks": [
+        "no claim bonus",
+        "policy_wording",
+        "motor"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "no claim bonus"
+      }
+    },
+    {
+      "id": "GOLDEN-041",
+      "query": "What does the regulation say about pre-existing diseases?",
+      "expected_answer": "As per IRDAI Health Insurance Regulations 2016, pre-existing diseases have a maximum waiting period of 48 months. Some insurers may offer reduced waiting periods. The waiting period credit is transferable on portability.",
+      "expected_chunks": [
+        "pre-existing diseases",
+        "regulation",
+        "health"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "regulation",
+      "source_doc": "irda_health_reg_2016",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "pre-existing diseases"
+      }
+    },
+    {
+      "id": "GOLDEN-042",
+      "query": "What are the IRDAI guidelines for pre-existing diseases?",
+      "expected_answer": "As per IRDAI Health Insurance Regulations 2016, pre-existing diseases have a maximum waiting period of 48 months. Some insurers may offer reduced waiting periods. The waiting period credit is transferable on portability.",
+      "expected_chunks": [
+        "pre-existing diseases",
+        "regulation",
+        "health"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "regulation",
+      "source_doc": "irda_health_reg_2016",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "pre-existing diseases"
+      }
+    },
+    {
+      "id": "GOLDEN-043",
+      "query": "What does the regulation say about senior citizen?",
+      "expected_answer": "Based on the regulation, nd exclusions, from one insurer to another or from one plan to another plan of the same insurer. “Senior citizen” means any person who has completed s...",
+      "expected_chunks": [
+        "senior citizen",
+        "regulation",
+        "health"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "regulation",
+      "source_doc": "irda_health_reg_2016",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "senior citizen"
+      }
+    },
+    {
+      "id": "GOLDEN-044",
+      "query": "What are the IRDAI guidelines for senior citizen?",
+      "expected_answer": "Based on the regulation, nd exclusions, from one insurer to another or from one plan to another plan of the same insurer. “Senior citizen” means any person who has completed s...",
+      "expected_chunks": [
+        "senior citizen",
+        "regulation",
+        "health"
+      ],
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "regulation",
+      "source_doc": "irda_health_reg_2016",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "senior citizen"
+      }
+    },
+    {
+      "id": "GOLDEN-045",
+      "query": "What are the network hospital benefits for senior citizen?",
+      "expected_answer": "Based on the network, grievance as and when required depending on the nature and circumstances of the grievance. 8.3 Senior Citizen Cell TPA to have a fully functional Seni...",
+      "expected_chunks": [
+        "senior citizen",
+        "network",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "network",
+      "source_doc": "network_agreement_pdf",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "senior citizen"
+      }
+    },
+    {
+      "id": "GOLDEN-046",
+      "query": "How does the network agreement affect senior citizen?",
+      "expected_answer": "Based on the network, grievance as and when required depending on the nature and circumstances of the grievance. 8.3 Senior Citizen Cell TPA to have a fully functional Seni...",
+      "expected_chunks": [
+        "senior citizen",
+        "network",
+        "health"
+      ],
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "network",
+      "source_doc": "network_agreement_pdf",
+      "metadata": {
+        "generated_from": "knowledge_base_documents",
+        "topic_category": "senior citizen"
+      }
+    }
+  ]
+}

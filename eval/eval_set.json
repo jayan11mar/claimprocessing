@@ -1,0 +1,652 @@
+{
+  "project": "claims / insurance",
+  "source": "Generated from knowledge base documents in data/knowledge_base",
+  "description": "Evaluation set for testing RAG retrieval and answer quality",
+  "total_items": 46,
+  "items": [
+    {
+      "id": "EVAL-001",
+      "query": "What is covered under pre-existing diseases in this policy?",
+      "expected_keywords": [
+        "pre-existing diseases",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo"
+    },
+    {
+      "id": "EVAL-002",
+      "query": "Are there any exclusions for pre-existing diseases?",
+      "expected_keywords": [
+        "pre-existing diseases",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo"
+    },
+    {
+      "id": "EVAL-003",
+      "query": "What is covered under day care procedures in this policy?",
+      "expected_keywords": [
+        "day care procedures",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo"
+    },
+    {
+      "id": "EVAL-004",
+      "query": "Are there any exclusions for day care procedures?",
+      "expected_keywords": [
+        "day care procedures",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo"
+    },
+    {
+      "id": "EVAL-005",
+      "query": "What is covered under pre-hospitalization in this policy?",
+      "expected_keywords": [
+        "pre-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo"
+    },
+    {
+      "id": "EVAL-006",
+      "query": "Are there any exclusions for pre-hospitalization?",
+      "expected_keywords": [
+        "pre-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo"
+    },
+    {
+      "id": "EVAL-007",
+      "query": "What is covered under post-hospitalization in this policy?",
+      "expected_keywords": [
+        "post-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo"
+    },
+    {
+      "id": "EVAL-008",
+      "query": "Are there any exclusions for post-hospitalization?",
+      "expected_keywords": [
+        "post-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo"
+    },
+    {
+      "id": "EVAL-009",
+      "query": "What is covered under senior citizen in this policy?",
+      "expected_keywords": [
+        "senior citizen",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo"
+    },
+    {
+      "id": "EVAL-010",
+      "query": "Are there any exclusions for senior citizen?",
+      "expected_keywords": [
+        "senior citizen",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_hdfcergo"
+    },
+    {
+      "id": "EVAL-011",
+      "query": "What is covered under pre-existing diseases in this policy?",
+      "expected_keywords": [
+        "pre-existing diseases",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_kotak"
+    },
+    {
+      "id": "EVAL-012",
+      "query": "Are there any exclusions for pre-existing diseases?",
+      "expected_keywords": [
+        "pre-existing diseases",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_kotak"
+    },
+    {
+      "id": "EVAL-013",
+      "query": "What is covered under senior citizen in this policy?",
+      "expected_keywords": [
+        "senior citizen",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_kotak"
+    },
+    {
+      "id": "EVAL-014",
+      "query": "Are there any exclusions for senior citizen?",
+      "expected_keywords": [
+        "senior citizen",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_kotak"
+    },
+    {
+      "id": "EVAL-015",
+      "query": "What is covered under pre-existing diseases in this policy?",
+      "expected_keywords": [
+        "pre-existing diseases",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi"
+    },
+    {
+      "id": "EVAL-016",
+      "query": "Are there any exclusions for pre-existing diseases?",
+      "expected_keywords": [
+        "pre-existing diseases",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi"
+    },
+    {
+      "id": "EVAL-017",
+      "query": "What is covered under pre-hospitalization in this policy?",
+      "expected_keywords": [
+        "pre-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi"
+    },
+    {
+      "id": "EVAL-018",
+      "query": "Are there any exclusions for pre-hospitalization?",
+      "expected_keywords": [
+        "pre-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi"
+    },
+    {
+      "id": "EVAL-019",
+      "query": "What is covered under post-hospitalization in this policy?",
+      "expected_keywords": [
+        "post-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi"
+    },
+    {
+      "id": "EVAL-020",
+      "query": "Are there any exclusions for post-hospitalization?",
+      "expected_keywords": [
+        "post-hospitalization",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi"
+    },
+    {
+      "id": "EVAL-021",
+      "query": "What is covered under senior citizen in this policy?",
+      "expected_keywords": [
+        "senior citizen",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi"
+    },
+    {
+      "id": "EVAL-022",
+      "query": "Are there any exclusions for senior citizen?",
+      "expected_keywords": [
+        "senior citizen",
+        "policy_wording",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "policy_wording",
+      "source_doc": "health_policy_sbi"
+    },
+    {
+      "id": "EVAL-023",
+      "query": "What is covered under total loss in this policy?",
+      "expected_keywords": [
+        "total loss",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private"
+    },
+    {
+      "id": "EVAL-024",
+      "query": "Are there any exclusions for total loss?",
+      "expected_keywords": [
+        "total loss",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private"
+    },
+    {
+      "id": "EVAL-025",
+      "query": "What is covered under third party liability in this policy?",
+      "expected_keywords": [
+        "third party liability",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private"
+    },
+    {
+      "id": "EVAL-026",
+      "query": "Are there any exclusions for third party liability?",
+      "expected_keywords": [
+        "third party liability",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private"
+    },
+    {
+      "id": "EVAL-027",
+      "query": "What is covered under own damage in this policy?",
+      "expected_keywords": [
+        "own damage",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private"
+    },
+    {
+      "id": "EVAL-028",
+      "query": "Are there any exclusions for own damage?",
+      "expected_keywords": [
+        "own damage",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private"
+    },
+    {
+      "id": "EVAL-029",
+      "query": "What is covered under deductible in this policy?",
+      "expected_keywords": [
+        "deductible",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private"
+    },
+    {
+      "id": "EVAL-030",
+      "query": "Are there any exclusions for deductible?",
+      "expected_keywords": [
+        "deductible",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private"
+    },
+    {
+      "id": "EVAL-031",
+      "query": "What is covered under no claim bonus in this policy?",
+      "expected_keywords": [
+        "no claim bonus",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private"
+    },
+    {
+      "id": "EVAL-032",
+      "query": "Are there any exclusions for no claim bonus?",
+      "expected_keywords": [
+        "no claim bonus",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi_private"
+    },
+    {
+      "id": "EVAL-033",
+      "query": "What is covered under total loss in this policy?",
+      "expected_keywords": [
+        "total loss",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi"
+    },
+    {
+      "id": "EVAL-034",
+      "query": "Are there any exclusions for total loss?",
+      "expected_keywords": [
+        "total loss",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi"
+    },
+    {
+      "id": "EVAL-035",
+      "query": "What is covered under third party liability in this policy?",
+      "expected_keywords": [
+        "third party liability",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi"
+    },
+    {
+      "id": "EVAL-036",
+      "query": "Are there any exclusions for third party liability?",
+      "expected_keywords": [
+        "third party liability",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi"
+    },
+    {
+      "id": "EVAL-037",
+      "query": "What is covered under deductible in this policy?",
+      "expected_keywords": [
+        "deductible",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi"
+    },
+    {
+      "id": "EVAL-038",
+      "query": "Are there any exclusions for deductible?",
+      "expected_keywords": [
+        "deductible",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi"
+    },
+    {
+      "id": "EVAL-039",
+      "query": "What is covered under no claim bonus in this policy?",
+      "expected_keywords": [
+        "no claim bonus",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi"
+    },
+    {
+      "id": "EVAL-040",
+      "query": "Are there any exclusions for no claim bonus?",
+      "expected_keywords": [
+        "no claim bonus",
+        "policy_wording",
+        "motor"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "motor",
+      "doc_type": "policy_wording",
+      "source_doc": "motor_policy_sbi"
+    },
+    {
+      "id": "EVAL-041",
+      "query": "What does the regulation say about pre-existing diseases?",
+      "expected_keywords": [
+        "pre-existing diseases",
+        "regulation",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "regulation",
+      "source_doc": "irda_health_reg_2016"
+    },
+    {
+      "id": "EVAL-042",
+      "query": "What are the IRDAI guidelines for pre-existing diseases?",
+      "expected_keywords": [
+        "pre-existing diseases",
+        "regulation",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "regulation",
+      "source_doc": "irda_health_reg_2016"
+    },
+    {
+      "id": "EVAL-043",
+      "query": "What does the regulation say about senior citizen?",
+      "expected_keywords": [
+        "senior citizen",
+        "regulation",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "regulation",
+      "source_doc": "irda_health_reg_2016"
+    },
+    {
+      "id": "EVAL-044",
+      "query": "What are the IRDAI guidelines for senior citizen?",
+      "expected_keywords": [
+        "senior citizen",
+        "regulation",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "hard",
+      "insurance_type": "health",
+      "doc_type": "regulation",
+      "source_doc": "irda_health_reg_2016"
+    },
+    {
+      "id": "EVAL-045",
+      "query": "What are the network hospital benefits for senior citizen?",
+      "expected_keywords": [
+        "senior citizen",
+        "network",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "network",
+      "source_doc": "network_agreement_pdf"
+    },
+    {
+      "id": "EVAL-046",
+      "query": "How does the network agreement affect senior citizen?",
+      "expected_keywords": [
+        "senior citizen",
+        "network",
+        "health"
+      ],
+      "top_k": 3,
+      "difficulty": "medium",
+      "insurance_type": "health",
+      "doc_type": "network",
+      "source_doc": "network_agreement_pdf"
+    }
+  ]
+}

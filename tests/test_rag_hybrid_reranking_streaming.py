@@ -1,4 +1,4 @@
-"""Phase 12 RAG regression tests.
+""" RAG regression tests.
 
 Technical context: hybrid retrieval, reranking, and streaming QA for claims knowledge retrieval.
 """

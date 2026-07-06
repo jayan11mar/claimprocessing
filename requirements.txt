@@ -40,7 +40,7 @@ beautifulsoup4
 lxml
 fpdf2
 
-# Optional: Redis-backed memory/cache (Phase 3B)
+# Optional: Redis-backed memory/cache 
 upstash-redis
 # redis
 

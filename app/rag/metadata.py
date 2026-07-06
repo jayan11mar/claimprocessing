@@ -16,7 +16,7 @@ REQUIRED_METADATA_FIELDS: List[str] = [
 def build_chunk_metadata(chunk: Any) -> Dict[str, Any]:
     """Build a metadata dictionary for a chunk using the shared schema.
 
-    Required fields from the phase plan are attached first, followed by any
+    Required fields from the shared schema are attached first, followed by any
     additional values stored in the chunk's raw metadata.
     """
     metadata: Dict[str, Any] = {}

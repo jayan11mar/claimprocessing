@@ -24,7 +24,7 @@ def test_chat_includes_retrieval_trace_and_citations_when_present(monkeypatch):
 
     resp = client.post(
         "/chat",
-        json={"session_id": "phase14", "message": "What does my policy cover?"},
+        json={"session_id": "puser4", "message": "What does my policy cover?"},
     )
 
     assert resp.status_code == 200

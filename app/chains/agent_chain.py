@@ -173,7 +173,13 @@ class AgentChain:
         for policy numbers, claim IDs, incident dates, and claim amounts so
         that follow-up turns in the same session can reuse previously supplied
         information without the user needing to re-enter it.
+
+        Extraction works in two ways:
+        1. Regex pattern matching on message text (policy numbers, claim IDs, etc.)
+        2. Structured JSON metadata parsing from assistant messages (looking for
+           tool_output fields that contain structured entities)
         """
+        import json
         context: Dict[str, Any] = {}
 
         if not self.memory or not session_id:
@@ -192,6 +198,7 @@ class AgentChain:
         for message in history:
             content = message.content if hasattr(message, "content") else str(message)
 
+            # --- Method 1: Regex pattern matching on raw text ---
             policy_number = self._extract_policy_number(content)
             if policy_number:
                 context["policy_number"] = policy_number
@@ -208,11 +215,78 @@ class AgentChain:
             if claim_amount > 0:
                 context["claim_amount"] = claim_amount
 
+            # --- Method 2: Structured JSON metadata parsing ---
+            # Assistant messages may contain JSON (e.g., tool output) embedded
+            # in the text, or may have metadata fields on the message object.
+            # Try to extract structured entities from any JSON found in content.
+            if hasattr(message, "type") and message.type == "assistant":
+                try:
+                    # Look for JSON blocks in the assistant response
+                    json_objects = self._extract_json_objects(content)
+                    for obj in json_objects:
+                        if isinstance(obj, dict):
+                            # Check for tool_output with claim_id or policy_number
+                            tool_output = obj.get("tool_output") or obj.get("metadata", {}).get("tool_output", {})
+                            if isinstance(tool_output, dict):
+                                if tool_output.get("claim_id") and "claim_id" not in context:
+                                    context["claim_id"] = tool_output["claim_id"]
+                                if tool_output.get("policy_number") and "policy_number" not in context:
+                                    context["policy_number"] = tool_output["policy_number"]
+
+                            # Direct metadata fields
+                            metadata = obj.get("metadata", {})
+                            if isinstance(metadata, dict):
+                                if metadata.get("claim_id") and "claim_id" not in context:
+                                    context["claim_id"] = metadata["claim_id"]
+                                if metadata.get("policy_number") and "policy_number" not in context:
+                                    context["policy_number"] = metadata["policy_number"]
+
+                            # Top-level fields in the JSON
+                            if obj.get("claim_id") and "claim_id" not in context:
+                                context["claim_id"] = obj["claim_id"]
+                            if obj.get("policy_number") and "policy_number" not in context:
+                                context["policy_number"] = obj["policy_number"]
+                except (json.JSONDecodeError, TypeError, ValueError):
+                    pass
+
         if "incident_date" in context:
             context.setdefault("extra_info", {})
             context["extra_info"]["incident_date"] = context["incident_date"]
 
         return context
+
+    def _extract_json_objects(self, text: str) -> list:
+        """Extract all JSON objects from a text string."""
+        import json
+        objects = []
+        stack = []
+        in_string = False
+        escaped = False
+        for index, char in enumerate(text):
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    in_string = False
+                continue
+            if char == '"':
+                in_string = True
+            elif char == "{":
+                stack.append(index)
+            elif char == "}":
+                if not stack:
+                    continue
+                start = stack.pop()
+                candidate = text[start:index + 1]
+                try:
+                    obj = json.loads(candidate)
+                    if isinstance(obj, dict):
+                        objects.append(obj)
+                except json.JSONDecodeError:
+                    continue
+        return objects
 
     def _record_tool_timing(self, tool_name: str, start: float, timings: Dict[str, Any], trace_id: Optional[str]) -> None:
         elapsed = int((time.time() - start) * 1000)

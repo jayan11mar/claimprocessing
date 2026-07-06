@@ -1,5 +1,6 @@
 from datetime import datetime
 import asyncio
+import hashlib
 import json
 import os
 import sqlite3
@@ -102,6 +103,12 @@ _rag_documents: Dict[str, Document] = {}
 _rag_vector_store: Any = None
 _ingest_jobs: Dict[str, Dict[str, Any]] = {}
 _rag_initialized = False
+
+# API-level conversation caching to avoid redundant processing
+# Cache structure: {session_id: {"response": ChatResponse, "timestamp": float, "message_hash": str}}
+_conversation_cache: Dict[str, Dict[str, Any]] = {}
+_CACHE_TTL_SECONDS = 300  # 5 minutes cache TTL
+_CACHE_MAX_SIZE = 1000  # Maximum number of cached sessions
 
 
 def _ensure_rag_documents_loaded() -> None:
@@ -291,6 +298,31 @@ def health() -> Dict[str, Any]:
     }
 
 
+def _get_cache_key(session_id: str, message: str) -> str:
+    """Generate a cache key from session_id and message."""
+    return hashlib.md5(f"{session_id}:{message}".encode()).hexdigest()
+
+
+def _cleanup_expired_cache() -> None:
+    """Remove expired entries from the conversation cache."""
+    global _conversation_cache
+    current_time = time.time()
+    expired_keys = [
+        key for key, value in _conversation_cache.items()
+        if current_time - value.get("timestamp", 0) > _CACHE_TTL_SECONDS
+    ]
+    for key in expired_keys:
+        del _conversation_cache[key]
+    
+    # Enforce max cache size by removing oldest entries
+    # Use strict inequality to ensure we're at or below max size
+    while len(_conversation_cache) > _CACHE_MAX_SIZE:
+        sorted_items = sorted(_conversation_cache.items(), key=lambda x: x[1].get("timestamp", 0))
+        if sorted_items:
+            oldest_key, _ = sorted_items[0]
+            del _conversation_cache[oldest_key]
+
+
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: Request, req: ChatRequest) -> ChatResponse:
     start = time.time()
@@ -303,6 +335,26 @@ def chat(request: Request, req: ChatRequest) -> ChatResponse:
 
     try:
         _ensure_components()
+        
+        # Check cache for identical requests (same session + same message)
+        cache_key = _get_cache_key(req.session_id, req.message)
+        _cleanup_expired_cache()
+        
+        cached_entry = _conversation_cache.get(cache_key)
+        if cached_entry:
+            cache_age = time.time() - cached_entry.get("timestamp", 0)
+            if cache_age < _CACHE_TTL_SECONDS:
+                logger.info("chat_cache_hit", {
+                    "session_id": req.session_id,
+                    "cache_key": cache_key,
+                    "cache_age_ms": int(cache_age * 1000),
+                })
+                # Return cached response but update latency to reflect current request time
+                cached_response = cached_entry["response"]
+                cached_response.chain_metadata["latency_ms"] = int((time.time() - start) * 1000)
+                cached_response.chain_metadata["cache_hit"] = True
+                return cached_response
+        
         context = {"correlation_id": correlation_id, "timings": request.state.timings}
         faq_response = _invoke_with_retry(req.session_id, req.message, context=context)
 
@@ -353,13 +405,23 @@ def chat(request: Request, req: ChatRequest) -> ChatResponse:
 
         retrieval_trace, citations = _extract_rag_metadata(faq_response.metadata)
 
-        return ChatResponse(
+        response = ChatResponse(
             answer_text=faq_response.answer_text,
             structured=faq_response,
             chain_metadata=chain_metadata,
             retrieval_trace=retrieval_trace,
             citations=citations,
         )
+        
+        # Cache the response for future identical requests
+        _conversation_cache[cache_key] = {
+            "response": response,
+            "timestamp": time.time(),
+            "message_hash": cache_key,
+            "session_id": req.session_id,
+        }
+        
+        return response
     except Exception as exc:
         logger.error("chat_error", {"error": str(exc), **log_meta})
         fallback = FAQResponse(
@@ -622,10 +684,26 @@ def history(session_id: str) -> HistoryResponse:
     )
 
 
+def _invalidate_session_cache(session_id: str) -> None:
+    """Invalidate all cache entries for a given session_id."""
+    global _conversation_cache
+    # We need to check all entries since we can't reverse-engineer the session_id from the hash
+    # In practice, this is called rarely (only on reset), so iterating is acceptable
+    keys_to_remove = []
+    for key, value in _conversation_cache.items():
+        # The cache key is md5(session_id:message), so we can't directly extract session_id
+        # We'll need to store session_id in the cache entry for proper invalidation
+        if value.get("session_id") == session_id:
+            keys_to_remove.append(key)
+    for key in keys_to_remove:
+        del _conversation_cache[key]
+
+
 @app.post("/reset")
 def reset(req: ResetRequest):
     session_id = req.session_id
     _ensure_components()
     _memory.clear_history(session_id)
+    _invalidate_session_cache(session_id)
     logger.info("reset_history", {"session_id": session_id})
     return {"status": "ok", "session_id": session_id}

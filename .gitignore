@@ -15,8 +15,16 @@ ENV/
 # OS generated files
 .DS_Store
 
+# IDE
+.vscode/
+.idea/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
 #github
 .github/
 .github/agents  
 .github/workflows/
-.coverage

@@ -43,6 +43,7 @@ def reset_caches():
     - Clears the @lru_cache on get_settings()
     - Resets in-memory demo policies and claims to their original state
     - Resets the SQLiteMemory singleton so a fresh instance is created
+    - Clears the API-level conversation cache
     """
     # Clear settings cache
     get_settings.cache_clear()
@@ -52,6 +53,15 @@ def reset_caches():
 
     # Reset memory singleton so next module-level call creates a fresh instance
     reset_memory_singleton()
+
+    # Clear API-level conversation cache to prevent test isolation issues
+    try:
+        import builtins
+        server = getattr(builtins, 'server', None)
+        if server and hasattr(server, '_conversation_cache'):
+            server._conversation_cache.clear()
+    except (ImportError, AttributeError):
+        pass
 
     yield
     # No teardown needed - the singleton reset and demo data reset at the

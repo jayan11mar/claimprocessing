@@ -2,7 +2,7 @@
 
 This repository contains a claims support assistant for insurance workflows. It combines a FastAPI backend, a Streamlit frontend, LangChain-based orchestration, custom domain tools, and a retrieval-augmented knowledge base for policy and claims guidance.
 
-## Recent updates
+## Project updates
 
 The project now includes:
 

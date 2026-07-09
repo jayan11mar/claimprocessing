@@ -2,6 +2,7 @@
 FAISS vector store implementation for the claims knowledge base.
 """
 
+import json
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -61,6 +62,9 @@ class FAISSStore(VectorStore):
         self._chunk_ids: List[str] = []
         self._embedding_model_version: Optional[str] = None
 
+        # Auto-load from disk if the index file exists
+        self._load()
+
     def _init_index(self, dimension: int) -> None:
         """Initialize the FAISS index if not already done."""
         if self.index is None:
@@ -69,6 +73,65 @@ class FAISSStore(VectorStore):
                 self.index = _FallbackIndex(dimension)
             else:
                 self.index = faiss.IndexFlatIP(dimension)
+
+    def _metadata_path(self) -> str:
+        """Return the path for the metadata JSON file alongside the FAISS index."""
+        return self.index_path + ".meta.json"
+
+    def _vectors_path(self) -> str:
+        """Return the path for the numpy vectors file (fallback when faiss is unavailable).
+        np.save automatically appends .npy, so we use the base path without extension."""
+        return self.index_path + ".npy"
+
+    def _load(self) -> bool:
+        """
+        Load the FAISS index and associated metadata from disk.
+
+        Returns:
+            True if the index was loaded successfully, False otherwise.
+        """
+        if not os.path.exists(self.index_path) and not os.path.exists(self._vectors_path()):
+            return False
+
+        # Try loading the full FAISS index first
+        if faiss is not None and os.path.exists(self.index_path):
+            try:
+                self.index = faiss.read_index(self.index_path)
+                self.dimension = self.index.d
+            except Exception:
+                self.index = None
+                return False
+        elif faiss is None and os.path.exists(self._vectors_path()):
+            # Load vectors from numpy file for fallback index
+            try:
+                vectors = np.load(self._vectors_path())
+                if vectors.ndim == 2 and vectors.shape[0] > 0:
+                    self.dimension = vectors.shape[1]
+                    self.index = _FallbackIndex(self.dimension)
+                    self.index._vectors = vectors.tolist()
+                else:
+                    return False
+            except Exception:
+                return False
+        else:
+            return False
+
+        # Load metadata (chunks, chunk_ids, embedding model version)
+        meta_path = self._metadata_path()
+        if os.path.exists(meta_path):
+            try:
+                with open(meta_path, "r") as f:
+                    meta = json.load(f)
+                self._chunks = [Chunk(**c) for c in meta.get("chunks", [])]
+                self._chunk_ids = meta.get("chunk_ids", [])
+                self._embedding_model_version = meta.get("embedding_model_version")
+            except Exception:
+                # If metadata is corrupted, reset to empty
+                self._chunks = []
+                self._chunk_ids = []
+                self._embedding_model_version = None
+
+        return True
 
     def add(self, chunks: List[Chunk], embeddings: List[List[float]]) -> None:
         """
@@ -170,10 +233,11 @@ class FAISSStore(VectorStore):
             self.index = None
             self._chunks = []
             self._chunk_ids = []
+            # Remove persisted files
+            self._remove_persisted_files()
         else:
             # For FAISS, we need to rebuild the index without the deleted items
             # This is a limitation of FAISS - it doesn't support efficient deletion
-            # In production, you might want to use a different approach
             new_chunks = []
             new_ids = []
             for chunk, chunk_id in zip(self._chunks, self._chunk_ids):
@@ -184,15 +248,38 @@ class FAISSStore(VectorStore):
             self._chunks = new_chunks
             self._chunk_ids = new_ids
 
-            # Rebuild index
+            # Rebuild index from remaining chunks
             if self._chunks:
-                # Re-embed all remaining chunks (in production, you'd cache embeddings)
-                # For now, we just mark that index needs rebuild
+                # Re-embed all remaining chunks using the stored embedding model
+                from app.rag.embeddings import get_embedding_fn
+                embed_fn = get_embedding_fn()
+                texts = [chunk.text for chunk in self._chunks]
+                embeddings = embed_fn(texts)
+                embeddings_array = np.array(embeddings, dtype=np.float32)
+                if faiss is not None:
+                    faiss.normalize_L2(embeddings_array)
+
+                # Rebuild the index
+                inferred_dim = len(embeddings[0])
+                self._init_index(inferred_dim)
+                self.index.add(embeddings_array)
+            else:
                 self.index = None
+
+    def _remove_persisted_files(self) -> None:
+        """Remove persisted index and metadata files from disk."""
+        for p in [self.index_path, self._metadata_path(), self._vectors_path()]:
+            if os.path.exists(p):
+                try:
+                    os.remove(p)
+                except OSError:
+                    pass
 
     def persist(self, path: Optional[str] = None) -> None:
         """
         Persist the store to disk.
+
+        Saves both the FAISS index (binary) and the chunk metadata (JSON).
 
         Args:
             path: Optional path to persist to.
@@ -200,12 +287,25 @@ class FAISSStore(VectorStore):
         if self.index is None:
             return
 
-        if faiss is None:
-            return
-
         persist_path = path or self.index_path
         os.makedirs(os.path.dirname(persist_path), exist_ok=True)
-        faiss.write_index(self.index, persist_path)
+
+        if faiss is not None:
+            faiss.write_index(self.index, persist_path)
+        else:
+            # Fallback: persist the vector data as numpy array
+            vectors = np.array(self.index._vectors, dtype=np.float32) if hasattr(self.index, '_vectors') and self.index._vectors else np.array([], dtype=np.float32)
+            np.save(persist_path, vectors)
+
+        # Persist metadata alongside the index
+        meta_path = persist_path + ".meta.json"
+        meta = {
+            "chunks": [c.to_dict() for c in self._chunks],
+            "chunk_ids": self._chunk_ids,
+            "embedding_model_version": self._embedding_model_version,
+        }
+        with open(meta_path, "w") as f:
+            json.dump(meta, f, indent=2)
 
     def as_retriever(self, search_kwargs: Optional[Dict[str, Any]] = None) -> Any:
         """

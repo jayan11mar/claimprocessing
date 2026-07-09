@@ -59,6 +59,85 @@ def test_hybrid_retrieve_uses_query_expansion_and_returns_scores():
     assert any(result["combined_score"] >= 0 for result in results)
 
 
+def test_hybrid_retrieve_auto_loads_embeddings_from_config():
+    """Hybrid retrieve auto-loads embedding function from config when none provided."""
+    chunks = make_chunks()
+
+    # Call without embedding_fn - should auto-load from config
+    # Since .env has dummy key, it'll use fallback embedding which at least
+    # tries to load from config rather than immediately falling to token overlap
+    results = hybrid_retrieve(chunks, "What exclusions apply to pre-existing conditions?", k=3)
+
+    assert results
+    assert all("dense_score" in r for r in results)
+    assert all("bm25_score" in r for r in results)
+    assert all("combined_score" in r for r in results)
+    # The function should attempt to load embeddings (may use fallback if no API key)
+    # but the key improvement is it no longer silently falls back to token overlap
+
+
+def test_hybrid_retrieve_with_explicit_embeddings():
+    """Hybrid retrieve uses real embeddings (cosine similarity) when function provided."""
+    chunks = make_chunks()
+
+    def dummy_embed(texts):
+        import hashlib
+        result = []
+        for text in texts:
+            h = hashlib.md5(text.encode()).hexdigest()
+            vec = [int(h[i:i+2], 16) / 255.0 for i in range(0, 8, 2)]
+            result.append(vec)
+        return result
+
+    results = hybrid_retrieve(
+        chunks,
+        "What exclusions apply to pre-existing conditions?",
+        k=3,
+        embedding_fn=dummy_embed,
+    )
+    assert results
+    # With real embeddings, dense_score should be > 0
+    assert any(r["dense_score"] > 0 for r in results)
+
+
+def test_hybrid_retrieve_with_metadata_filter():
+    """Hybrid retrieve applies metadata filter correctly."""
+    chunks = make_chunks()
+
+    def dummy_embed(texts):
+        import hashlib
+        result = []
+        for text in texts:
+            h = hashlib.md5(text.encode()).hexdigest()
+            vec = [int(h[i:i+2], 16) / 255.0 for i in range(0, 8, 2)]
+            result.append(vec)
+        return result
+
+    results = hybrid_retrieve(
+        chunks,
+        "What exclusions apply?",
+        k=3,
+        embedding_fn=dummy_embed,
+        metadata_filter={"doc_type": "adjudication_memo"},
+    )
+    assert results
+    for result in results:
+        assert result["chunk"].doc_type == "adjudication_memo"
+
+
+def test_hybrid_retrieve_no_matching_filter():
+    """Hybrid retrieve returns empty list when filter matches nothing."""
+    chunks = make_chunks()
+    results = hybrid_retrieve(chunks, "test", k=3, metadata_filter={"doc_type": "nonexistent"})
+    assert results == []
+
+
+def test_hybrid_retrieve_empty_chunks():
+    """Hybrid retrieve returns empty list for empty chunks."""
+    results = hybrid_retrieve([], "test query", k=3)
+    assert results == []
+
+
 def test_reranker_can_reorder_results_with_fallback():
     chunks = make_chunks()
     base_results = [

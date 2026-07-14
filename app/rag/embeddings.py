@@ -59,7 +59,7 @@ def get_embedding_model_version() -> str:
     between ingestion and query time.
     """
     settings = get_settings()
-    return getattr(settings, "EMBEDDING_MODEL_VERSION", "text-embedding-3-small@2024-02-15")
+    return getattr(settings, "EMBEDDING_MODEL_VERSION", "text-embedding-3-small")
 
 
 def check_embedding_model_consistency(stored_version: Optional[str]) -> None:

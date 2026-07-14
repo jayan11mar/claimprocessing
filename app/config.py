@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     # RAG settings
     OPENAI_EMBEDDING_MODEL: str = Field("text-embedding-3-small", env="OPENAI_EMBEDDING_MODEL")
     EMBEDDING_MODEL: Optional[str] = Field(None, env="EMBEDDING_MODEL")
-    EMBEDDING_MODEL_VERSION: str = Field("text-embedding-3-small@2024-02-15", env="EMBEDDING_MODEL_VERSION")
+    EMBEDDING_MODEL_VERSION: str = Field("text-embedding-3-small", env="EMBEDDING_MODEL_VERSION")
     VECTOR_BACKEND: str = Field("faiss", env="VECTOR_BACKEND")
     PINECONE_API_KEY: Optional[str] = Field(None, env="PINECONE_API_KEY")
     KNOWLEDGE_BASE_DIR: Optional[str] = Field(None, env="KNOWLEDGE_BASE_DIR")

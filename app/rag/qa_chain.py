@@ -1,11 +1,14 @@
-"""A lightweight QA chain that produces answer text and citations from hybrid retrieval."""
+"""A lightweight QA chain that produces LLM-synthesized answer text with [chunk_id] citations from hybrid retrieval."""
 
+import logging
 from typing import Any, Dict, List, Optional
 
 from app.rag.chunkers import Chunk, ChunkConfig, chunk_document
 from app.rag.loaders import load_documents_from_manifest
 from app.rag.retriever_hybrid import hybrid_retrieve
 from app.rag.vectorstores import get_vector_store
+
+logger = logging.getLogger(__name__)
 
 
 # ── Module-level persisted chunks cache ──────────────────────────────────────
@@ -44,6 +47,86 @@ def _get_persisted_chunks() -> List[Chunk]:
     return _PERSISTED_CHUNKS
 
 
+def _llm_synthesize_answer(
+    query: str,
+    results: List[Dict[str, Any]],
+    claim_context: Optional[str] = None,
+) -> str:
+    """Send reranked chunks to the app LLM and get a synthesized answer with [chunk_id] citations.
+
+    Args:
+        query: The user query string.
+        results: Reranked list of result dicts (must have ``chunk_id`` and ``chunk`` keys).
+        claim_context: Optional claim context string.
+
+    Returns:
+        Synthesized answer text with inline [chunk_id] citations, or a fallback
+        excerpt if the LLM is unavailable.
+    """
+    from app.config import get_settings
+    from langchain_openai import ChatOpenAI
+
+    settings = get_settings()
+
+    # ── Fallback when no LLM is configured ───────────────────────────────
+    if not settings.OPENAI_API_KEY or settings.OPENAI_API_KEY.startswith("your-"):
+        best_chunk = results[0]["chunk"]
+        excerpt = best_chunk.text.strip().replace("\n", " ")
+        if len(excerpt) > 260:
+            excerpt = excerpt[:257] + "..."
+        if claim_context:
+            return f"For {claim_context}, the retrieved guidance says: {excerpt}"
+        return f"The retrieved guidance says: {excerpt}"
+
+    # ── Build context from reranked chunks ───────────────────────────────
+    context_parts: List[str] = []
+    for result in results:
+        chunk_id = result["chunk_id"]
+        text = result["chunk"].text.strip()
+        context_parts.append(f"[{chunk_id}] {text}")
+    context_str = "\n\n".join(context_parts)
+
+    system_prompt = (
+        "You are a helpful insurance claims assistant. Answer the user's question based solely on "
+        "the provided context chunks. "
+        "Every factual statement MUST be followed by a citation in the format [chunk_id] referencing "
+        "the chunk that supports it. "
+        "If the context does not contain enough information to answer the question, say so clearly. "
+        "Do not make up information. Do not use external knowledge."
+    )
+
+    if claim_context:
+        user_prompt = f"Claim context: {claim_context}\n\nQuestion: {query}\n\nContext:\n{context_str}"
+    else:
+        user_prompt = f"Question: {query}\n\nContext:\n{context_str}"
+
+    llm = ChatOpenAI(
+        model=settings.OPENAI_MODEL_NAME,
+        temperature=0.3,
+        openai_api_key=settings.OPENAI_API_KEY,
+        timeout=settings.OPENAI_REQUEST_TIMEOUT,
+        max_retries=2,
+    )
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
+
+    try:
+        response = llm.invoke(messages)
+        return response.content.strip()
+    except Exception as exc:
+        logger.warning("LLM synthesis failed, falling back to excerpt: %s", exc)
+        best_chunk = results[0]["chunk"]
+        excerpt = best_chunk.text.strip().replace("\n", " ")
+        if len(excerpt) > 260:
+            excerpt = excerpt[:257] + "..."
+        if claim_context:
+            return f"For {claim_context}, the retrieved guidance says: {excerpt}"
+        return f"The retrieved guidance says: {excerpt}"
+
+
 def _build_qa_payload(
     query: str,
     chunks: Optional[List[Chunk]] = None,
@@ -70,24 +153,12 @@ def _build_qa_payload(
             "confidence": 0.0,
         }
 
-    best_chunk = results[0]["chunk"]
-    excerpt = best_chunk.text.strip().replace("\n", " ")
-    if len(excerpt) > 260:
-        excerpt = excerpt[:257] + "..."
-
-    if claim_context:
-        answer_text = f"For {claim_context}, the retrieved guidance says: {excerpt}"
-    else:
-        answer_text = f"The retrieved guidance says: {excerpt}"
-
-    import logging
-    _log = logging.getLogger(__name__)
-
+    # ── Build citations list from reranked results ───────────────────────
     citations = []
     for result in results[: min(3, len(results))]:
         rerank_score = result.get("rerank_score")
         if rerank_score is None:
-            _log.warning(
+            logger.warning(
                 "Missing rerank_score on chunk %s; combined_score=%s used instead.",
                 result.get("chunk_id"),
                 result.get("combined_score"),
@@ -103,6 +174,9 @@ def _build_qa_payload(
                 "score": rerank_score,
             }
         )
+
+    # ── LLM-synthesize answer with [chunk_id] citations ──────────────────
+    answer_text = _llm_synthesize_answer(query, results, claim_context=claim_context)
 
     confidence = min(0.99, max(0.45, 0.55 + 0.08 * len(citations) + 0.03 * min(1.0, results[0]["combined_score"])))
     return {
@@ -120,7 +194,9 @@ def run_qa_chain(
     embedding_fn: Optional[Any] = None,
     metadata_filter: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    """Run a hybrid retrieval QA flow and return answer text plus citations.
+    """Run a hybrid retrieval QA flow and return LLM-synthesized answer text plus citations.
+
+    Every factual claim in the answer references a [chunk_id] for traceability.
 
     Args:
         query: The query string.

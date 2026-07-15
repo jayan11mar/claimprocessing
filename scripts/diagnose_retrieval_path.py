@@ -145,8 +145,14 @@ def diagnose_rerank() -> str:
 
 def main():
     print("=" * 70)
-    print("PHASE R1 — RETRIEVAL PATH DIAGNOSTIC")
+    print("PHASE R3 — RETRIEVAL PATH DIAGNOSTIC (dense+BM25 verification)")
     print("=" * 70)
+
+    # 0. Config RETRIEVER_MODE
+    from app.config import get_settings
+    settings = get_settings()
+    print("\n--- [CONFIG] ---")
+    print(f"RETRIEVER_MODE from config: {settings.RETRIEVER_MODE}")
 
     # 1. RETRIEVER_MODE
     print("\n--- [RETRIEVER_MODE] ---")

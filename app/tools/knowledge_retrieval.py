@@ -1,5 +1,7 @@
 from typing import Any, Dict, Optional
 
+from app.config import get_settings
+from app.rag.embeddings import get_embedding_fn
 from app.rag.qa_chain import run_qa_chain
 
 
@@ -21,7 +23,10 @@ def knowledge_retrieval(
     Returns:
         Dict with answer_text, citations, confidence, and retrieval_trace.
     """
-    payload = run_qa_chain(query, claim_context=claim_context, top_k=top_k, metadata_filter=metadata_filter)
+    settings = get_settings()
+    embedding_model = settings.EMBEDDING_MODEL or settings.OPENAI_EMBEDDING_MODEL
+    embedding_fn = get_embedding_fn(embedding_model)
+    payload = run_qa_chain(query, claim_context=claim_context, top_k=top_k, embedding_fn=embedding_fn, metadata_filter=metadata_filter)
     return {
         "answer_text": payload.get("answer_text", ""),
         "citations": payload.get("citations", []),

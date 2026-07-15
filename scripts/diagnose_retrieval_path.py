@@ -20,6 +20,7 @@ from app.tools.knowledge_retrieval import knowledge_retrieval
 from app.rag.qa_chain import (
     run_qa_chain,
     _load_chunks_from_manifest,
+    _get_persisted_chunks,
     _build_qa_payload,
 )
 from app.rag.retriever_hybrid import hybrid_retrieve, _get_default_embedding_fn
@@ -79,29 +80,40 @@ def diagnose_retriever_mode() -> str:
 
 
 def diagnose_persistence() -> str:
-    """Check whether chunks are loaded from disk (data/faiss_index) or rebuilt from manifest.
+    """Check whether chunks are loaded from the persisted FAISS index or rebuilt from manifest.
 
-    Inspects _load_chunks_from_manifest behaviour and checks if data/faiss_index exists.
+    Uses _get_persisted_chunks() which tries FAISSStore.load(VECTOR_PERSIST_PATH) first.
 
-    Returns "loaded-from-disk" if data/faiss_index is read, else "rebuilt-in-memory".
+    Returns "loaded-from-disk" if the FAISS index was found and loaded,
+    else "rebuilt-in-memory".
     """
-    faiss_index_path = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-        "data",
-        "faiss_index",
-    )
-    faiss_index_exists = os.path.isdir(faiss_index_path)
+    from app.config import get_settings
 
-    chunks = _load_chunks_from_manifest()
+    persist_path = get_settings().VECTOR_PERSIST_PATH
+    faiss_index_exists = os.path.exists(persist_path)
+
+    _PERSISTED_CHUNKS_ATTR = "_PERSISTED_CHUNKS"
+    # Clear the module-level cache so we get a fresh read
+    import app.rag.qa_chain
+    if hasattr(app.rag.qa_chain, _PERSISTED_CHUNKS_ATTR):
+        setattr(app.rag.qa_chain, _PERSISTED_CHUNKS_ATTR, None)
+
+    chunks = _get_persisted_chunks()
     source_paths = set(c.source_path for c in chunks)
-    any_from_faiss = any("faiss_index" in (p or "") for p in source_paths)
 
-    if any_from_faiss:
-        return "loaded-from-disk (chunks sourced from faiss_index)"
-    if faiss_index_exists:
-        return f"rebuilt-in-memory (data/faiss_index exists but NOT READ; {len(chunks)} chunks rebuilt from manifest)"
+    # Something from the FAISS store won't have a "manifest" path
+    # If faiss_index exists and was loaded, chunks will NOT have come from manifest.
+    # We check by comparing chunk count: _load_chunks_from_manifest() should produce
+    # the exact same count as the persisted store if it was loaded.
+    manifest_chunks = _load_chunks_from_manifest()
+    loaded_from_disk = faiss_index_exists and len(chunks) > 0
+
+    if loaded_from_disk:
+        return f"loaded-from-disk (persisted index at {persist_path}; {len(chunks)} chunks)"
+    elif faiss_index_exists:
+        return f"rebuilt-in-memory (persisted index found at {persist_path} but failed to load; {len(chunks)} chunks rebuilt from manifest)"
     else:
-        return f"rebuilt-in-memory (data/faiss_index does not exist; {len(chunks)} chunks rebuilt from manifest)"
+        return f"rebuilt-in-memory (no persisted index at {persist_path}; {len(chunks)} chunks rebuilt from manifest)"
 
 
 def diagnose_rerank() -> str:

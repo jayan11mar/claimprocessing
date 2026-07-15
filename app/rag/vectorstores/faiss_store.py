@@ -56,7 +56,10 @@ class FAISSStore(VectorStore):
             dimension: Embedding dimension. If None, inferred from first batch of embeddings.
         """
         self.dimension = dimension
-        self.index_path = index_path or str(Path(__file__).parent.parent.parent.parent / "data" / "faiss_index")
+        if index_path is None:
+            from app.config import get_settings
+            index_path = get_settings().VECTOR_PERSIST_PATH
+        self.index_path = index_path
         self.index: Optional[faiss.Index] = None
         self._chunks: List[Chunk] = []
         self._chunk_ids: List[str] = []
@@ -132,6 +135,25 @@ class FAISSStore(VectorStore):
                 self._embedding_model_version = None
 
         return True
+
+    @staticmethod
+    def load(path: str) -> Optional["FAISSStore"]:
+        """
+        Public method: load a persisted FAISSStore from disk.
+
+        Args:
+            path: Path to the persisted FAISS index file.
+
+        Returns:
+            A FAISSStore instance with index and chunks loaded, or None if
+            the path does not exist or loading fails.
+        """
+        if not os.path.exists(path) and not os.path.exists(path + ".npy"):
+            return None
+        store = FAISSStore(index_path=path)
+        if store.index is None:
+            return None
+        return store
 
     def add(self, chunks: List[Chunk], embeddings: List[List[float]]) -> None:
         """
@@ -395,3 +417,7 @@ class FAISSStore(VectorStore):
     def chunk_count(self) -> int:
         """Return the number of chunks in the store."""
         return len(self._chunks)
+
+    def get_chunks(self) -> List[Chunk]:
+        """Return the chunks stored in this store."""
+        return list(self._chunks)

@@ -5,6 +5,11 @@ from typing import Any, Dict, List, Optional
 from app.rag.chunkers import Chunk, ChunkConfig, chunk_document
 from app.rag.loaders import load_documents_from_manifest
 from app.rag.retriever_hybrid import hybrid_retrieve
+from app.rag.vectorstores import get_vector_store
+
+
+# ── Module-level persisted chunks cache ──────────────────────────────────────
+_PERSISTED_CHUNKS: Optional[List[Chunk]] = None
 
 
 def _load_chunks_from_manifest() -> List[Chunk]:
@@ -13,6 +18,30 @@ def _load_chunks_from_manifest() -> List[Chunk]:
     for doc in documents:
         chunks.extend(chunk_document(doc, ChunkConfig(chunk_size=800, chunk_overlap=100), use_semantic=True))
     return chunks
+
+
+def _get_persisted_chunks() -> List[Chunk]:
+    """
+    Return chunks from the persisted vector store, falling back to building
+    from manifest if the persisted index does not exist.
+
+    The result is cached at module level so it is loaded only once.
+    """
+    global _PERSISTED_CHUNKS
+    if _PERSISTED_CHUNKS is not None:
+        return _PERSISTED_CHUNKS
+
+    from app.config import get_settings
+    from app.rag.vectorstores.faiss_store import FAISSStore
+
+    persist_path = get_settings().VECTOR_PERSIST_PATH
+    store = FAISSStore.load(persist_path)
+    if store is not None and store.chunk_count > 0:
+        _PERSISTED_CHUNKS = store.get_chunks()
+    else:
+        _PERSISTED_CHUNKS = _load_chunks_from_manifest()
+
+    return _PERSISTED_CHUNKS
 
 
 def _build_qa_payload(
@@ -24,7 +53,7 @@ def _build_qa_payload(
     metadata_filter: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     if chunks is None:
-        chunks = _load_chunks_from_manifest()
+        chunks = _get_persisted_chunks()
 
     if not chunks:
         return {
@@ -83,7 +112,7 @@ def run_qa_chain(
 
     Args:
         query: The query string.
-        chunks: Optional list of Chunk objects. If None, loads from manifest.
+        chunks: Optional list of Chunk objects. If None, loads from persisted index.
         claim_context: Optional claim context string for answer formatting.
         top_k: Number of results to return.
         embedding_fn: Optional embedding function for dense scoring.

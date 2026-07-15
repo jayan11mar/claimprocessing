@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     VECTOR_BACKEND: str = Field("faiss", env="VECTOR_BACKEND")
     PINECONE_API_KEY: Optional[str] = Field(None, env="PINECONE_API_KEY")
     KNOWLEDGE_BASE_DIR: Optional[str] = Field(None, env="KNOWLEDGE_BASE_DIR")
+    VECTOR_PERSIST_PATH: str = Field("data/faiss_index", env="VECTOR_PERSIST_PATH")
     CHUNK_SIZE: int = Field(800, env="CHUNK_SIZE")
     CHUNK_OVERLAP: int = Field(100, env="CHUNK_OVERLAP")
     CHUNKING_STRATEGY: str = Field("recursive", env="CHUNKING_STRATEGY")

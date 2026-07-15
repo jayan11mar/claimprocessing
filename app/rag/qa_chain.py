@@ -80,15 +80,27 @@ def _build_qa_payload(
     else:
         answer_text = f"The retrieved guidance says: {excerpt}"
 
+    import logging
+    _log = logging.getLogger(__name__)
+
     citations = []
     for result in results[: min(3, len(results))]:
+        rerank_score = result.get("rerank_score")
+        if rerank_score is None:
+            _log.warning(
+                "Missing rerank_score on chunk %s; combined_score=%s used instead.",
+                result.get("chunk_id"),
+                result.get("combined_score"),
+            )
+            rerank_score = result["combined_score"]
         citations.append(
             {
                 "chunk_id": result["chunk_id"],
                 "text": result["chunk"].text,
                 "source_id": result["source_id"],
                 "source_path": result["source_path"],
-                "score": result.get("rerank_score", result["combined_score"]),
+                "rerank_score": rerank_score,
+                "score": rerank_score,
             }
         )
 

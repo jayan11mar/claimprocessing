@@ -33,10 +33,12 @@ def main(query: Optional[str] = None) -> None:
     print()
     print("\nCITATIONS")
     for citation in qa_result["citations"]:
-        print(f"- {citation['chunk_id']}: {citation['source_path']}")
-    print("\nTOP 5 RETRIEVED CHUNKS")
+        rerank_score = citation.get("rerank_score", "N/A")
+        print(f"- {citation['chunk_id']}: {citation['source_path']} (rerank_score={rerank_score})")
+    print("\nTOP 5 RETRIEVED CHUNKS (post-rerank)")
     for result in results:
-        print(f"- {result['chunk_id']} (score={result['combined_score']})")
+        rerank_s = result.get("rerank_score", "N/A")
+        print(f"- {result['chunk_id']} (combined={result['combined_score']}, rerank={rerank_s})")
         print(result["chunk"].text[:220])
         print()
 

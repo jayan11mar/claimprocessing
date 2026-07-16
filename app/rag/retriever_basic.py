@@ -82,6 +82,12 @@ def build_basic_retriever(
     # Get vector store
     store = get_vector_store(backend=vector_backend, dimension=dimension)
 
+    # Clear any existing index data before adding fresh chunks.
+    # FAISSStore.__init__ auto-loads persisted data from disk, and add()
+    # appends to the existing index. Without this clear, old dummy-chunk
+    # data accumulates across repeated ingestion runs.
+    store.delete(ids=None)
+
     # Upsert chunks
     store.add(all_chunks, embeddings)
 
@@ -172,6 +178,9 @@ def get_retriever_with_stats(
 
     # Get vector store
     store = get_vector_store(backend=vector_backend, dimension=dimension)
+
+    # Clear any existing index data before adding fresh chunks.
+    store.delete(ids=None)
 
     # Upsert chunks
     store.add(all_chunks, embeddings)

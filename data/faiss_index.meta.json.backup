@@ -1,0 +1,43 @@
+{
+  "chunks": [
+    {
+      "text": "Coverage for hospital claims is available after the deductible.",
+      "source_id": "policy-1",
+      "source_path": "policy.md",
+      "doc_type": "policy_wording",
+      "insurance_type": "health",
+      "insurer": null,
+      "product_code": null,
+      "product_name": null,
+      "claim_type": null,
+      "section": null,
+      "clause_id": null,
+      "chunk_index": 0,
+      "raw_metadata": {
+        "source": "api_upload"
+      }
+    },
+    {
+      "text": "Hospital claims are covered after the deductible and prior authorization is required for elective procedures.",
+      "source_id": "policy-week6",
+      "source_path": "policy-week6.md",
+      "doc_type": "policy_wording",
+      "insurance_type": "health",
+      "insurer": null,
+      "product_code": null,
+      "product_name": null,
+      "claim_type": null,
+      "section": null,
+      "clause_id": null,
+      "chunk_index": 0,
+      "raw_metadata": {
+        "source": "api_upload"
+      }
+    }
+  ],
+  "chunk_ids": [
+    "policy-1_0",
+    "policy-week6_0"
+  ],
+  "embedding_model_version": "text-embedding-3-small"
+}

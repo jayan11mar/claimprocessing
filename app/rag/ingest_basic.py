@@ -81,6 +81,11 @@ def main(
         print("Step 4/4: Upserting into vector store...")
         dimension = len(embeddings[0]) if embeddings else 1536
         store = get_vector_store(backend=vector_backend, dimension=dimension)
+        # Clear any existing index data before adding fresh chunks.
+        # FAISSStore.__init__ auto-loads persisted data from disk, and add()
+        # appends to the existing index. Without this clear, old dummy-chunk
+        # data accumulates across repeated ingestion runs.
+        store.delete(ids=None)
         store.add(all_chunks, embeddings)
         store.persist()
         print(f"  → {store.chunk_count} chunk(s) stored in {vector_backend} backend")

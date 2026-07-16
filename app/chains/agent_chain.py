@@ -592,6 +592,101 @@ class AgentChain:
         self._record_tool_timing("claim_status_checker", start, timings, trace_id)
         return self._format_claim_status_answer(intent, result)
 
+    def _infer_insurance_type(self, message: str) -> Optional[str]:
+        """Infer insurance type from query using comprehensive keyword matching.
+        
+        Args:
+            message: The user query string.
+            
+        Returns:
+            "health", "motor", or None if ambiguous/unknown.
+        """
+        message_lower = message.lower()
+        
+        # Health-related keywords (ordered by specificity - multi-word first)
+        health_keywords = [
+            "day care procedure", "day care treatment", "pre-existing disease",
+            "pre existing disease", "network hospital", "cashless claim",
+            "room rent", "ambulance charges", "icu charges", "hospitalization",
+            "hospitalisation", "ayush treatment", "new born", "organ donor",
+            "health checkup", "medical expense", "medical bill", "inpatient",
+            "outpatient", "domiciliary", "maternity", "wellness",
+            "preventive", "consultation", "diagnosis", "prescription",
+            "therapy", "rehabilitation", "day care", "daycare",
+            "health", "medical", "hospital", "surgery", "treatment",
+            "disease", "illness", "icu", "ambulance", "cashless",
+            "doctor", "patient", "opd"
+        ]
+        
+        # Motor-related keywords (ordered by specificity - multi-word first)
+        # Note: Avoid overly generic terms like "car" that can match substrings in health terms
+        motor_keywords = [
+            "own damage", "third party", "third-party", "personal accident",
+            "owner driver", "paid driver", "no claim bonus", "ncb",
+            "accident damage", "total loss", "four wheeler", "two wheeler",
+            "spare parts", "plate number",
+            "motor", "vehicle", "bike", "idv",
+            "garage", "engine", "tyre", "bumper", "windshield",
+            "collision", "theft", "comprehensive", "fuel",
+            "registration", "rc", "chassis", "traffic", "road",
+            "driving", "repair", "consumables", "depreciation", "premium"
+        ]
+        
+        # Count matches for each type (check multi-word keywords first)
+        health_matches = []
+        motor_matches = []
+        
+        # Check health keywords
+        for kw in health_keywords:
+            if kw in message_lower:
+                health_matches.append(kw)
+        
+        # Check motor keywords
+        for kw in motor_keywords:
+            if kw in message_lower:
+                motor_matches.append(kw)
+        
+        # Log detection results
+        logger.info(
+            "Metadata filter inference",
+            extra={
+                "query": message,
+                "health_keywords_found": health_matches,
+                "motor_keywords_found": motor_matches,
+            }
+        )
+        
+        # Conflict handling: if both detected, return None to retrieve across all policies
+        if health_matches and motor_matches:
+            logger.warning(
+                "Conflicting insurance type signals detected in query: %s. "
+                "Health keywords: %s, Motor keywords: %s. "
+                "Setting insurance_type to None to retrieve across all policies.",
+                message,
+                health_matches,
+                motor_matches,
+            )
+            return None
+        
+        # Return detected type
+        if health_matches:
+            logger.info(
+                "Detected health insurance query. Trigger keyword: '%s'",
+                health_matches[0],
+            )
+            return "health"
+        
+        if motor_matches:
+            logger.info(
+                "Detected motor insurance query. Trigger keyword: '%s'",
+                motor_matches[0],
+            )
+            return "motor"
+        
+        # No clear signal
+        logger.info("No insurance type confidently detected for query: %s", message)
+        return None
+
     def _handle_knowledge_retrieval(
         self,
         intent: FAQResponse,
@@ -602,18 +697,24 @@ class AgentChain:
         """Handle knowledge base retrieval queries using RAG."""
         start = time.time()
         
-        # Extract insurance type from message if mentioned
-        insurance_type = None
-        message_lower = message.lower()
-        if "health" in message_lower or "medical" in message_lower:
-            insurance_type = "health"
-        elif "motor" in message_lower or "car" in message_lower or "vehicle" in message_lower:
-            insurance_type = "motor"
+        # Extract insurance type from message using improved inference
+        insurance_type = self._infer_insurance_type(message)
         
         # Build metadata filter if insurance type detected
         metadata_filter = None
         if insurance_type:
             metadata_filter = {"insurance_type": insurance_type}
+        
+        # Defensive logging at metadata filter creation point
+        logger.info(
+            "Creating metadata filter",
+            extra={
+                "query": message,
+                "detected_insurance_type": insurance_type,
+                "metadata_filter": metadata_filter,
+                "reason": f"Keyword-based detection: {insurance_type}" if insurance_type else "No clear insurance type detected",
+            }
+        )
         
         # Call knowledge retrieval tool
         result = knowledge_retrieval(

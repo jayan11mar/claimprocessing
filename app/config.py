@@ -44,6 +44,22 @@ class Settings(BaseSettings):
     RERANKER_MODEL: str = Field("cross-encoder/ms-marco-MiniLM-L-6-v2", env="RERANKER_MODEL")
     RETRIEVAL_FILTER_FALLBACK_ENABLED: bool = Field(True, env="RETRIEVAL_FILTER_FALLBACK_ENABLED")
 
+    # ── Week 8 Feature Flags ─────────────────────────────────────────────────
+    ENABLE_MCP: bool = Field(False, env="ENABLE_MCP")
+    ENABLE_HITL: bool = Field(False, env="ENABLE_HITL")
+    ENABLE_RBAC: bool = Field(False, env="ENABLE_RBAC")
+    ENABLE_AGENTS: bool = Field(False, env="ENABLE_AGENTS")
+    ENABLE_DRIFT: bool = Field(False, env="ENABLE_DRIFT")
+    ENABLE_PROMPT_MANAGER: bool = Field(False, env="ENABLE_PROMPT_MANAGER")
+
+    # ── Week 8 Config Paths ──────────────────────────────────────────────────
+    MCP_SERVERS_PATH: str = Field("config/mcp_servers.yaml", env="MCP_SERVERS_PATH")
+    HITL_RULES_PATH: str = Field("config/hitl_rules.yaml", env="HITL_RULES_PATH")
+    ROLES_PATH: str = Field("config/roles.yaml", env="ROLES_PATH")
+    DRIFT_THRESHOLDS_PATH: str = Field("config/drift_thresholds.yaml", env="DRIFT_THRESHOLDS_PATH")
+    AGENTS_CONFIG_PATH: str = Field("config/agents.yaml", env="AGENTS_CONFIG_PATH")
+    PROMPTS_DIR: str = Field("prompts", env="PROMPTS_DIR")
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

@@ -36,6 +36,9 @@ def test_build_basic_retriever_passes_metadata_filter_to_store(monkeypatch):
         def add(self, chunks, embeddings):
             return None
 
+        def delete(self, ids=None):
+            return None
+
         def persist(self, path=None):
             return None
 

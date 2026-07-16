@@ -125,8 +125,11 @@ def test_hybrid_retrieve_with_metadata_filter():
         assert result["chunk"].doc_type == "adjudication_memo"
 
 
-def test_hybrid_retrieve_no_matching_filter():
-    """Hybrid retrieve returns empty list when filter matches nothing."""
+def test_hybrid_retrieve_no_matching_filter(monkeypatch):
+    """Hybrid retrieve returns empty list when filter matches nothing and fallback disabled."""
+    from app.config import get_settings
+    settings = get_settings()
+    monkeypatch.setattr(settings, "RETRIEVAL_FILTER_FALLBACK_ENABLED", False)
     chunks = make_chunks()
     results = hybrid_retrieve(chunks, "test", k=3, metadata_filter={"doc_type": "nonexistent"})
     assert results == []

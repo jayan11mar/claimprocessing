@@ -8,6 +8,7 @@ Covers the branches that the existing test_langsmith_integration_unit.py misses:
 """
 
 import os
+import unittest
 from unittest.mock import patch, MagicMock, PropertyMock
 
 import pytest
@@ -111,32 +112,21 @@ class TestStartTrace:
         mock_client = MagicMock()
         mock_run = MagicMock()
         mock_run.id = "test-run-id-123"
-        mock_client.start_run.return_value = mock_run
-
-        with patch("app.langsmith_integration._enabled", True):
-            with patch("app.langsmith_integration._client", mock_client):
-                with start_trace("test-trace") as trace:
-                    assert trace["trace_id"] == "test-run-id-123"
-                    mock_client.start_run.assert_called_once_with(name="test-trace")
-
-    def test_start_trace_fallback_to_create_run(self):
-        """start_trace falls back to create_run when start_run returns None."""
-        mock_client = MagicMock()
-        mock_client.start_run.return_value = None
-        mock_run = MagicMock()
-        mock_run.id = "fallback-run-id"
         mock_client.create_run.return_value = mock_run
 
         with patch("app.langsmith_integration._enabled", True):
             with patch("app.langsmith_integration._client", mock_client):
                 with start_trace("test-trace") as trace:
-                    assert trace["trace_id"] == "fallback-run-id"
-                    mock_client.create_run.assert_called_once_with(name="test-trace")
+                    assert trace["trace_id"] == "test-run-id-123"
+                    mock_client.create_run.assert_called_once_with(
+                        name="test-trace", run_type="chain",
+                        start_time=unittest.mock.ANY,
+                        extra={"trace_name": "test-trace"},
+                    )
 
     def test_start_trace_fallback_to_fake_trace_id(self):
-        """start_trace uses a fake trace_id when both start_run and create_run return None."""
+        """start_trace uses a fake trace_id when create_run returns None."""
         mock_client = MagicMock()
-        mock_client.start_run.return_value = None
         mock_client.create_run.return_value = None
 
         with patch("app.langsmith_integration._enabled", True):
@@ -144,31 +134,28 @@ class TestStartTrace:
                 with start_trace("test-trace") as trace:
                     assert trace["trace_id"] == "ls-test-trace"
 
-    def test_start_trace_calls_end_run_on_exit(self):
-        """start_trace calls end_run/stop_run on context exit."""
+    def test_start_trace_calls_update_run_on_exit(self):
+        """start_trace calls update_run on context exit."""
         mock_client = MagicMock()
         mock_run = MagicMock()
         mock_run.id = "run-id"
-        mock_client.start_run.return_value = mock_run
-        mock_client.end_run = MagicMock()
-        mock_client.stop_run = MagicMock()
+        mock_client.create_run.return_value = mock_run
+        mock_client.update_run = MagicMock()
 
         with patch("app.langsmith_integration._enabled", True):
             with patch("app.langsmith_integration._client", mock_client):
                 with start_trace("test-trace"):
                     pass
 
-        mock_client.end_run.assert_called_once()
-        mock_client.stop_run.assert_called_once()
+        mock_client.update_run.assert_called_once()
 
     def test_start_trace_handles_shutdown_failure(self):
-        """start_trace handles exceptions during end_run/stop_run gracefully."""
+        """start_trace handles exceptions during update_run gracefully."""
         mock_client = MagicMock()
         mock_run = MagicMock()
         mock_run.id = "run-id"
-        mock_client.start_run.return_value = mock_run
-        mock_client.end_run = MagicMock(side_effect=RuntimeError("shutdown failed"))
-        mock_client.stop_run = MagicMock(side_effect=RuntimeError("stop failed"))
+        mock_client.create_run.return_value = mock_run
+        mock_client.update_run = MagicMock(side_effect=RuntimeError("update failed"))
 
         with patch("app.langsmith_integration._enabled", True):
             with patch("app.langsmith_integration._client", mock_client):
@@ -191,57 +178,47 @@ class TestRecordSpan:
                 result = record_span("test-span", {"key": "value"})
                 assert result is None
 
-    def test_record_span_uses_log_event(self):
-        """record_span uses log_event if available."""
+    def test_record_span_uses_create_feedback(self):
+        """record_span uses create_feedback if trace_id is a valid UUID."""
         mock_client = MagicMock()
-        mock_client.log_event = MagicMock()
+        mock_client.create_feedback = MagicMock()
 
         with patch("app.langsmith_integration._enabled", True):
             with patch("app.langsmith_integration._client", mock_client):
-                result = record_span("test-span", {"key": "value"})
-                assert result is None
-                mock_client.log_event.assert_called_once_with(
-                    {"span": "test-span", "meta": {"key": "value"}}
-                )
+                with patch("app.langsmith_integration._last_trace_id", "00000000-0000-0000-0000-000000000001"):
+                    result = record_span("test-span", {"key": "value"})
+                    assert result is None
+                    mock_client.create_feedback.assert_called_once_with(
+                        run_id="00000000-0000-0000-0000-000000000001",
+                        key="span:test-span",
+                        score=None,
+                        comment=None,
+                        source_info={"metadata": {"key": "value"}},
+                    )
 
-    def test_record_span_log_event_failure_caught_gracefully(self):
-        """record_span catches exceptions from log_event and returns None."""
+    def test_record_span_skips_non_uuid_trace_id(self):
+        """record_span skips create_feedback for non-UUID (fallback) trace IDs."""
         mock_client = MagicMock()
-        mock_client.log_event = MagicMock(side_effect=TypeError("bad"))
-        mock_client.add_span = MagicMock()
+        mock_client.create_feedback = MagicMock()
 
         with patch("app.langsmith_integration._enabled", True):
             with patch("app.langsmith_integration._client", mock_client):
-                result = record_span("test-span", {"key": "value"})
-                # log_event was called but failed; record_span returns None
-                # and does NOT fall through to add_span because log_event exists
-                assert result is None
-                mock_client.log_event.assert_called_once()
-                mock_client.add_span.assert_not_called()
+                with patch("app.langsmith_integration._last_trace_id", "ls-fallback-span"):
+                    result = record_span("test-span", {"key": "value"})
+                    assert result is None
+                    mock_client.create_feedback.assert_not_called()
 
-    def test_record_span_uses_add_span_when_no_log_event(self):
-        """record_span uses add_span when client has no log_event attribute."""
+    def test_record_span_create_feedback_failure_caught_gracefully(self):
+        """record_span catches exceptions from create_feedback and returns None."""
         mock_client = MagicMock()
-        # Remove log_event so hasattr returns False
-        mock_client.log_event = MagicMock(side_effect=AttributeError("no log_event"))
-        mock_client.add_span = MagicMock()
+        mock_client.create_feedback = MagicMock(side_effect=TypeError("bad"))
 
         with patch("app.langsmith_integration._enabled", True):
             with patch("app.langsmith_integration._client", mock_client):
-                result = record_span("test-span", {"key": "value"})
-                mock_client.add_span.assert_called_once_with("test-span", {"key": "value"})
-
-    def test_record_span_log_failure_does_not_raise(self):
-        """record_span handles exceptions from client.log gracefully."""
-        mock_client = MagicMock()
-        mock_client.log_event = MagicMock(side_effect=AttributeError("no log_event"))
-        mock_client.log = MagicMock(side_effect=RuntimeError("log failed"))
-
-        with patch("app.langsmith_integration._enabled", True):
-            with patch("app.langsmith_integration._client", mock_client):
-                # Should not raise
-                result = record_span("test-span", {"key": "value"})
-                assert result is None
+                with patch("app.langsmith_integration._last_trace_id", "00000000-0000-0000-0000-000000000001"):
+                    result = record_span("test-span", {"key": "value"})
+                    assert result is None
+                    mock_client.create_feedback.assert_called_once()
 
 
 class TestGetLangsmithTraceId:

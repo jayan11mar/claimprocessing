@@ -31,8 +31,11 @@ def test_chat_sets_langsmith_trace_id_when_sdk_enabled(monkeypatch):
             self.id = id
 
     class FakeClient:
-        def start_run(self, name=None):
+        def create_run(self, name=None, run_type=None, start_time=None, extra=None):
             return FakeRun(id=f"run-{name}")
+
+        def update_run(self, run_id, end_time=None):
+            pass
 
     lsi._client = FakeClient()
     lsi._enabled = True

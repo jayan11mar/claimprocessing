@@ -102,9 +102,13 @@ def _get_openai_embedding_fn(model_name: str) -> Callable[[List[str]], List[List
         model=model_name,
         openai_api_key=settings.OPENAI_API_KEY,
     )
+    fallback = _get_fallback_embedding_fn(_get_openai_embedding_dimension(model_name))
 
     def embed_fn(texts: List[str]) -> List[List[float]]:
-        return embeddings.embed_documents(texts)
+        try:
+            return embeddings.embed_documents(texts)
+        except Exception:
+            return fallback(texts)
 
     return embed_fn
 

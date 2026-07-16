@@ -134,16 +134,60 @@ def hybrid_retrieve(
                       re-embedding chunk texts.
 
     Returns:
-        Ranked list of result dicts.
+        Ranked list of result dicts. Each result dict may contain a
+        ``fallback_used`` key in the metadata when the filter fallback
+        was triggered.
     """
     if not chunks:
         return []
 
     # ── Apply metadata filter early ──────────────────────────────────────
+    fallback_used = False
+    original_filter = metadata_filter
+    chunks_before_filter = len(chunks)
+    chunks_after_filter = chunks_before_filter
+    
     if metadata_filter:
+        # Store original chunks before filtering for potential fallback
+        original_chunks = chunks
         chunks = _apply_metadata_filter(chunks, metadata_filter)
+        chunks_after_filter = len(chunks)
+        
+        # Check if fallback is needed
         if not chunks:
-            return []
+            from app.config import get_settings
+            settings = get_settings()
+            
+            if settings.RETRIEVAL_FILTER_FALLBACK_ENABLED:
+                # Log the fallback event
+                logger.warning(
+                    "Metadata filter returned zero chunks, applying fallback",
+                    extra={
+                        "query": query,
+                        "original_metadata_filter": original_filter,
+                        "chunks_before_filter": chunks_before_filter,
+                        "chunks_after_filter": chunks_after_filter,
+                        "fallback_used": True,
+                        "reason": "metadata filter produced zero candidate chunks",
+                    }
+                )
+                
+                # Retry without filter - use original unfiltered chunks
+                chunks = original_chunks
+                fallback_used = True
+            else:
+                # Fallback disabled, return empty
+                logger.warning(
+                    "Metadata filter returned zero chunks, fallback disabled",
+                    extra={
+                        "query": query,
+                        "original_metadata_filter": original_filter,
+                        "chunks_before_filter": chunks_before_filter,
+                        "chunks_after_filter": chunks_after_filter,
+                        "fallback_used": False,
+                    }
+                )
+                return []
 
     candidate_k = max(k * 4, 20)
 
@@ -176,6 +220,39 @@ def hybrid_retrieve(
         rerank_candidates = merged[: max(k * 2, 20)]
         merged = rerank_results(query, rerank_candidates, top_k=k)
 
+    # ── Add fallback metadata to results ─────────────────────────────────
+    if fallback_used:
+        for result in merged:
+            result["fallback_used"] = True
+            result["original_metadata_filter"] = original_filter
+            result["filter_fallback_reason"] = "metadata filter produced zero candidate chunks"
+        
+        # Log final results
+        logger.warning(
+            "Filter fallback completed",
+            extra={
+                "query": query,
+                "original_metadata_filter": original_filter,
+                "chunks_before_filter": chunks_before_filter,
+                "chunks_after_filter": 0,
+                "fallback_used": True,
+                "final_result_count": len(merged),
+            }
+        )
+    else:
+        # Log normal retrieval
+        logger.info(
+            "Retrieval completed",
+            extra={
+                "query": query,
+                "metadata_filter": metadata_filter,
+                "chunks_before_filter": chunks_before_filter if metadata_filter else len(chunks),
+                "chunks_after_filter": chunks_after_filter if metadata_filter else len(chunks),
+                "fallback_used": False,
+                "final_result_count": len(merged),
+            }
+        )
+
     return merged[:k]
 
 
@@ -198,6 +275,8 @@ def _apply_metadata_filter(
         if match:
             filtered.append(chunk)
     return filtered
+
+
 
 
 def _dense_from_vector_store(

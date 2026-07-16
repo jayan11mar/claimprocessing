@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     RAG_EVALUATION_OUTPUT_PATH: Optional[str] = Field(None, env="RAG_EVALUATION_OUTPUT_PATH")
     RETRIEVER_MODE: str = Field("hybrid", env="RETRIEVER_MODE")
     RERANKER_MODEL: str = Field("cross-encoder/ms-marco-MiniLM-L-6-v2", env="RERANKER_MODEL")
+    RETRIEVAL_FILTER_FALLBACK_ENABLED: bool = Field(True, env="RETRIEVAL_FILTER_FALLBACK_ENABLED")
 
     class Config:
         env_file = ".env"

@@ -1,0 +1,522 @@
+{
+  "validation_metadata": {
+    "total_queries": 5,
+    "total_documents": 59,
+    "total_chunks": 2066,
+    "vector_store_chunks": 2066,
+    "embedding_model": "text-embedding-3-small"
+  },
+  "queries": [
+    {
+      "query": "What is covered under day care procedures in this policy?",
+      "detected_intent": "KNOWLEDGE_RETRIEVAL",
+      "detected_insurance_type": "health",
+      "metadata_filter": {
+        "insurance_type": "health"
+      },
+      "fallback_used": false,
+      "retriever_mode": "hybrid",
+      "bm25_result_count": 5,
+      "dense_faiss_result_count": 3,
+      "final_merged_result_count": 5,
+      "reranker_used": true,
+      "top_5_retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "health_policy_kotak_43",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "4. Day Care Treatment \nWe will indemnify the Medical Expenses incurred on t he Insured \nPerson's Day Care Treatment during the Policy Period following an \nIllness or Injury that occurs during the Poli...",
+          "bm25_score": 16.817,
+          "dense_score": 0.6004,
+          "combined_score": 0.8324,
+          "rerank_score": 5.0477
+        },
+        {
+          "rank": 2,
+          "chunk_id": "health_policy_sbi_52",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "surgical appliances. \n vi. Consultation fees including Telemedicine by Medical \nPractitioner.\n vii. Medicines, drugs, and consumables.\n viii. Diagnostic procedures.\n ix. The Cost of prosthetic and oth...",
+          "bm25_score": 17.5659,
+          "dense_score": 0.5767,
+          "combined_score": 0.8518,
+          "rerank_score": 4.8642
+        },
+        {
+          "rank": 3,
+          "chunk_id": "health_policy_hdfcergo_74",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "14 \nd) Day Care Procedures \nMedical treatment or surgical procedure which is \nundertaken under general or local anaesthesia, \nwhich require admission in a Hospital/Day Care \nCentre for stay less than ...",
+          "bm25_score": 15.5949,
+          "dense_score": 0.5363,
+          "combined_score": 0.7648,
+          "rerank_score": 3.2737
+        },
+        {
+          "rank": 4,
+          "chunk_id": "health_policy_kotak_132",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "26. Medical Advancement Surgery Cover \nWe will pay the Reasonable and Customary charges upto the limit \nspecified in the Policy Schedule/Certificate of Insurance in respect of the \nInsured person \u2019s I...",
+          "bm25_score": 10.4287,
+          "dense_score": 0.0,
+          "combined_score": 0.3859,
+          "rerank_score": 3.1
+        },
+        {
+          "rank": 5,
+          "chunk_id": "health_policy_sbi_155",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "i. This bene\ufffdt can only be availed by Insured Person(s) up to \nthe age of 65 years.\n ii. This bene\ufffdt shall become available only after the expiry of \n24 months from the date of inception of the \ufffdrst P...",
+          "bm25_score": 12.4717,
+          "dense_score": 0.0,
+          "combined_score": 0.4615,
+          "rerank_score": 2.6798
+        }
+      ],
+      "citations": [
+        {
+          "chunk_id": "health_policy_kotak_43",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "text": "4. Day Care Treatment \nWe will indemnify the Medical Expenses incurred on t he Insured \nPerson's Day Care Treatment during the Policy Period following an \nIllness or Injury that occurs during the Policy Period provided that: \n(a) The Day Care Treatment is for Medically Necessary Treatment and \nfollo"
+        },
+        {
+          "chunk_id": "health_policy_sbi_52",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "text": "surgical appliances. \n vi. Consultation fees including Telemedicine by Medical \nPractitioner.\n vii. Medicines, drugs, and consumables.\n viii. Diagnostic procedures.\n ix. The Cost of prosthetic and other devices or equipment if \nimplanted internally during a Surgical Procedure.\n3(b).    Day Care Trea"
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_74",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "text": "14 \nd) Day Care Procedures \nMedical treatment or surgical procedure which is \nundertaken under general or local anaesthesia, \nwhich require admission in a Hospital/Day Care \nCentre for stay less than 24 hours. Treatment \nnormally taken on out-patient basis is not included \nin the scope of this defin"
+        }
+      ]
+    },
+    {
+      "query": "What is covered under hospitalization?",
+      "detected_intent": "KNOWLEDGE_RETRIEVAL",
+      "detected_insurance_type": "health",
+      "metadata_filter": {
+        "insurance_type": "health"
+      },
+      "fallback_used": false,
+      "retriever_mode": "hybrid",
+      "bm25_result_count": 5,
+      "dense_faiss_result_count": 2,
+      "final_merged_result_count": 5,
+      "reranker_used": true,
+      "top_5_retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "health_policy_kotak_169",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "Exclusion: Any expenses arising out of Domiciliary Hospitalization will \nbe excluded as per the attached cover; unless covered under extension \n\u2018Domiciliary hospitalization cover\u2019 ",
+          "bm25_score": 11.2986,
+          "dense_score": 0.5678,
+          "combined_score": 0.8487,
+          "rerank_score": 5.4103
+        },
+        {
+          "rank": 2,
+          "chunk_id": "health_policy_hdfcergo_75",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "he/she is not in a condition to be removed \nto a Hospital or, \n2. The Patient takes treatment at home on \naccount of non availability of room in a \nHospital. \nPre and Post Hospitalisation expenses for...",
+          "bm25_score": 7.1897,
+          "dense_score": 0.5664,
+          "combined_score": 0.6119,
+          "rerank_score": 3.5598
+        },
+        {
+          "rank": 3,
+          "chunk_id": "health_policy_kotak_189",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "which the Insured Person is untrained, unless  specifically \ncovered under the Policy. \n(ee) All non-medical expenses listed in Annexure III of the Policy. \n(ff) Any OPD treatment will not be covered ...",
+          "bm25_score": 7.8751,
+          "dense_score": 0.0,
+          "combined_score": 0.4531,
+          "rerank_score": 2.3653
+        },
+        {
+          "rank": 4,
+          "chunk_id": "health_policy_sbi_53",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "ii. The Day Care Treatment would be covered if the Insured \nPerson is admitted for 2 hours or more wand would also \ncover treatment taken for Angiography, Dialysis, \nRadiotherapy or Chemotherapy for c...",
+          "bm25_score": 6.7175,
+          "dense_score": 0.0,
+          "combined_score": 0.3865,
+          "rerank_score": 2.0714
+        },
+        {
+          "rank": 5,
+          "chunk_id": "health_policy_sbi_167",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "procedures set out below shall be followed.\n xiii. The onus of procuring all the medical documents \n/requirements to adjudicate any Claim will be on the \nInsured Person.\n xiv. The Sum Insured under th...",
+          "bm25_score": 7.41,
+          "dense_score": 0.0,
+          "combined_score": 0.4263,
+          "rerank_score": 2.0038
+        }
+      ],
+      "citations": [
+        {
+          "chunk_id": "health_policy_kotak_169",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "text": "Exclusion: Any expenses arising out of Domiciliary Hospitalization will \nbe excluded as per the attached cover; unless covered under extension \n\u2018Domiciliary hospitalization cover\u2019 "
+        },
+        {
+          "chunk_id": "health_policy_hdfcergo_75",
+          "source_id": "health_policy_hdfcergo",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_hdfcergo_wording.pdf",
+          "text": "he/she is not in a condition to be removed \nto a Hospital or, \n2. The Patient takes treatment at home on \naccount of non availability of room in a \nHospital. \nPre and Post Hospitalisation expenses for \nconsultations, investigations and medicines \nincurred upto 60 days before hospitalisation \nand 90 "
+        },
+        {
+          "chunk_id": "health_policy_kotak_189",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "text": "which the Insured Person is untrained, unless  specifically \ncovered under the Policy. \n(ee) All non-medical expenses listed in Annexure III of the Policy. \n(ff) Any OPD treatment will not be covered \n(gg) Admission primarily for diagnostic purposes not related to \nIllness for which Hospitalization "
+        }
+      ]
+    },
+    {
+      "query": "What is covered under own damage?",
+      "detected_intent": "KNOWLEDGE_RETRIEVAL",
+      "detected_insurance_type": "motor",
+      "metadata_filter": {
+        "insurance_type": "motor"
+      },
+      "fallback_used": false,
+      "retriever_mode": "hybrid",
+      "bm25_result_count": 5,
+      "dense_faiss_result_count": 5,
+      "final_merged_result_count": 5,
+      "reranker_used": true,
+      "top_5_retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "motor_policy_sbi_private_212",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "motor",
+          "text_preview": "charges incurred during replacement/ repairs of damaged \nTyre (s)/Rims of the insured vehicle. \n  If damage to Tyre / tube and/ or Rim is due to Accidental \ndamage to the insured vehicle covered under...",
+          "bm25_score": 9.959,
+          "dense_score": 0.6252,
+          "combined_score": 0.8626,
+          "rerank_score": 6.2823
+        },
+        {
+          "rank": 2,
+          "chunk_id": "motor_policy_sbi_private_96",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "motor",
+          "text_preview": "Specific Exclusions\n 1. Where the Own Damage Claim made by Insured  against the \nCompany under this Policy is not payable.\n 2. Depreciation pertaining to any part/ sub part/ accessories \nnot approved ...",
+          "bm25_score": 8.1632,
+          "dense_score": 0.6739,
+          "combined_score": 0.7635,
+          "rerank_score": 5.0491
+        },
+        {
+          "rank": 3,
+          "chunk_id": "motor_policy_sbi_private_192",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "motor",
+          "text_preview": "from the eligible days of benefit for each and every claim \nunder the Policy. The Company's liability to make any \npayment under the Policy is in excess of the deductible. \n d)  The cover is applicabl...",
+          "bm25_score": 8.5535,
+          "dense_score": 0.5817,
+          "combined_score": 0.7565,
+          "rerank_score": 4.6137
+        },
+        {
+          "rank": 4,
+          "chunk_id": "motor_policy_sbi_private_200",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "motor",
+          "text_preview": "\u2022 Where the Own Damage Claim under the Motor Insurance \nPolicy is not payable.\n \u2022 Where a loss is covered under Motor Insurance Policy or any \nother type of insurance policy with any other insurer or ...",
+          "bm25_score": 7.731,
+          "dense_score": 0.5998,
+          "combined_score": 0.7097,
+          "rerank_score": 3.8618
+        },
+        {
+          "rank": 5,
+          "chunk_id": "motor_policy_sbi_private_171",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "motor",
+          "text_preview": "Section I \u2013 ACCIDENTAL LOSS OF OR DAMAGE TO THE \nVEHICLE INSURED, during the Policy Year.\n If any time during the mid-term of the policy, insured vehicle is \nexpected to exceed the kilometer limit as ...",
+          "bm25_score": 8.7089,
+          "dense_score": 0.6001,
+          "combined_score": 0.773,
+          "rerank_score": 2.7278
+        }
+      ],
+      "citations": [
+        {
+          "chunk_id": "motor_policy_sbi_private_212",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "text": "charges incurred during replacement/ repairs of damaged \nTyre (s)/Rims of the insured vehicle. \n  If damage to Tyre / tube and/ or Rim is due to Accidental \ndamage to the insured vehicle covered under \u201cOwn \nDamage\u201d section of the Policy, the Company's liability \nunder this cover will be restricted t"
+        },
+        {
+          "chunk_id": "motor_policy_sbi_private_96",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "text": "Specific Exclusions\n 1. Where the Own Damage Claim made by Insured  against the \nCompany under this Policy is not payable.\n 2. Depreciation pertaining to any part/ sub part/ accessories \nnot approved for replacement by the Company under this \nPolicy .\n The cost of repairs equaling or exceeding its i"
+        },
+        {
+          "chunk_id": "motor_policy_sbi_private_192",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "text": "from the eligible days of benefit for each and every claim \nunder the Policy. The Company's liability to make any \npayment under the Policy is in excess of the deductible. \n d)  The cover is applicable only for the first two own-damage \nclaims lodged during the Policy Period. \n Deductible \u2013 First 3 "
+        }
+      ]
+    },
+    {
+      "query": "What are the exclusions in this policy?",
+      "detected_intent": "KNOWLEDGE_RETRIEVAL",
+      "detected_insurance_type": null,
+      "metadata_filter": null,
+      "fallback_used": false,
+      "retriever_mode": "hybrid",
+      "bm25_result_count": 5,
+      "dense_faiss_result_count": 1,
+      "final_merged_result_count": 5,
+      "reranker_used": true,
+      "top_5_retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "motor_policy_sbi_private_96",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "motor",
+          "text_preview": "Specific Exclusions\n 1. Where the Own Damage Claim made by Insured  against the \nCompany under this Policy is not payable.\n 2. Depreciation pertaining to any part/ sub part/ accessories \nnot approved ...",
+          "bm25_score": 7.7684,
+          "dense_score": 0.644,
+          "combined_score": 0.7008,
+          "rerank_score": 5.6754
+        },
+        {
+          "rank": 2,
+          "chunk_id": "health_policy_sbi_236",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "Person directly or indirectly for, caused by, arising from or in any way \nattributable to any of the following unless expressly stated to the \ncontrary in this Policy.\n13.1. Standard Exclusions\n13.1(a...",
+          "bm25_score": 8.8783,
+          "dense_score": 0.0,
+          "combined_score": 0.5433,
+          "rerank_score": 5.3028
+        },
+        {
+          "rank": 3,
+          "chunk_id": "health_policy_kotak_38",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "The Benefits available under this Policy are described below. Benefits \nwill be payable subject to the terms, conditions and exclusions of this \nPolicy and the availability of Basic Sum Insured and su...",
+          "bm25_score": 10.6226,
+          "dense_score": 0.0,
+          "combined_score": 0.65,
+          "rerank_score": 3.6675
+        },
+        {
+          "rank": 4,
+          "chunk_id": "health_policy_kotak_3",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "This is a contract of insurance between You and Us which is subject to the receipt of the premium in full and the terms, conditions and exclusions of \nthis Policy. This Policy has been issued on the b...",
+          "bm25_score": 8.4845,
+          "dense_score": 0.0,
+          "combined_score": 0.5192,
+          "rerank_score": 3.3404
+        },
+        {
+          "rank": 5,
+          "chunk_id": "health_policy_sbi_248",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "lawful medical termination of pregnancy during the Policy \nPeriod.\n13.2. Speci\ufb01c Exclusions\n13.2(a). An Insured Person committing or attempting to commit a \nbreach of law with criminal intent, intenti...",
+          "bm25_score": 8.0037,
+          "dense_score": 0.0,
+          "combined_score": 0.4898,
+          "rerank_score": 3.0419
+        }
+      ],
+      "citations": [
+        {
+          "chunk_id": "motor_policy_sbi_private_96",
+          "source_id": "motor_policy_sbi_private",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/motor_sbi_private_wording.pdf",
+          "text": "Specific Exclusions\n 1. Where the Own Damage Claim made by Insured  against the \nCompany under this Policy is not payable.\n 2. Depreciation pertaining to any part/ sub part/ accessories \nnot approved for replacement by the Company under this \nPolicy .\n The cost of repairs equaling or exceeding its i"
+        },
+        {
+          "chunk_id": "health_policy_sbi_236",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "text": "Person directly or indirectly for, caused by, arising from or in any way \nattributable to any of the following unless expressly stated to the \ncontrary in this Policy.\n13.1. Standard Exclusions\n13.1(a). Investigation & Evaluation (Code: Excl04)\n i. Expenses related to any admission primarily for \ndi"
+        },
+        {
+          "chunk_id": "health_policy_kotak_38",
+          "source_id": "health_policy_kotak",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_kotakmahindra_wording.pdf",
+          "text": "The Benefits available under this Policy are described below. Benefits \nwill be payable subject to the terms, conditions and exclusions of this \nPolicy and the availability of Basic Sum Insured and subject to sub-limits \n(if Optional Cover 40. Disease-wise sublimit opted for) and specified in \nrespe"
+        }
+      ]
+    },
+    {
+      "query": "What documents are required for a health insurance claim?",
+      "detected_intent": "KNOWLEDGE_RETRIEVAL",
+      "detected_insurance_type": "health",
+      "metadata_filter": {
+        "insurance_type": "health"
+      },
+      "fallback_used": false,
+      "retriever_mode": "hybrid",
+      "bm25_result_count": 5,
+      "dense_faiss_result_count": 4,
+      "final_merged_result_count": 5,
+      "reranker_used": true,
+      "top_5_retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "network_agreement_pdf_53",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "doc_type": "network",
+          "insurance_type": "health",
+          "text_preview": "13 \n \nhospitalisation papers or separately and adjudicate the claim based on documents received. \n \n12.1.12 Communication regarding details of settlement \n \n Upon payment by Insur er towards a claim, ...",
+          "bm25_score": 9.9801,
+          "dense_score": 0.6096,
+          "combined_score": 0.678,
+          "rerank_score": 4.2189
+        },
+        {
+          "rank": 2,
+          "chunk_id": "network_agreement_pdf_48",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "doc_type": "network",
+          "insurance_type": "health",
+          "text_preview": "by way of request, reminder, investigation or otherwise, to secure all documents or information \nfrom the  Hospital, Insured or any other source for ascertaining and satisfying about the \nadmissibilit...",
+          "bm25_score": 9.8999,
+          "dense_score": 0.551,
+          "combined_score": 0.6537,
+          "rerank_score": 3.9417
+        },
+        {
+          "rank": 3,
+          "chunk_id": "irda_health_reg_2016_124",
+          "source_id": "irda_health_reg_2016",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/regulations/irDAI_health_regulations_2016.docx",
+          "doc_type": "regulation",
+          "insurance_type": "health",
+          "text_preview": "Except in cases where a fraud is suspected, ordinarily no document not listed in the policy terms and conditions shall be deemed \u2018necessary\u2019. The insurer shall ensure that all the documents required f...",
+          "bm25_score": 12.2531,
+          "dense_score": 0.536,
+          "combined_score": 0.758,
+          "rerank_score": 3.3868
+        },
+        {
+          "rank": 4,
+          "chunk_id": "health_policy_sbi_312",
+          "source_id": "health_policy_sbi",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/policies/health_sbihealth_wording.pdf",
+          "doc_type": "policy_wording",
+          "insurance_type": "health",
+          "text_preview": "documents mentioned above.\n 3. Certi\ufffded copies of document meaning documents \nattested by any vested authority (e.g. Notarized \nDocuments, attested from Gazetted o\ufffdcer, SBI Branch \nManager, Special Ex...",
+          "bm25_score": 11.3482,
+          "dense_score": 0.5943,
+          "combined_score": 0.7363,
+          "rerank_score": 3.2518
+        },
+        {
+          "rank": 5,
+          "chunk_id": "network_agreement_pdf_46",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "doc_type": "network",
+          "insurance_type": "health",
+          "text_preview": "claim, hold consultations with the Doctors, Hospital staff and other persons as may be necessary \nand take all other such steps as required. The TPA will send a monthly report to the insurer on \nthe n...",
+          "bm25_score": 13.5853,
+          "dense_score": 0.0,
+          "combined_score": 0.6324,
+          "rerank_score": 3.0445
+        }
+      ],
+      "citations": [
+        {
+          "chunk_id": "network_agreement_pdf_53",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "text": "13 \n \nhospitalisation papers or separately and adjudicate the claim based on documents received. \n \n12.1.12 Communication regarding details of settlement \n \n Upon payment by Insur er towards a claim, TPA shall communicate to the \nPolicyholder/Insured, details for the amount paid as per Regulation 21"
+        },
+        {
+          "chunk_id": "network_agreement_pdf_48",
+          "source_id": "network_agreement_pdf",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/network/hospital_network_agreement.pdf",
+          "text": "by way of request, reminder, investigation or otherwise, to secure all documents or information \nfrom the  Hospital, Insured or any other source for ascertaining and satisfying about the \nadmissibility of the claim under the terms and conditions of the Policy of Insurance.  \n \n12.1.3 Scrutiny of Cla"
+        },
+        {
+          "chunk_id": "irda_health_reg_2016_124",
+          "source_id": "irda_health_reg_2016",
+          "source_path": "/home/kasm-user/Documents/claimprocessing/data/knowledge_base/regulations/irDAI_health_regulations_2016.docx",
+          "text": "Except in cases where a fraud is suspected, ordinarily no document not listed in the policy terms and conditions shall be deemed \u2018necessary\u2019. The insurer shall ensure that all the documents required for claims processing are called for at one time and shall not call for the documents in a piece meal"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_queries": 5,
+    "successful_queries": 5,
+    "failed_queries": 0,
+    "queries_with_results": 5,
+    "queries_with_fallback": 0,
+    "queries_with_reranker": 5
+  }
+}

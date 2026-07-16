@@ -94,10 +94,16 @@ Actual project layout (as implemented):
 .
 ├── .env.example
 ├── .gitignore
+├── diagnostics.md
+├── END_TO_END_RAG_VALIDATION.json
+├── END_TO_END_RAG_VALIDATION.md
 ├── extended_plan.md
+├── INGESTION_FIX_SUMMARY.md
+├── METADATA_FILTER_FIX_SUMMARY.md
 ├── plan.md
 ├── README.md
 ├── requirements.txt
+├── RETRIEVAL_FALLBACK_FIX_SUMMARY.md
 ├── app/
 │   ├── __init__.py
 │   ├── config.py
@@ -159,7 +165,10 @@ Actual project layout (as implemented):
 │       └── settlement_calculator.py
 ├── data/
 │   ├── claims.db
-│   ├── faiss_index
+│   ├── faiss_index/                 # persisted FAISS vector index (Phase R2)
+│   ├── faiss_index.backup
+│   ├── faiss_index.meta.json
+│   ├── faiss_index.meta.json.backup
 │   ├── golden_dataset/
 │   │   ├── claims.json
 │   │   ├── faq.json
@@ -225,12 +234,15 @@ Actual project layout (as implemented):
 │   ├── langsmith_trace_verification.json
 │   ├── rag_pipeline_langsmith_verification_report.md
 │   ├── rag_pipeline_langsmith_verification.json
+│   ├── remediation_baseline.md
 │   ├── report.md
 │   └── summary.json
 ├── Screenshots/
 │   └── Screenshots.docx
 ├── scripts/
 │   ├── demo_policy_status.py
+│   ├── diagnose_retrieval_path.py
+│   ├── end_to_end_rag_validation.py
 │   ├── evaluate_rag.py
 │   ├── evaluate.py
 │   ├── generate_eval_golden_sets.py
@@ -263,6 +275,7 @@ Actual project layout (as implemented):
     ├── test_knowledge_retrieval_integration.py
     ├── test_langsmith_integration_coverage.py
     ├── test_langsmith_integration_unit.py
+    ├── test_metadata_filter_inference.py
     ├── test_multi_turn_context.py
     ├── test_policy_checker.py
     ├── test_policy_status_integration.py
@@ -275,6 +288,7 @@ Actual project layout (as implemented):
     ├── test_rag_pipeline.py
     ├── test_rag_retriever_and_config.py
     ├── test_rag_simple.py
+    ├── test_retrieval_filter_fallback.py
     ├── test_settlement_calculator.py
     ├── test_simple_acknowledgments.py
     ├── test_sqlite_memory_coverage.py
@@ -783,9 +797,12 @@ project-root/
 │   ├── langsmith_trace_verification.json
 │   ├── rag_pipeline_langsmith_verification_report.md
 │   ├── rag_pipeline_langsmith_verification.json
+│   ├── remediation_baseline.md
 │   ├── report.md
 │   └── summary.json
 ├── scripts/
+│   ├── diagnose_retrieval_path.py
+│   ├── end_to_end_rag_validation.py
 │   ├── evaluate_rag.py
 │   ├── generate_eval_golden_sets.py
 │   ├── rag_evaluation_results.json

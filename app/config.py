@@ -45,6 +45,7 @@ class Settings(BaseSettings):
     RETRIEVAL_FILTER_FALLBACK_ENABLED: bool = Field(True, env="RETRIEVAL_FILTER_FALLBACK_ENABLED")
 
     # ── Week 8 Feature Flags ─────────────────────────────────────────────────
+    ENABLE_LCEL: bool = Field(False, env="ENABLE_LCEL")
     ENABLE_MCP: bool = Field(False, env="ENABLE_MCP")
     ENABLE_HITL: bool = Field(False, env="ENABLE_HITL")
     ENABLE_RBAC: bool = Field(False, env="ENABLE_RBAC")

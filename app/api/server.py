@@ -15,9 +15,14 @@ from pydantic import BaseModel
 from app.config import get_settings
 from app.logging.json_logger import get_logger
 from app.chains.agent_chain import AgentChain
+from app.chains.router import lcel_router
 from app.langsmith_integration import get_langsmith_trace_id
 from app.memory.sqlite_memory import SQLiteMemory
 from app.models.faq import FAQIntent, FAQResponse
+from app.callbacks.logging_cb import LoggingCallbackHandler
+from app.callbacks.tracing_cb import TracingCallbackHandler
+from app.callbacks.metrics_cb import MetricsCallbackHandler
+from langchain_core.runnables import RunnableConfig
 from app.rag.chunkers import ChunkConfig, chunk_document
 from app.rag.embeddings import get_embedding_fn
 from app.rag.evaluation_harness import run_rag_evaluation
@@ -337,6 +342,80 @@ def _cleanup_expired_cache() -> None:
             del _conversation_cache[oldest_key]
 
 
+def _invoke_lcel(request: Request, session_id: str, user_message: str, correlation_id: Optional[str] = None) -> ChatResponse:
+    """Invoke the LCEL router and build a ChatResponse.
+
+    Attaches logging, tracing, and metrics callbacks via ``RunnableConfig``.
+    """
+    from app.langsmith_integration import get_langsmith_trace_id
+    trace_id = get_langsmith_trace_id()
+
+    metrics_handler = MetricsCallbackHandler()
+    callbacks = [
+        LoggingCallbackHandler(session_id=session_id),
+        metrics_handler,
+    ]
+    if trace_id:
+        callbacks.append(TracingCallbackHandler(session_id=session_id, trace_id=trace_id))
+
+    config = RunnableConfig(callbacks=callbacks)
+
+    inputs = {
+        "session_id": session_id,
+        "user_message": user_message,
+        "metadata": {
+            "correlation_id": correlation_id,
+            "timings": getattr(request.state, "timings", {"llm_ms": 0, "tools": []}),
+        },
+    }
+
+    result = lcel_router.invoke(inputs, config=config)
+
+    answer_text = result.get("answer_text", "")
+    intent_str = result.get("intent", "OTHER")
+    category = result.get("category", "general")
+    confidence = result.get("confidence", 0.0)
+    reasoning = result.get("reasoning")
+    inner_metadata = result.get("metadata", {})
+    citations = result.get("citations", [])
+    retrieval_trace = result.get("retrieval_trace", [])
+    lcel_chain_metadata = result.get("chain_metadata", {})
+    metrics_report = metrics_handler.report()
+
+    structured = FAQResponse(
+        intent=FAQIntent(intent_str) if intent_str in FAQIntent.__members__ else FAQIntent.OTHER,
+        category=category,
+        confidence=confidence,
+        answer_text=answer_text,
+        reasoning=reasoning,
+        metadata=inner_metadata,
+    )
+
+    latency_ms = int((time.time() - getattr(request.state, "start_time", time.time())) * 1000)
+    settings = get_settings()
+
+    chain_metadata = {
+        "latency_ms": latency_ms,
+        "lcel": True,
+        "lcel_metrics": metrics_report,
+        "llm_ms": lcel_chain_metadata.get("llm_ms", 0),
+        "tool_timings": lcel_chain_metadata.get("tool_timings", []),
+        "is_tool_augmented": lcel_chain_metadata.get("is_tool_augmented", False),
+        "model": settings.OPENAI_MODEL_NAME,
+        "temperature": settings.OPENAI_MODEL_TEMPERATURE,
+    }
+    if trace_id:
+        chain_metadata["langsmith_trace_id"] = trace_id
+
+    return ChatResponse(
+        answer_text=answer_text,
+        structured=structured,
+        chain_metadata=chain_metadata,
+        retrieval_trace=retrieval_trace,
+        citations=citations,
+    )
+
+
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: Request, req: ChatRequest) -> ChatResponse:
     start = time.time()
@@ -347,6 +426,27 @@ def chat(request: Request, req: ChatRequest) -> ChatResponse:
         "correlation_id": correlation_id,
     }
 
+    settings = get_settings()
+
+    # ── LCEL path (behind flag) ────────────────────────────────────────
+    if settings.ENABLE_LCEL:
+        try:
+            response = _invoke_lcel(request, req.session_id, req.message, correlation_id)
+            # Cache the response for future identical requests
+            cache_key = _get_cache_key(req.session_id, req.message)
+            _cleanup_expired_cache()
+            _conversation_cache[cache_key] = {
+                "response": response,
+                "timestamp": time.time(),
+                "message_hash": cache_key,
+                "session_id": req.session_id,
+            }
+            return response
+        except Exception as exc:
+            logger.error("lcel_chat_error", {"error": str(exc), **log_meta})
+            # Fall through to legacy path on LCEL failure
+
+    # ── Legacy path (fallback) ─────────────────────────────────────────
     try:
         _ensure_components()
         
@@ -403,7 +503,6 @@ def chat(request: Request, req: ChatRequest) -> ChatResponse:
 
         logger.info("chat_handled", log_meta)
 
-        settings = get_settings()
         chain_metadata = {
             "latency_ms": latency_ms,
             "llm_ms": request.state.timings.get("llm_ms", 0),

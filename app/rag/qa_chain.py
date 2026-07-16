@@ -7,12 +7,14 @@ from app.rag.chunkers import Chunk, ChunkConfig, chunk_document
 from app.rag.loaders import load_documents_from_manifest
 from app.rag.retriever_hybrid import hybrid_retrieve
 from app.rag.vectorstores import get_vector_store
+from app.rag.vectorstores.base import VectorStore
 
 logger = logging.getLogger(__name__)
 
 
-# ── Module-level persisted chunks cache ──────────────────────────────────────
+# ── Module-level persisted chunks & vector store cache ───────────────────────
 _PERSISTED_CHUNKS: Optional[List[Chunk]] = None
+_PERSISTED_VECTOR_STORE: Optional[VectorStore] = None
 
 
 def _load_chunks_from_manifest() -> List[Chunk]:
@@ -47,6 +49,55 @@ def _get_persisted_chunks() -> List[Chunk]:
     return _PERSISTED_CHUNKS
 
 
+def _get_persisted_vector_store() -> Optional[VectorStore]:
+    """
+    Return the persisted FAISS vector store, or None if unavailable.
+
+    Cached at module level so it is loaded only once.
+    """
+    global _PERSISTED_VECTOR_STORE
+    if _PERSISTED_VECTOR_STORE is not None:
+        return _PERSISTED_VECTOR_STORE
+
+    from app.config import get_settings
+    from app.rag.vectorstores.faiss_store import FAISSStore
+
+    persist_path = get_settings().VECTOR_PERSIST_PATH
+    store = FAISSStore.load(persist_path)
+    if store is not None and store.chunk_count > 0:
+        _PERSISTED_VECTOR_STORE = store
+    return _PERSISTED_VECTOR_STORE
+
+
+# ── Module-level LLM cache so we reuse the same ChatOpenAI instance ──────────
+import time as _time
+_LLM_CACHE: Optional[Any] = None
+_LLM_CACHE_TIME: float = 0.0
+_LLM_CACHE_TTL: float = 3600.0  # Re-create hourly
+
+
+def _get_cached_llm():
+    """Return a cached ChatOpenAI instance, creating one if needed."""
+    global _LLM_CACHE, _LLM_CACHE_TIME
+    now = _time.time()
+    if _LLM_CACHE is None or (now - _LLM_CACHE_TIME) > _LLM_CACHE_TTL:
+        from app.config import get_settings
+        from langchain_openai import ChatOpenAI
+        settings = get_settings()
+        if not settings.OPENAI_API_KEY or settings.OPENAI_API_KEY.startswith("your-"):
+            _LLM_CACHE = None
+        else:
+            _LLM_CACHE = ChatOpenAI(
+                model=settings.OPENAI_MODEL_NAME,
+                temperature=0.3,
+                openai_api_key=settings.OPENAI_API_KEY,
+                timeout=settings.OPENAI_REQUEST_TIMEOUT,
+                max_retries=2,
+            )
+        _LLM_CACHE_TIME = now
+    return _LLM_CACHE
+
+
 def _llm_synthesize_answer(
     query: str,
     results: List[Dict[str, Any]],
@@ -64,7 +115,6 @@ def _llm_synthesize_answer(
         excerpt if the LLM is unavailable.
     """
     from app.config import get_settings
-    from langchain_openai import ChatOpenAI
 
     settings = get_settings()
 
@@ -100,13 +150,15 @@ def _llm_synthesize_answer(
     else:
         user_prompt = f"Question: {query}\n\nContext:\n{context_str}"
 
-    llm = ChatOpenAI(
-        model=settings.OPENAI_MODEL_NAME,
-        temperature=0.3,
-        openai_api_key=settings.OPENAI_API_KEY,
-        timeout=settings.OPENAI_REQUEST_TIMEOUT,
-        max_retries=2,
-    )
+    llm = _get_cached_llm()
+    if llm is None:
+        best_chunk = results[0]["chunk"]
+        excerpt = best_chunk.text.strip().replace("\n", " ")
+        if len(excerpt) > 260:
+            excerpt = excerpt[:257] + "..."
+        if claim_context:
+            return f"For {claim_context}, the retrieved guidance says: {excerpt}"
+        return f"The retrieved guidance says: {excerpt}"
 
     messages = [
         {"role": "system", "content": system_prompt},
@@ -145,7 +197,15 @@ def _build_qa_payload(
             "confidence": 0.0,
         }
 
-    results = hybrid_retrieve(chunks, query, k=top_k, embedding_fn=embedding_fn, metadata_filter=metadata_filter)
+    # Load the persistent vector store for dense retrieval (avoids re-embedding chunks)
+    vector_store = _get_persisted_vector_store()
+
+    results = hybrid_retrieve(
+        chunks, query, k=top_k,
+        embedding_fn=embedding_fn,
+        metadata_filter=metadata_filter,
+        vector_store=vector_store,
+    )
     if not results:
         return {
             "answer_text": "No relevant guidance was found in the knowledge base.",

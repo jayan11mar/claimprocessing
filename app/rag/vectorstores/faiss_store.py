@@ -342,9 +342,19 @@ class FAISSStore(VectorStore):
         search_kwargs = dict(search_kwargs or {})
         embedding_fn = search_kwargs.pop("embedding_fn", None)
         if embedding_fn is None:
-            embedding_fn = getattr(self, "embedding_fn", None)
+            # Auto-load from the configured embedding function as a convenience.
+            try:
+                from app.rag.embeddings import get_embedding_fn
+                embedding_fn = get_embedding_fn()
+            except Exception:
+                pass
         if embedding_fn is None:
-            embedding_fn = getattr(self, "_embedding_fn", None)
+            import logging
+            logging.getLogger(__name__).warning(
+                "FAISSStore.as_retriever() was called without an embedding_fn. "
+                "Provide one via search_kwargs={'embedding_fn': <callable>} or "
+                "ensure an embedding model is configured."
+            )
 
         k = search_kwargs.pop("k", 5)
         filter_value = search_kwargs.pop("filter", None)
@@ -375,6 +385,11 @@ class FAISSStore(VectorStore):
                         effective_embedding_fn = config.get("embedding_fn", effective_embedding_fn)
 
                 if effective_embedding_fn is None:
+                    import logging
+                    logging.getLogger(__name__).warning(
+                        "FAISSRetriever invoked without embedding_fn. "
+                        "Pass embedding_fn in search_kwargs or set on the store."
+                    )
                     return []
 
                 embedding = effective_embedding_fn([query_text])[0]

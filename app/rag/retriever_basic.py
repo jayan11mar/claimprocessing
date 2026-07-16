@@ -88,9 +88,11 @@ def build_basic_retriever(
     # Persist
     store.persist()
 
-    # Return retriever
+    # Pass embedding_fn so the retriever can embed queries at search time
     effective_filter = metadata_filter if metadata_filter is not None else filter
     effective_search_kwargs = dict(search_kwargs or {})
+    if "embedding_fn" not in effective_search_kwargs:
+        effective_search_kwargs["embedding_fn"] = embed_fn
     if effective_filter is not None and "filter" not in effective_search_kwargs:
         effective_search_kwargs["filter"] = effective_filter
     if "k" not in effective_search_kwargs:
@@ -177,9 +179,11 @@ def get_retriever_with_stats(
     # Persist
     store.persist()
 
-    # Return retriever and stats
+    # Pass embedding_fn so the retriever can embed queries at search time
     effective_filter = metadata_filter if metadata_filter is not None else filter
     effective_search_kwargs = dict(search_kwargs or {})
+    if "embedding_fn" not in effective_search_kwargs:
+        effective_search_kwargs["embedding_fn"] = embed_fn
     if effective_filter is not None and "filter" not in effective_search_kwargs:
         effective_search_kwargs["filter"] = effective_filter
     if "k" not in effective_search_kwargs:

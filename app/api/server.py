@@ -22,7 +22,6 @@ from app.rag.chunkers import ChunkConfig, chunk_document
 from app.rag.embeddings import get_embedding_fn
 from app.rag.evaluation_harness import run_rag_evaluation
 from app.rag.loaders import Document, load_documents_from_manifest
-from app.rag.retriever_hybrid import hybrid_retrieve
 from app.rag.vectorstores import get_vector_store
 
 
@@ -202,6 +201,19 @@ def _serialize_document(document: Document) -> Dict[str, Any]:
     }
 
 
+def _ensure_rag_vector_store_loaded() -> None:
+    """Load the persisted FAISS vector store from disk if not already loaded."""
+    global _rag_vector_store
+    if _rag_vector_store is not None:
+        return
+    store = get_vector_store(backend=get_settings().VECTOR_BACKEND)
+    if store.index is not None and store.chunk_count > 0:
+        _rag_vector_store = store
+        logger.info("persistent_vector_store_loaded", {"chunk_count": store.chunk_count})
+    else:
+        logger.warning("persistent_vector_store_missing", {"chunk_count": store.chunk_count})
+
+
 def _rebuild_rag_index() -> None:
     global _rag_vector_store
     if not _rag_documents:
@@ -223,9 +235,11 @@ def _rebuild_rag_index() -> None:
     embeddings = embed_fn(texts)
     dimension = len(embeddings[0]) if embeddings else 1536
     store = get_vector_store(backend=get_settings().VECTOR_BACKEND, dimension=dimension)
+    store.delete(ids=None)  # Clear existing FAISS contents before add to avoid duplicate vectors
     store.add(all_chunks, embeddings)
     store.persist()
     _rag_vector_store = store
+    logger.info("index_rebuilt", {"chunk_count": len(all_chunks), "dimension": dimension})
 
 
 def _get_retrieval_chunks() -> List[Any]:
@@ -523,31 +537,56 @@ def ingest_status(job_id: str) -> Dict[str, Any]:
 
 @app.post("/retrieve")
 def retrieve(req: RetrieveRequest) -> Dict[str, Any]:
-    chunks = _get_retrieval_chunks()
-    if not chunks:
-        return {"query": req.query, "top_k": req.top_k, "results": [], "source_count": 0}
+    _ensure_rag_vector_store_loaded()
+    if _rag_vector_store is None:
+        return {
+            "query": req.query,
+            "top_k": req.top_k,
+            "results": [],
+            "source_count": 0,
+            "message": "Persistent vector index not found or empty. Run ingestion first.",
+        }
 
-    results = hybrid_retrieve(chunks, req.query, k=req.top_k)
+    retriever = _rag_vector_store.as_retriever(
+        search_kwargs={"k": req.top_k, "embedding_fn": get_embedding_fn()}
+    )
+    docs = retriever.invoke(req.query)
     serialized_results: List[Dict[str, Any]] = []
-    for item in results:
-        chunk = item.get("chunk")
-        if chunk is None:
-            continue
+    for doc in docs:
+        metadata = doc.metadata if hasattr(doc, "metadata") else {}
         serialized_results.append(
             {
-                "chunk": chunk.to_dict(),
-                "score": item.get("rerank_score", item.get("combined_score", 0.0)),
-                "chunk_id": item.get("chunk_id"),
-                "source_id": item.get("source_id"),
-                "source_path": item.get("source_path"),
+                "chunk": {
+                    "text": doc.page_content if hasattr(doc, "page_content") else "",
+                    "source_id": metadata.get("source_id", ""),
+                    "source_path": metadata.get("source_path", ""),
+                    "doc_type": metadata.get("doc_type", ""),
+                    "insurance_type": metadata.get("insurance_type", ""),
+                    "product_code": metadata.get("product_code"),
+                    "product_name": metadata.get("product_name"),
+                    "claim_type": metadata.get("claim_type"),
+                    "section": metadata.get("section"),
+                    "clause_id": metadata.get("clause_id"),
+                    "chunk_index": metadata.get("chunk_index", 0),
+                    "raw_metadata": metadata,
+                },
+                "score": 0.0,
+                "chunk_id": metadata.get("chunk_id"),
+                "source_id": metadata.get("source_id", ""),
+                "source_path": metadata.get("source_path", ""),
             }
         )
 
+    logger.info("retrieve_completed", {
+        "query": req.query,
+        "top_k": req.top_k,
+        "result_count": len(serialized_results),
+    })
     return {
         "query": req.query,
         "top_k": req.top_k,
         "results": serialized_results,
-        "source_count": len(_rag_documents) if _rag_documents else 0,
+        "source_count": len(serialized_results),
     }
 
 

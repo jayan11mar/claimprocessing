@@ -53,8 +53,13 @@ def test_build_basic_retriever_passes_metadata_filter_to_store(monkeypatch):
     metadata_filter = {"doc_type": "policy_wording", "product_code": "AUTO"}
     retriever = build_basic_retriever(metadata_filter=metadata_filter)
 
-    assert getattr(retriever, "search_kwargs", None) == {"k": 5, "filter": metadata_filter}
-    assert dummy_store.search_kwargs == {"k": 5, "filter": metadata_filter}
+    # embedding_fn is now passed through to the store; verify it's callable
+    assert callable(dummy_store.search_kwargs.get("embedding_fn"))
+    assert dummy_store.search_kwargs.get("k") == 5
+    assert dummy_store.search_kwargs.get("filter") == metadata_filter
+    assert getattr(retriever, "search_kwargs", None) is not None
+    assert getattr(retriever, "search_kwargs", {}).get("k") == 5
+    assert getattr(retriever, "search_kwargs", {}).get("filter") == metadata_filter
 
 
 def test_settings_reads_chunking_environment(monkeypatch):

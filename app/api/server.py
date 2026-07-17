@@ -35,6 +35,20 @@ from app.mcp.registry import get_registry as get_mcp_registry
 from app.mcp.client import MCPClient, MCPClientPool, get_client_pool, reset_client_pool
 from app.mcp.tool_adapter import discover_and_create_tools
 
+# ── RBAC imports ────────────────────────────────────────────────────────
+from app.rbac.auth import (
+    extract_role_context_from_request,
+    get_service_role_context,
+)
+from app.rbac.models import (
+    PermissionMatrix,
+    RoleContext,
+    AnonymousContext,
+    Role,
+)
+from app.rbac.filter import build_role_metadata_filter, clamp_top_k
+from app.rbac.validator import validate_retrieval_results
+from app.rbac.audit import audit_retrieval, audit_top_k_clamp
 
 logger = get_logger("app.api.server")
 
@@ -64,6 +78,26 @@ async def add_correlation_and_timing(request: Request, call_next):
     latency_ms = int((time.time() - request.state.start_time) * 1000)
     response.headers["X-Correlation-ID"] = correlation_id
     response.headers["X-Request-Latency-Ms"] = str(latency_ms)
+    return response
+
+
+# ── RBAC Middleware ─────────────────────────────────────────────────────
+# Attaches a RoleContext to every request based on the JWT in the
+# Authorization header.  The context is stored on request.state.role_context
+# and consumed by the pre-retrieval filter and post-retrieval validator.
+
+@app.middleware("http")
+async def rbac_middleware(request: Request, call_next):
+    settings = get_settings()
+    if settings.ENABLE_RBAC:
+        role_context = extract_role_context_from_request(request)
+        request.state.role_context = role_context
+    else:
+        # When RBAC is disabled, attach a service role context with
+        # unrestricted access to all document types.  This ensures
+        # existing tests and operations continue to work unchanged.
+        request.state.role_context = get_service_role_context()
+    response = await call_next(request)
     return response
 
 
@@ -648,7 +682,7 @@ def ingest_status(job_id: str) -> Dict[str, Any]:
 
 
 @app.post("/retrieve")
-def retrieve(req: RetrieveRequest) -> Dict[str, Any]:
+def retrieve(request: Request, req: RetrieveRequest) -> Dict[str, Any]:
     _ensure_rag_vector_store_loaded()
     if _rag_vector_store is None:
         return {
@@ -659,10 +693,50 @@ def retrieve(req: RetrieveRequest) -> Dict[str, Any]:
             "message": "Persistent vector index not found or empty. Run ingestion first.",
         }
 
+    # ── RBAC: Extract role context ──────────────────────────────────────
+    role_context = getattr(request.state, "role_context", AnonymousContext())
+    settings = get_settings()
+    rbac_start_ns = time.perf_counter_ns()
+
+    # ── RBAC: Build pre-retrieval metadata filter ───────────────────────
+    effective_k = req.top_k
+    metadata_filter = None
+    if settings.ENABLE_RBAC:
+        effective_k = clamp_top_k(role_context, req.top_k)
+        metadata_filter = build_role_metadata_filter(
+            role_context, query=req.query, requested_k=req.top_k,
+        )
+
+        # Short-circuit: empty filter dict means no allowed doc types
+        if metadata_filter == {}:
+            elapsed_ms = round((time.perf_counter_ns() - rbac_start_ns) / 1_000_000, 3)
+            audit_retrieval(
+                role_context=role_context,
+                query=req.query,
+                requested_k=req.top_k,
+                effective_k=0,
+                pre_filter_count=0,
+                post_validator_count=0,
+                stripped_count=0,
+                elapsed_ms=elapsed_ms,
+                metadata_filter_used=None,
+                fallback_triggered=False,
+            )
+            return {
+                "query": req.query,
+                "top_k": 0,
+                "results": [],
+                "source_count": 0,
+                "message": "Access denied: no document types are permitted for your role.",
+            }
+
+    # ── Perform retrieval ───────────────────────────────────────────────
     retriever = _rag_vector_store.as_retriever(
-        search_kwargs={"k": req.top_k, "embedding_fn": get_embedding_fn()}
+        search_kwargs={"k": effective_k, "embedding_fn": get_embedding_fn()}
     )
     docs = retriever.invoke(req.query)
+
+    # ── Serialize results as dicts for RBAC processing ──────────────────
     serialized_results: List[Dict[str, Any]] = []
     for doc in docs:
         metadata = doc.metadata if hasattr(doc, "metadata") else {}
@@ -686,17 +760,47 @@ def retrieve(req: RetrieveRequest) -> Dict[str, Any]:
                 "chunk_id": metadata.get("chunk_id"),
                 "source_id": metadata.get("source_id", ""),
                 "source_path": metadata.get("source_path", ""),
+                "doc_type": metadata.get("doc_type", ""),
             }
         )
+
+    pre_validator_count = len(serialized_results)
+
+    # ── RBAC: Post-retrieval validation ─────────────────────────────────
+    stripped_count = 0
+    if settings.ENABLE_RBAC:
+        validated = validate_retrieval_results(
+            serialized_results, role_context, query=req.query,
+        )
+        stripped_count = pre_validator_count - len(validated)
+        serialized_results = validated
+
+    elapsed_ms = round((time.perf_counter_ns() - rbac_start_ns) / 1_000_000, 3)
+
+    # ── RBAC: Audit every retrieval ─────────────────────────────────────
+    audit_retrieval(
+        role_context=role_context,
+        query=req.query,
+        requested_k=req.top_k,
+        effective_k=effective_k,
+        pre_filter_count=pre_validator_count,
+        post_validator_count=len(serialized_results),
+        stripped_count=stripped_count,
+        elapsed_ms=elapsed_ms,
+        metadata_filter_used=metadata_filter,
+        fallback_triggered=False,
+    )
 
     logger.info("retrieve_completed", {
         "query": req.query,
         "top_k": req.top_k,
+        "effective_k": effective_k,
         "result_count": len(serialized_results),
+        "rbac_stripped": stripped_count,
     })
     return {
         "query": req.query,
-        "top_k": req.top_k,
+        "top_k": effective_k,
         "results": serialized_results,
         "source_count": len(serialized_results),
     }
@@ -858,6 +962,61 @@ def reset(req: ResetRequest):
     _invalidate_session_cache(session_id)
     logger.info("reset_history", {"session_id": session_id})
     return {"status": "ok", "session_id": session_id}
+
+
+# ── RBAC Endpoints ─────────────────────────────────────────────────────
+
+
+@app.get("/roles")
+def list_roles() -> Dict[str, Any]:
+    """List all roles and their permissions from the RBAC permission matrix.
+
+    Returns:
+        Dict with role definitions that can be consumed by the UI to
+        understand what each role can access.
+    """
+    matrix = PermissionMatrix.get_instance()
+    roles_dict = {}
+    for role_name, perms in matrix.roles.items():
+        roles_dict[role_name] = {
+            "display_name": perms.display_name,
+            "description": perms.description,
+            "allowed_doc_types": perms.allowed_doc_types,
+            "allowed_insurance_types": perms.allowed_insurance_types,
+            "max_retrieval_k": perms.max_retrieval_k,
+            "requires_explicit_consent": perms.requires_explicit_consent,
+        }
+    return {
+        "status": "ok",
+        "enabled": get_settings().ENABLE_RBAC,
+        "roles": roles_dict,
+        "role_count": len(roles_dict),
+    }
+
+
+@app.get("/auth/context")
+def auth_context(request: Request) -> Dict[str, Any]:
+    """Return the current authentication context for the request.
+
+    Useful for debugging and for frontend components to verify the
+    active role and permissions.
+
+    Returns:
+        Dict with user_id, role, permissions, and JWT claims.
+    """
+    role_context = getattr(request.state, "role_context", AnonymousContext())
+    return {
+        "status": "ok",
+        "user_id": role_context.user_id,
+        "role": role_context.role,
+        "is_authenticated": role_context.is_authenticated,
+        "permissions": {
+            "allowed_doc_types": role_context.allowed_doc_types,
+            "max_retrieval_k": role_context.max_k,
+            "requires_explicit_consent": role_context.requires_consent,
+        },
+        "rbac_enabled": get_settings().ENABLE_RBAC,
+    }
 
 
 # ── HITL Endpoints (gated behind ENABLE_HITL) ─────────────────────────

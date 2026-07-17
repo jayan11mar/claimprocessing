@@ -1,1 +1,74 @@
-# Week 8 scaffolding — RBAC Roles
+# Week 8 — RBAC Role-Permission Matrix
+# Spec 3.6: Role-Based RAG
+#
+# Each role defines:
+#   - allowed_doc_types: doc_type values the role may retrieve
+#   - allowed_insurance_types: optional filter on insurance_type
+#   - max_retrieval_k: maximum top-k the role may request
+#   - requires_explicit_consent: if True, retrieval of certain types needs audit trail
+#
+# The permission matrix is loaded by rbac/models.py at startup
+# and consulted by the pre-retrieval filter (rbac/filter.py) and
+# the post-retrieval validator (rbac/validator.py).
+
+roles:
+  claims_processor:
+    display_name: "Claims Processor"
+    description: "Process standard claims with policy wordings and SOPs"
+    allowed_doc_types:
+      - policy_wording
+      - sop
+    allowed_insurance_types: null          # no restriction
+    max_retrieval_k: 10
+    requires_explicit_consent: false
+    restricted_doc_types: []               # never allowed
+
+  senior_adjuster:
+    display_name: "Senior Adjuster"
+    description: "Adjust complex claims with access to prior memos"
+    allowed_doc_types:
+      - policy_wording
+      - sop
+      - memo
+    allowed_insurance_types: null
+    max_retrieval_k: 20
+    requires_explicit_consent: false
+    restricted_doc_types: []
+
+  claims_manager:
+    display_name: "Claims Manager"
+    description: "Oversee claims lifecycle with access to prior memos"
+    allowed_doc_types:
+      - policy_wording
+      - sop
+      - memo
+    allowed_insurance_types: null
+    max_retrieval_k: 20
+    requires_explicit_consent: false
+    restricted_doc_types: []
+
+  fraud_investigator:
+    display_name: "Fraud Investigator"
+    description: "Investigate suspicious claims with access to investigation files"
+    allowed_doc_types:
+      - policy_wording
+      - sop
+      - memo
+      - investigation
+    allowed_insurance_types: null
+    max_retrieval_k: 30
+    requires_explicit_consent: true        # investigation access must be audited
+    restricted_doc_types: []               # has access to all types in allowed
+
+# ── JWT configuration ────────────────────────────────────────────────────
+jwt:
+  algorithm: HS256
+  access_token_expire_minutes: 60
+  default_role: claims_processor
+  header_prefix: "Bearer "
+
+# ── Metadata field mapping ────────────────────────────────────────────────
+# Maps role concept "doc_type" to the Chunk attribute name used in filtering.
+metadata_fields:
+  doc_type_field: doc_type
+  insurance_type_field: insurance_type

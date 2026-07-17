@@ -18,11 +18,11 @@ template: |
   Context:
   {context_str}
 ---
-version: "1.0"
+version: "0.3"
 author: "system"
 last_updated: "2026-07-17"
 changelog:
-  "1.0": "RAG QA system prompt without claim context"
+  "0.3": "RAG QA system prompt without claim context"
 model_compatibility: ["gpt-4o-mini", "gpt-4", "gpt-4-turbo"]
 input_variables:
   - context_str
@@ -35,11 +35,11 @@ template: |
   Context:
   {context_str}
 ---
-version: "1.0"
+version: "0.2"
 author: "system"
 last_updated: "2026-07-17"
 changelog:
-  "1.0": "Fallback excerpt template with claim context"
+  "0.2": "Fallback excerpt template with claim context"
 model_compatibility: ["gpt-4o-mini", "gpt-4", "gpt-4-turbo"]
 input_variables:
   - claim_context
@@ -47,11 +47,11 @@ input_variables:
 template: |
   For {claim_context}, the retrieved guidance says: {excerpt}
 ---
-version: "1.0"
+version: "0.1"
 author: "system"
 last_updated: "2026-07-17"
 changelog:
-  "1.0": "Fallback excerpt template without claim context"
+  "0.1": "Fallback excerpt template without claim context"
 model_compatibility: ["gpt-4o-mini", "gpt-4", "gpt-4-turbo"]
 input_variables:
   - excerpt

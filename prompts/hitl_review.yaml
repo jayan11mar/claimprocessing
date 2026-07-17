@@ -1,0 +1,17 @@
+version: "1.0"
+author: "system"
+last_updated: "2026-07-17"
+changelog:
+  "1.0": "Initial HITL review template"
+model_compatibility: ["gpt-4o-mini", "gpt-4", "gpt-4-turbo"]
+input_variables:
+  - session_id
+  - user_message
+  - agent_response
+  - review_decision
+template: |
+  Human-In-The-Loop Review for session {session_id}
+
+  User Message: {user_message}
+  Agent Response: {agent_response}
+  Review Decision: {review_decision}

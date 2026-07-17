@@ -8,7 +8,7 @@ import time
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -28,12 +28,20 @@ from app.rag.embeddings import get_embedding_fn
 from app.rag.evaluation_harness import run_rag_evaluation
 from app.rag.loaders import Document, load_documents_from_manifest
 from app.rag.vectorstores import get_vector_store
+from app.prompt_manager.registry import get_registry, initialize_prompts
 
 
 logger = get_logger("app.api.server")
 
 app = FastAPI(title="Claims Processing & Settlement API", version="0.1.0")
 _START_TIME = time.time()
+
+# ── Initialize prompt registry on startup ─────────────────────────────
+@app.on_event("startup")
+async def startup_prompt_manager():
+    registry = initialize_prompts()
+    count = len(registry.list_prompts())
+    logger.info("prompt_manager_initialized", {"prompt_count": count})
 
 # Expose this module as `server` in builtins so tests can reference `server` directly
 import sys as _sys, builtins as _builtins
@@ -845,3 +853,74 @@ def reset(req: ResetRequest):
     _invalidate_session_cache(session_id)
     logger.info("reset_history", {"session_id": session_id})
     return {"status": "ok", "session_id": session_id}
+
+
+# ── Prompt Management Endpoints ───────────────────────────────────────
+
+
+class ActivatePromptRequest(BaseModel):
+    version: str
+
+
+@app.get("/prompts")
+def list_prompts() -> Dict[str, Any]:
+    """List all registered prompts with their active versions."""
+    registry = get_registry()
+    prompts = registry.list_prompts()
+    return {
+        "status": "ok",
+        "prompts": prompts,
+        "count": len(prompts),
+    }
+
+
+@app.get("/prompts/{name}/history")
+def prompt_history(name: str) -> Dict[str, Any]:
+    """Get version history for a specific prompt."""
+    registry = get_registry()
+    history = registry.get_version_history(name)
+    if not history:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Prompt '{name}' not found",
+        )
+    return {
+        "status": "ok",
+        "name": name,
+        "active_version": registry.get_active_version(name),
+        "versions": history,
+        "count": len(history),
+    }
+
+
+@app.post("/prompts/{name}/activate")
+def activate_prompt_version(name: str, req: ActivatePromptRequest) -> Dict[str, Any]:
+    """Activate a specific version of a prompt (rollback).
+
+    This completes in O(1) — just updating the active version pointer.
+    """
+    import time
+    start = time.time()
+    registry = get_registry()
+    success = registry.activate_version(name, req.version)
+    elapsed_ms = int((time.time() - start) * 1000)
+
+    if not success:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Prompt '{name}' with version '{req.version}' not found",
+        )
+
+    logger.info("prompt_activated", {
+        "name": name,
+        "version": req.version,
+        "elapsed_ms": elapsed_ms,
+    })
+
+    return {
+        "status": "ok",
+        "name": name,
+        "active_version": req.version,
+        "elapsed_ms": elapsed_ms,
+        "message": f"Activated version '{req.version}' for prompt '{name}'",
+    }

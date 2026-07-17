@@ -8,8 +8,34 @@ from app.rag.loaders import load_documents_from_manifest
 from app.rag.retriever_hybrid import hybrid_retrieve
 from app.rag.vectorstores import get_vector_store
 from app.rag.vectorstores.base import VectorStore
+from app.prompt_manager.registry import get_registry
 
 logger = logging.getLogger(__name__)
+
+
+def _get_rag_system_prompt(
+    claim_context: Optional[str],
+    query: str,
+    context_str: str,
+) -> str:
+    """Get the RAG QA system prompt from the versioned registry.
+
+    Falls back to the old inline version if the registry is unavailable.
+    """
+    try:
+        registry = get_registry()
+        if claim_context:
+            return registry.get_template("rag_qa")
+        return registry.get_template("rag_qa")
+    except Exception:
+        return (
+            "You are a helpful insurance claims assistant. Answer the user's question based solely on "
+            "the provided context chunks. "
+            "Every factual statement MUST be followed by a citation in the format [chunk_id] referencing "
+            "the chunk that supports it. "
+            "If the context does not contain enough information to answer the question, say so clearly. "
+            "Do not make up information. Do not use external knowledge."
+        )
 
 
 # ── Module-level persisted chunks & vector store cache ───────────────────────
@@ -136,15 +162,7 @@ def _llm_synthesize_answer(
         context_parts.append(f"[{chunk_id}] {text}")
     context_str = "\n\n".join(context_parts)
 
-    system_prompt = (
-        "You are a helpful insurance claims assistant. Answer the user's question based solely on "
-        "the provided context chunks. "
-        "Every factual statement MUST be followed by a citation in the format [chunk_id] referencing "
-        "the chunk that supports it. "
-        "If the context does not contain enough information to answer the question, say so clearly. "
-        "Do not make up information. Do not use external knowledge."
-    )
-
+    system_prompt = _get_rag_system_prompt(claim_context, query, context_str)
     if claim_context:
         user_prompt = f"Claim context: {claim_context}\n\nQuestion: {query}\n\nContext:\n{context_str}"
     else:

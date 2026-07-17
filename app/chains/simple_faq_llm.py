@@ -19,23 +19,38 @@ logger = logging.getLogger(__name__)
 
 
 def build_prompt(user_message: str) -> str:
+    from app.prompt_manager.registry import get_registry
     examples = get_few_shot_examples()
-    parts = [
-        "You are an insurance FAQ assistant. Provide a concise answer and then a JSON block.",
-        "",
-        get_json_format_instruction(),
-        "",
-        "--- Few-shot examples ---",
-    ]
-    
-    for ex in examples[:3]:  # Use first 3 examples
-        parts.append(f"User: {ex['user']}")
-        parts.append(f"Assistant: {ex['assistant']}")
-        parts.append("")
-    
-    parts.append(f"User: {user_message}")
-    parts.append("Assistant:")
-    return "\n".join(parts)
+    try:
+        registry = get_registry()
+        agent_template = registry.get_template("agent_system")
+        examples_block = "\n".join(
+            f"User: {ex['user']}\nAssistant: {ex['assistant']}\n"
+            for ex in examples[:3]
+        )
+        return agent_template.format(
+            json_instruction=get_json_format_instruction(),
+            examples=examples_block,
+            user_message=user_message,
+        )
+    except Exception:
+        # Fallback to inline if registry not available
+        parts = [
+            "You are an insurance FAQ assistant. Provide a concise answer and then a JSON block.",
+            "",
+            get_json_format_instruction(),
+            "",
+            "--- Few-shot examples ---",
+        ]
+        
+        for ex in examples[:3]:
+            parts.append(f"User: {ex['user']}")
+            parts.append(f"Assistant: {ex['assistant']}")
+            parts.append("")
+        
+        parts.append(f"User: {user_message}")
+        parts.append("Assistant:")
+        return "\n".join(parts)
 
 
 def _extract_json_from_text(text: str) -> Optional[Dict[str, Any]]:
@@ -113,12 +128,22 @@ def call_faq_llm(user_message: str, retry: bool = True) -> Optional[FAQResponse]
         
         if retry:
             logger.warning("First parse attempt failed, retrying with stricter instruction...")
-            retry_prompt = (
-                f"Please respond ONLY with a valid JSON object matching this structure:\n"
-                f'{{"intent": "CLAIM_REGISTRATION", "category": "claims", "confidence": 0.8, '
-                f'"answer_text": "...", "reasoning": "..."}}\n\n'
-                f"User question: {user_message}"
-            )
+            from app.prompt_manager.registry import get_registry
+            try:
+                registry = get_registry()
+                retry_template = registry.get_template("faq_json_instruction")
+                retry_prompt = (
+                    f"Please respond ONLY with a valid JSON object matching this structure:\n"
+                    f"{retry_template}\n\n"
+                    f"User question: {user_message}"
+                )
+            except Exception:
+                retry_prompt = (
+                    f"Please respond ONLY with a valid JSON object matching this structure:\n"
+                    f'{{"intent": "CLAIM_REGISTRATION", "category": "claims", "confidence": 0.8, '
+                    f'"answer_text": "...", "reasoning": "..."}}\n\n'
+                    f"User question: {user_message}"
+                )
             retry_response = openai_client.chat.completions.create(
                 model=settings.OPENAI_MODEL_NAME,
                 messages=[

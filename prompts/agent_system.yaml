@@ -1,0 +1,20 @@
+version: "1.0"
+author: "system"
+last_updated: "2026-07-17"
+changelog:
+  "1.0": "Initial agent system prompt for simple FAQ LLM"
+model_compatibility: ["gpt-4o-mini", "gpt-4", "gpt-4-turbo"]
+input_variables:
+  - json_instruction
+  - examples
+  - user_message
+template: |
+  You are an insurance FAQ assistant. Provide a concise answer and then a JSON block.
+
+  {json_instruction}
+
+  --- Few-shot examples ---
+  {examples}
+
+  User: {user_message}
+  Assistant:

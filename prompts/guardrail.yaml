@@ -1,0 +1,16 @@
+version: "1.0"
+author: "system"
+last_updated: "2026-07-17"
+changelog:
+  "1.0": "Initial guardrail response templates extracted from templates.json"
+model_compatibility: ["gpt-4o-mini", "gpt-4", "gpt-4-turbo"]
+input_variables: []
+templates:
+  pii_warning: |
+    I detected potentially sensitive personal information in your message. For your security, please do not share full SSNs, complete credit card numbers, or banking details in the chat. If you need to provide such information, please contact our secure claims line or use our secure portal.
+  off_topic_response: |
+    I'm specifically designed to help with insurance claims, policy coverage, and settlement questions. Your question seems to be outside my area of expertise. Please ask me about claims, policies, settlements, or related insurance topics. For other questions, please contact our general support.
+  injection_warning: |
+    I noticed your message contains instructions that appear to be trying to change how I operate. I'm designed to follow consistent guidelines for insurance assistance. Please rephrase your question about insurance policies or claims, and I'll be happy to help.
+  unsafe_content_response: |
+    I'm not able to respond to that type of content. I'm here to help with insurance and claims questions. Please feel free to ask about policies, claims processing, coverage details, or settlement calculations.

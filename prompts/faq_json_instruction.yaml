@@ -1,0 +1,9 @@
+version: "1.0"
+author: "system"
+last_updated: "2026-07-17"
+changelog:
+  "1.0": "Initial JSON format instruction extracted from templates.json"
+model_compatibility: ["gpt-4o-mini", "gpt-4", "gpt-4-turbo"]
+input_variables: []
+template: |
+  RESPOND ONLY with a single valid JSON object and NOTHING ELSE — do not include any explanatory text, code fences, or markdown. The JSON must exactly include these keys: "intent": one of [CLAIM_REGISTRATION, POLICY_STATUS, CLAIM_STATUS, FRAUD_CHECK, SETTLEMENT_QUERY, DOCUMENTS_REQUIRED, ESCALATION, KNOWLEDGE_RETRIEVAL, OTHER], "category": string (e.g., "claims"), "confidence": float between 0.0 and 1.0, "answer_text": string (brief answer), "reasoning": string (brief reasoning). Optional: "metadata": object. When producing the JSON, do not echo the full conversation history inside the JSON — rely on the system prompt to incorporate history into reasoning. Example: {"intent": "CLAIM_REGISTRATION", "category": "claims", "confidence": 0.85, "answer_text": "You may be eligible for reimbursement.", "reasoning": "Rental reimbursement is listed on declarations page."}

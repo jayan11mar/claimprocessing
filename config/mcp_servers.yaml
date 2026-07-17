@@ -1,1 +1,191 @@
-# Week 8 scaffolding — MCP Server definitions
+# MCP Server definitions — Claims Processing
+# Each server exposes tools for the agent to discover and invoke.
+
+servers:
+  hospital_network:
+    name: Hospital Network Directory
+    description: "Hospital network directory service for verifying in-network hospitals, bed availability, and hospital details."
+    transport: http
+    url: "http://127.0.0.1:9001"
+    health_endpoint: "/health"
+    tools_endpoint: "/tools"
+    invoke_endpoint: "/invoke"
+    timeout_seconds: 2.0
+    retry:
+      max_retries: 3
+      base_delay: 0.2
+      max_delay: 2.0
+    auth:
+      type: none
+    tools:
+      - name: check_hospital_network
+        description: "Check if a hospital is in-network for a given policy and get coverage details."
+        input_schema:
+          type: object
+          properties:
+            hospital_name:
+              type: string
+              description: "Name of the hospital"
+            policy_number:
+              type: string
+              description: "Policy number to check network coverage"
+          required:
+            - hospital_name
+            - policy_number
+      - name: get_hospital_details
+        description: "Get hospital details including address, rating, specialties."
+        input_schema:
+          type: object
+          properties:
+            hospital_name:
+              type: string
+              description: "Name of the hospital"
+          required:
+            - hospital_name
+
+  policy_administration:
+    name: Policy Administration System
+    description: "Policy administration system for looking up policy details, coverage, and eligibility."
+    transport: http
+    url: "http://127.0.0.1:9002"
+    health_endpoint: "/health"
+    tools_endpoint: "/tools"
+    invoke_endpoint: "/invoke"
+    timeout_seconds: 2.0
+    retry:
+      max_retries: 3
+      base_delay: 0.2
+      max_delay: 2.0
+    auth:
+      type: api_key
+      header_name: "X-API-Key"
+      credentials:
+        default: "test-policy-api-key-2024"
+    tools:
+      - name: get_policy_details
+        description: "Get detailed policy information including coverage limits, deductibles, and copay."
+        input_schema:
+          type: object
+          properties:
+            policy_number:
+              type: string
+              description: "Policy number to look up"
+          required:
+            - policy_number
+      - name: check_claim_eligibility
+        description: "Check if a claim is eligible under the policy based on diagnosis code and treatment type."
+        input_schema:
+          type: object
+          properties:
+            policy_number:
+              type: string
+              description: "Policy number"
+            diagnosis_code:
+              type: string
+              description: "Medical diagnosis code (ICD-10)"
+            treatment_type:
+              type: string
+              description: "Type of treatment"
+            claim_amount:
+              type: number
+              description: "Proposed claim amount"
+          required:
+            - policy_number
+            - diagnosis_code
+
+  fraud_detection:
+    name: Fraud Detection Scoring
+    description: "Fraud detection scoring service that evaluates claims for potential fraud indicators."
+    transport: http
+    url: "http://127.0.0.1:9003"
+    health_endpoint: "/health"
+    tools_endpoint: "/tools"
+    invoke_endpoint: "/invoke"
+    timeout_seconds: 2.0
+    retry:
+      max_retries: 3
+      base_delay: 0.2
+      max_delay: 2.0
+    auth:
+      type: bearer
+      credentials:
+        token: "test-fraud-token-2024"
+    tools:
+      - name: score_fraud_risk
+        description: "Score a claim for fraud risk. Returns a score from 0 (low risk) to 1 (high risk) with signal breakdown."
+        input_schema:
+          type: object
+          properties:
+            claim_id:
+              type: string
+              description: "Claim ID to evaluate"
+            policy_number:
+              type: string
+              description: "Policy number"
+            claim_amount:
+              type: number
+              description: "Claim amount"
+            diagnosis_code:
+              type: string
+              description: "Diagnosis code"
+          required:
+            - claim_id
+            - claim_amount
+      - name: get_fraud_signals
+        description: "Get detailed fraud signal analysis for a previously scored claim."
+        input_schema:
+          type: object
+          properties:
+            claim_id:
+              type: string
+              description: "Claim ID to get fraud signals for"
+          required:
+            - claim_id
+
+  irdai_compliance:
+    name: IRDAI Compliance API
+    description: "IRDAI compliance API for regulatory checks, compliance status, and reporting requirements."
+    transport: http
+    url: "http://127.0.0.1:9004"
+    health_endpoint: "/health"
+    tools_endpoint: "/tools"
+    invoke_endpoint: "/invoke"
+    timeout_seconds: 2.0
+    retry:
+      max_retries: 3
+      base_delay: 0.2
+      max_delay: 2.0
+    auth:
+      type: basic
+      credentials:
+        username: "irdai-service"
+        password: "test-irdai-pass-2024"
+    tools:
+      - name: check_compliance_status
+        description: "Check IRDAI compliance status for a claim or policy."
+        input_schema:
+          type: object
+          properties:
+            entity_type:
+              type: string
+              enum: ["claim", "policy"]
+              description: "Type of entity to check"
+            entity_id:
+              type: string
+              description: "Claim ID or Policy number"
+          required:
+            - entity_type
+            - entity_id
+      - name: get_reporting_requirements
+        description: "Get IRDAI regulatory reporting requirements for a specific claim type."
+        input_schema:
+          type: object
+          properties:
+            claim_type:
+              type: string
+              description: "Type of claim"
+            amount:
+              type: number
+              description: "Claim amount"
+          required:
+            - claim_type

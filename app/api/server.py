@@ -29,6 +29,9 @@ from app.rag.evaluation_harness import run_rag_evaluation
 from app.rag.loaders import Document, load_documents_from_manifest
 from app.rag.vectorstores import get_vector_store
 from app.prompt_manager.registry import get_registry, initialize_prompts
+from app.mcp.registry import get_registry as get_mcp_registry
+from app.mcp.client import MCPClient, MCPClientPool, get_client_pool, reset_client_pool
+from app.mcp.tool_adapter import discover_and_create_tools
 
 
 logger = get_logger("app.api.server")
@@ -853,6 +856,154 @@ def reset(req: ResetRequest):
     _invalidate_session_cache(session_id)
     logger.info("reset_history", {"session_id": session_id})
     return {"status": "ok", "session_id": session_id}
+
+
+# ── MCP Integration Endpoints (gated behind ENABLE_MCP) ──────────────
+
+_mcp_client_pool: Optional[MCPClientPool] = None
+_mcp_langchain_tools: List[Any] = []
+
+
+@app.on_event("startup")
+async def startup_mcp():
+    """Initialize MCP client pool and discover tools if ENABLE_MCP is True."""
+    settings = get_settings()
+    if not settings.ENABLE_MCP:
+        logger.info("mcp_disabled", {"reason": "ENABLE_MCP is False"})
+        return
+
+    global _mcp_client_pool, _mcp_langchain_tools
+    try:
+        registry = get_mcp_registry()
+        servers = registry.list_servers()
+        logger.info("mcp_startup", {"server_count": len(servers), "servers": list(servers.keys())})
+
+        pool = get_client_pool()
+        _mcp_client_pool = pool
+
+        # Create MCP clients for each server and do health checks
+        for key, srv_def in servers.items():
+            client = MCPClient(srv_def)
+            pool.register(key, client)
+            try:
+                healthy = await client.health_check(force=True)
+                logger.info("mcp_server_health",
+                            {"server": key, "healthy": healthy})
+            except Exception as exc:
+                logger.warning("mcp_server_startup_health_failed",
+                               {"server": key, "error": str(exc)})
+
+        # Discover and create LangChain tools
+        _mcp_langchain_tools = discover_and_create_tools(pool)
+        logger.info("mcp_tools_discovered", {"tool_count": len(_mcp_langchain_tools)})
+
+    except FileNotFoundError as exc:
+        logger.warning("mcp_config_missing", {"error": str(exc)})
+    except Exception as exc:
+        logger.error("mcp_startup_error", {"error": str(exc)})
+
+
+@app.on_event("shutdown")
+async def shutdown_mcp():
+    """Close all MCP clients on shutdown."""
+    global _mcp_client_pool
+    if _mcp_client_pool is not None:
+        await _mcp_client_pool.close_all()
+        logger.info("mcp_clients_closed")
+
+
+class MCPToolInfo(BaseModel):
+    server: str
+    name: str
+    description: str
+    input_schema: Dict[str, Any]
+
+
+class MCPToolsResponse(BaseModel):
+    tools: List[MCPToolInfo]
+    tool_count: int
+    enabled: bool
+
+
+@app.get("/mcp/tools", response_model=MCPToolsResponse)
+def list_mcp_tools() -> MCPToolsResponse:
+    """List all discovered MCP tools."""
+    settings = get_settings()
+    if not settings.ENABLE_MCP:
+        return MCPToolsResponse(tools=[], tool_count=0, enabled=False)
+
+    registry = get_mcp_registry()
+    all_tools = registry.get_all_tools()
+    tools_list = []
+    for server_key, tool_schema in all_tools:
+        tools_list.append(MCPToolInfo(
+            server=server_key,
+            name=tool_schema.name,
+            description=tool_schema.description,
+            input_schema=tool_schema.input_schema,
+        ))
+    return MCPToolsResponse(tools=tools_list, tool_count=len(tools_list), enabled=True)
+
+
+class MCPInvokeRequest(BaseModel):
+    tool: str
+    arguments: Dict[str, Any] = {}
+
+
+class MCPInvokeResponse(BaseModel):
+    result: Optional[Dict[str, Any]] = None
+    error: Optional[str] = None
+    tool: str
+    success: bool
+    latency_ms: int
+
+
+@app.post("/mcp/invoke", response_model=MCPInvokeResponse)
+async def invoke_mcp_tool(req: MCPInvokeRequest) -> MCPInvokeResponse:
+    """Invoke an MCP tool by name."""
+    settings = get_settings()
+    if not settings.ENABLE_MCP:
+        return MCPInvokeResponse(
+            tool=req.tool, success=False,
+            error="MCP is disabled. Set ENABLE_MCP=true to enable.",
+            latency_ms=0,
+        )
+
+    start = time.time()
+    registry = get_mcp_registry()
+    found = registry.find_tool(req.tool)
+    if not found:
+        return MCPInvokeResponse(
+            tool=req.tool, success=False,
+            error=f"Tool '{req.tool}' not found. Use /mcp/tools to list available tools.",
+            latency_ms=int((time.time() - start) * 1000),
+        )
+
+    server_key, tool_schema, server_def = found
+    pool = _mcp_client_pool or get_client_pool()
+    client = pool.get(server_key)
+    if client is None:
+        client = MCPClient(server_def)
+        pool.register(server_key, client)
+
+    try:
+        result = await client.invoke_tool(req.tool, req.arguments)
+        latency_ms = int((time.time() - start) * 1000)
+        logger.info("mcp_invoke_success", {
+            "tool": req.tool, "server": server_key, "latency_ms": latency_ms,
+        })
+        return MCPInvokeResponse(
+            tool=req.tool, result=result, success=True, latency_ms=latency_ms,
+        )
+    except Exception as exc:
+        latency_ms = int((time.time() - start) * 1000)
+        logger.error("mcp_invoke_error", {
+            "tool": req.tool, "server": server_key, "error": str(exc), "latency_ms": latency_ms,
+        })
+        return MCPInvokeResponse(
+            tool=req.tool, success=False,
+            error=str(exc), latency_ms=latency_ms,
+        )
 
 
 # ── Prompt Management Endpoints ───────────────────────────────────────

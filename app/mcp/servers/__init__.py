@@ -1,0 +1,1 @@
+"""MCP stub servers for offline reproducible testing."""

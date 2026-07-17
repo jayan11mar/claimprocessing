@@ -19,6 +19,8 @@ from app.chains.router import lcel_router
 from app.langsmith_integration import get_langsmith_trace_id
 from app.memory.sqlite_memory import SQLiteMemory
 from app.models.faq import FAQIntent, FAQResponse
+from app.hitl.manager import get_hitl_manager
+from app.hitl.models import HITLReviewRequest, HITLTask
 from app.callbacks.logging_cb import LoggingCallbackHandler
 from app.callbacks.tracing_cb import TracingCallbackHandler
 from app.callbacks.metrics_cb import MetricsCallbackHandler
@@ -856,6 +858,86 @@ def reset(req: ResetRequest):
     _invalidate_session_cache(session_id)
     logger.info("reset_history", {"session_id": session_id})
     return {"status": "ok", "session_id": session_id}
+
+
+# ── HITL Endpoints (gated behind ENABLE_HITL) ─────────────────────────
+
+
+@app.get("/hitl/pending")
+def hitl_pending() -> Dict[str, Any]:
+    """List all pending HITL tasks.
+
+    Returns an empty list when HITL is disabled.
+    """
+    settings = get_settings()
+    if not settings.ENABLE_HITL:
+        return {"status": "ok", "tasks": [], "count": 0, "enabled": False}
+
+    manager = get_hitl_manager()
+    tasks = manager.list_pending()
+    return {
+        "status": "ok",
+        "tasks": [task.model_dump(mode="json") for task in tasks],
+        "count": len(tasks),
+        "enabled": True,
+    }
+
+
+@app.post("/hitl/review/{task_id}")
+def hitl_review(task_id: str, req: HITLReviewRequest) -> Dict[str, Any]:
+    """Review (approve or reject) a pending HITL task.
+
+    The task must be in ``pending`` status.  Once reviewed, the decision
+    is persisted and the task is no longer returned by ``/hitl/pending``.
+    """
+    settings = get_settings()
+    if not settings.ENABLE_HITL:
+        raise HTTPException(
+            status_code=503,
+            detail="HITL is disabled. Set ENABLE_HITL=true to enable.",
+        )
+
+    manager = get_hitl_manager()
+    task = manager.resume(task_id, req.decision, req.comments)
+    if task is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Task '{task_id}' not found or is not pending.",
+        )
+
+    logger.info(
+        "hitl_review_completed",
+        {
+            "task_id": task_id,
+            "decision": req.decision,
+            "comments": req.comments,
+        },
+    )
+    return {
+        "status": "ok",
+        "task": task.model_dump(mode="json"),
+        "message": f"Task '{task_id}' has been {req.decision}.",
+    }
+
+
+@app.get("/hitl/task/{task_id}")
+def hitl_get_task(task_id: str) -> Dict[str, Any]:
+    """Get a single HITL task by ID (regardless of status)."""
+    settings = get_settings()
+    if not settings.ENABLE_HITL:
+        raise HTTPException(
+            status_code=503,
+            detail="HITL is disabled. Set ENABLE_HITL=true to enable.",
+        )
+
+    manager = get_hitl_manager()
+    task = manager.get_task(task_id)
+    if task is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Task '{task_id}' not found.",
+        )
+    return {"status": "ok", "task": task.model_dump(mode="json")}
 
 
 # ── MCP Integration Endpoints (gated behind ENABLE_MCP) ──────────────

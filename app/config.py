@@ -56,6 +56,7 @@ class Settings(BaseSettings):
     # ── Week 8 Config Paths ──────────────────────────────────────────────────
     MCP_SERVERS_PATH: str = Field("config/mcp_servers.yaml", env="MCP_SERVERS_PATH")
     HITL_RULES_PATH: str = Field("config/hitl_rules.yaml", env="HITL_RULES_PATH")
+    HITL_STORE_PATH: str = Field("data/hitl_tasks.db", env="HITL_STORE_PATH")
     ROLES_PATH: str = Field("config/roles.yaml", env="ROLES_PATH")
     DRIFT_THRESHOLDS_PATH: str = Field("config/drift_thresholds.yaml", env="DRIFT_THRESHOLDS_PATH")
     AGENTS_CONFIG_PATH: str = Field("config/agents.yaml", env="AGENTS_CONFIG_PATH")

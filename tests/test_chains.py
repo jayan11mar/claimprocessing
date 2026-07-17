@@ -177,6 +177,11 @@ class TestHitlChain:
 
     def test_hitl_placeholder_skipped(self):
         """When ENABLE_HITL is False, hitl chain returns pass-through with skipped status."""
+        import os
+        if "ENABLE_HITL" in os.environ:
+            del os.environ["ENABLE_HITL"]
+        from app.config import get_settings
+        get_settings.cache_clear()
         inputs = {
             "session_id": "sess-1",
             "user_message": "Approve claim C1001",
@@ -187,11 +192,18 @@ class TestHitlChain:
         assert result["session_id"] == "sess-1"
         assert result["user_message"] == "Approve claim C1001"
 
-    @patch("app.chains.hitl_chain.get_settings")
-    def test_hitl_placeholder_enabled(self, mock_settings):
-        """When ENABLE_HITL is True, hitl chain returns placeholder status."""
-        mock_settings.return_value.ENABLE_HITL = True
-        mock_settings.return_value.HITL_RULES_PATH = "config/hitl_rules.yaml"
+    def test_hitl_chain_pass_through_when_no_trigger(self):
+        """When HITL is enabled but no rule matches, chain returns passed status."""
+        import os
+        os.environ["ENABLE_HITL"] = "true"
+        from app.config import get_settings
+        get_settings.cache_clear()
+        from app.hitl.store import reset_task_store_singleton
+        from app.hitl.manager import reset_hitl_manager_singleton
+        from app.hitl.triggers import clear_rules_cache
+        reset_task_store_singleton()
+        reset_hitl_manager_singleton()
+        clear_rules_cache()
 
         inputs = {
             "session_id": "sess-1",
@@ -199,8 +211,38 @@ class TestHitlChain:
             "metadata": {},
         }
         result = hitl_lcel_chain.invoke(inputs)
-        assert result["hitl"]["status"] == "placeholder"
-        assert result["hitl"]["reason"] == "HITL enabled but chain not yet implemented"
+        assert result["hitl"]["status"] == "passed"
+        assert result["hitl_paused"] is False
+
+    def test_hitl_chain_pauses_on_trigger(self):
+        """When a trigger rule matches (high amount), chain must pause and return task_id."""
+        import os
+        import tempfile
+        os.environ["ENABLE_HITL"] = "true"
+        os.environ["HITL_STORE_PATH"] = tempfile.mktemp(suffix=".db")
+        from app.config import get_settings
+        get_settings.cache_clear()
+        from app.hitl.store import reset_task_store_singleton
+        from app.hitl.manager import reset_hitl_manager_singleton
+        from app.hitl.triggers import clear_rules_cache
+        reset_task_store_singleton()
+        reset_hitl_manager_singleton()
+        clear_rules_cache()
+
+        inputs = {
+            "session_id": "sess-hitl-trigger",
+            "user_message": "Process claim for Rs 600,000",
+            "claim_amount": 600000,
+            "decision": "pending",
+            "confidence": 0.72,
+            "recommendation": {"action": "manual_review", "amount": 480000},
+            "retrieved_chunks": [{"chunk_id": "c1", "text": "Policy limit clause"}],
+        }
+        result = hitl_lcel_chain.invoke(inputs)
+        assert result["hitl"]["status"] == "pending"
+        assert result["hitl_paused"] is True
+        assert "hitl_task_id" in result
+        assert result["hitl_task_id"].startswith("hitl_")
 
 
 # =========================================================================

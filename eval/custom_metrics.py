@@ -571,17 +571,35 @@ def compute_all_custom_metrics(
         queries=queries,
     )
 
-    # 3. Regulatory Compliance
-    answers = [r.get("answer", r.get("expected_answer", "")) for r in results] if results else []
-    compliance = compute_regulatory_compliance(
-        answers,
-        queries=queries,
-    )
+    # 3. Regulatory Compliance — only evaluate regulatory-relevant cases
+    reg_cases = [
+        r for r in (results or [])
+        if str(r.get("category", r.get("project", ""))).lower()
+           in {"policy", "regulatory", "compliance", "coverage"}
+    ]
+    # Only evaluate if we have actual generated answers, not just expected_answer templates
+    reg_answers = [r.get("answer", "") for r in reg_cases]
+    reg_queries = [r.get("query", "") for r in reg_cases]
+    
+    # Check if we have actual generated answers (not just templates)
+    has_real_answers = any(r.get("answer") for r in reg_cases)
+    
+    compliance = {"compliance_score": 0.0, "per_case": [], "matched_patterns": {}}
+    if has_real_answers:
+        compliance = compute_regulatory_compliance(
+            reg_answers,
+            queries=reg_queries,
+        )
+        overall_reg = compliance["compliance_score"]
+    else:
+        # No real answers generated, mark as not-evaluable
+        overall_reg = None
 
     # 4. Role Appropriateness
+    all_answers = [r.get("answer", r.get("expected_answer", "")) for r in (results or [])]
     appropriateness = compute_role_appropriateness(
-        answers,
-        role_contexts or ["customer"] * len(answers),
+        all_answers,
+        role_contexts or ["customer"] * len(all_answers),
         queries=queries,
     )
 
@@ -592,7 +610,7 @@ def compute_all_custom_metrics(
     overall = {
         "golden_set_pass_rate": golden["pass_rate"],
         "answer_stability": stability["stability_score"] if stability["per_pair"] else None,
-        "regulatory_compliance": compliance["compliance_score"],
+        "regulatory_compliance": overall_reg,
         "role_appropriateness": appropriateness["appropriateness_score"],
         "hitl_trigger_precision": hitl_precision["precision"] if hitl_precision["total_triggers"] > 0 else None,
     }

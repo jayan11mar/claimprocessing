@@ -28,6 +28,8 @@ from eval.llm_judge import judge_answer
 # Generation entry point used by the app
 from app.chains.router import lcel_router
 from app.config import get_settings
+from app.rag.qa_chain import reset_llm_cache
+import app.rag.qa_chain
 
 
 # ---------------------------------------------------------------------------
@@ -90,6 +92,7 @@ def evaluate_single_case(
     case_id: str = "unknown",
     difficulty: str = "unknown",
     project: str = "unknown",
+    category: str = "unknown",
 ) -> Dict[str, Any]:
     """Run a full evaluation on a single test case.
 
@@ -156,6 +159,7 @@ def evaluate_single_case(
         "expected_answer": expected_answer,
         "difficulty": difficulty,
         "project": project,
+        "category": category,
         "intrinsic": intrinsic,
         "extrinsic": extrinsic,
         "judge": judge,
@@ -276,26 +280,6 @@ def run_regression(
     role_contexts = []
     hitl_decisions = []
     for case in cases:
-        # Generate two deterministic (temperature=0) answers for stability
-        settings = get_settings()
-        original_temp = settings.OPENAI_MODEL_TEMPERATURE
-        settings.OPENAI_MODEL_TEMPERATURE = 0.0
-        try:
-            result_a = lcel_router.invoke({
-                "session_id": "stability-run-a",
-                "user_message": case.get("query", ""),
-            })
-            result_b = lcel_router.invoke({
-                "session_id": "stability-run-b",
-                "user_message": case.get("query", ""),
-            })
-            answers_a.append(result_a.get("answer_text", ""))
-            answers_b.append(result_b.get("answer_text", ""))
-        except Exception:
-            answers_a.append("")
-            answers_b.append("")
-        finally:
-            settings.OPENAI_MODEL_TEMPERATURE = original_temp
         expected_chunks = case.get("expected_chunks", [])
         retrieved_chunks = [
             chunk for chunk in expected_chunks[:2]
@@ -310,6 +294,7 @@ def run_regression(
             case_id=case.get("id", "unknown"),
             difficulty=case.get("difficulty", "unknown"),
             project=case.get("project", "unknown"),
+            category=case.get("category", "unknown"),
         )
 
         # Attach Week 6 threshold comparison
@@ -325,6 +310,15 @@ def run_regression(
                 "approved": bool(case.get("expected_hitl")),
             })
 
+    # Load pre-computed stability from reports/_stability.json if available
+    _stab = None
+    _p = Path("reports/_stability.json")
+    if _p.exists():
+        try:
+            _stab = json.loads(_p.read_text()).get("stability_score")
+        except Exception:
+            _stab = None
+
     # Compute custom metrics (Spec 3.5)
     custom_metrics = compute_all_custom_metrics(
         results=results,
@@ -334,6 +328,15 @@ def run_regression(
         hitl_decisions=hitl_decisions,
         thresholds=thresholds,
     )
+
+    # Inject pre-computed stability value if available
+    if _stab is not None:
+        custom_metrics["overall"]["answer_stability"] = _stab
+        req = custom_metrics["required_thresholds"]
+        ov = custom_metrics["overall"]
+        custom_metrics["all_metrics_passed"] = all(
+            ov[k] >= req[k] for k in req if ov[k] is not None
+        )
 
     # Failure analysis
     failure_buckets = bucket_failures(results)

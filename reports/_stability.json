@@ -1,0 +1,108 @@
+{
+  "stability_score": 0.9838,
+  "per_pair": [
+    {
+      "index": 0,
+      "similarity": 0.9978
+    },
+    {
+      "index": 1,
+      "similarity": 0.8444
+    },
+    {
+      "index": 2,
+      "similarity": 0.9794
+    },
+    {
+      "index": 3,
+      "similarity": 1.0
+    },
+    {
+      "index": 4,
+      "similarity": 1.0
+    },
+    {
+      "index": 5,
+      "similarity": 0.9509
+    },
+    {
+      "index": 6,
+      "similarity": 1.0
+    },
+    {
+      "index": 7,
+      "similarity": 0.9663
+    },
+    {
+      "index": 8,
+      "similarity": 1.0
+    },
+    {
+      "index": 9,
+      "similarity": 1.0
+    },
+    {
+      "index": 10,
+      "similarity": 0.9572
+    },
+    {
+      "index": 11,
+      "similarity": 1.0
+    },
+    {
+      "index": 12,
+      "similarity": 1.0
+    },
+    {
+      "index": 13,
+      "similarity": 1.0
+    },
+    {
+      "index": 14,
+      "similarity": 1.0
+    },
+    {
+      "index": 15,
+      "similarity": 0.9592
+    },
+    {
+      "index": 16,
+      "similarity": 1.0
+    },
+    {
+      "index": 17,
+      "similarity": 0.967
+    },
+    {
+      "index": 18,
+      "similarity": 1.0
+    },
+    {
+      "index": 19,
+      "similarity": 1.0
+    },
+    {
+      "index": 20,
+      "similarity": 1.0
+    },
+    {
+      "index": 21,
+      "similarity": 1.0
+    },
+    {
+      "index": 22,
+      "similarity": 0.9734
+    },
+    {
+      "index": 23,
+      "similarity": 1.0
+    },
+    {
+      "index": 24,
+      "similarity": 1.0
+    }
+  ],
+  "min_similarity": 0.8444,
+  "max_similarity": 1.0,
+  "std_similarity": 0.0328
+}

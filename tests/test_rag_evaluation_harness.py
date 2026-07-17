@@ -125,8 +125,10 @@ def test_settings_reads_rag_evaluation_thresholds(monkeypatch):
 # =========================================================================
 
 
-def test_judge_config_defaults_to_none():
+def test_judge_config_defaults_to_none(monkeypatch):
     """JUDGE_MODEL_NAME and JUDGE_ANTHROPIC_API_KEY should default to None."""
+    monkeypatch.delenv("JUDGE_MODEL_NAME", raising=False)
+    monkeypatch.delenv("JUDGE_ANTHROPIC_API_KEY", raising=False)
     judge_model, api_key = _get_judge_config()
     assert judge_model is None
     assert api_key is None

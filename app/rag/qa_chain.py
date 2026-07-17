@@ -102,6 +102,12 @@ _LLM_CACHE_TIME: float = 0.0
 _LLM_CACHE_TTL: float = 3600.0  # Re-create hourly
 
 
+def reset_llm_cache():
+    global _LLM_CACHE, _LLM_CACHE_TIME
+    _LLM_CACHE = None
+    _LLM_CACHE_TIME = 0.0
+
+
 def _get_cached_llm():
     """Return a cached ChatOpenAI instance, creating one if needed."""
     global _LLM_CACHE, _LLM_CACHE_TIME
@@ -115,7 +121,7 @@ def _get_cached_llm():
         else:
             _LLM_CACHE = ChatOpenAI(
                 model=settings.OPENAI_MODEL_NAME,
-                temperature=0.3,
+                temperature=settings.OPENAI_MODEL_TEMPERATURE,
                 openai_api_key=settings.OPENAI_API_KEY,
                 timeout=settings.OPENAI_REQUEST_TIMEOUT,
                 max_retries=2,

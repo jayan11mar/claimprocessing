@@ -1247,6 +1247,158 @@ async def invoke_mcp_tool(req: MCPInvokeRequest) -> MCPInvokeResponse:
         )
 
 
+# ── Evaluation Regression and Drift Endpoints (Week 8) ─────────────────
+
+
+class RegressionRequest(BaseModel):
+    golden_set_path: Optional[str] = None
+    project_filter: Optional[str] = None
+    thresholds: Optional[Dict[str, float]] = None
+    baseline_path: Optional[str] = None
+
+
+class RegressionResponse(BaseModel):
+    status: str
+    summary: Dict[str, Any] = {}
+    comparison: Optional[Dict[str, Any]] = None
+    error: Optional[str] = None
+
+
+@app.post("/eval/regression", response_model=RegressionResponse)
+def eval_regression(request: Request, req: RegressionRequest) -> RegressionResponse:
+    """Run a full regression evaluation against the golden set.
+
+    Results are written to ``reports/regression_report.json`` and returned
+    inline.  When a *baseline_path* is provided, the response includes a
+    before/after comparison with regression and improvement counts.
+
+    This endpoint is designed for CI pipelines and can be called with
+    minimal configuration — sensible defaults are used for all optional
+    fields.
+    """
+    try:
+        from eval.regression_suite import run_regression
+
+        # Default output directory: reports/ in the project root
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        output_dir = os.path.join(base_dir, "reports")
+
+        report = run_regression(
+            golden_set_path=req.golden_set_path,
+            output_dir=output_dir,
+            project_filter=req.project_filter,
+            thresholds=req.thresholds,
+            baseline_path=req.baseline_path,
+        )
+
+        logger.info("eval_regression_completed", {
+            "total": report["summary"]["total_cases"],
+            "passed": report["summary"]["passed_cases"],
+            "failed": report["summary"]["failed_cases"],
+            "pass_rate": report["summary"]["pass_rate"],
+        })
+
+        return RegressionResponse(
+            status="ok",
+            summary=report["summary"],
+            comparison=report.get("comparison"),
+        )
+    except Exception as exc:
+        logger.exception("eval_regression_error", {"error": str(exc)})
+        return RegressionResponse(
+            status="error",
+            error=str(exc),
+        )
+
+
+class DriftRequest(BaseModel):
+    current_report_path: Optional[str] = None
+    baseline_report_path: Optional[str] = None
+    current_report: Optional[Dict[str, Any]] = None
+    baseline_report: Optional[Dict[str, Any]] = None
+    ks_threshold: float = 0.3
+    psi_threshold: float = 0.25
+
+
+class DriftResponse(BaseModel):
+    status: str
+    overall_drift_score: float = 0.0
+    metric_drift: Optional[Dict[str, Any]] = None
+    distribution_drift: Optional[Dict[str, Any]] = None
+    alerts: List[Dict[str, Any]] = []
+    has_baseline: bool = False
+    error: Optional[str] = None
+
+
+@app.post("/eval/drift", response_model=DriftResponse)
+def eval_drift(request: Request, req: DriftRequest) -> DriftResponse:
+    """Detect drift in evaluation metrics by comparing against a baseline.
+
+    Accepts either file paths or inline report dicts for both current and
+    baseline data.  Uses KS test and PSI for distribution comparison and
+    per-metric relative-change thresholds for metric drift.
+
+    Returns:
+      - overall_drift_score: the maximum drift detected (0 = none, 1 = max)
+      - metric_drift: per-metric drift details
+      - distribution_drift: KS statistic and PSI
+      - alerts: actionable drift alerts
+    """
+    try:
+        from app.drift import run_drift_detection
+
+        # Load reports from paths if provided
+        current_report = req.current_report
+        if current_report is None and req.current_report_path:
+            with open(req.current_report_path, "r", encoding="utf-8") as f:
+                current_report = json.load(f)
+
+        baseline_report = req.baseline_report
+        if baseline_report is None and req.baseline_report_path:
+            with open(req.baseline_report_path, "r", encoding="utf-8") as f:
+                baseline_report = json.load(f)
+
+        if current_report is None:
+            return DriftResponse(
+                status="error",
+                error="No current report provided. Supply either current_report or current_report_path.",
+            )
+
+        from app.drift import save_drift_report
+
+        result = run_drift_detection(
+            current_report=current_report,
+            baseline_report=baseline_report,
+            ks_threshold=req.ks_threshold,
+            psi_threshold=req.psi_threshold,
+        )
+
+        # Save drift report to disk
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        drift_path = save_drift_report(result, output_dir=os.path.join(base_dir, "reports"))
+        logger.info("eval_drift_completed", {
+            "drift_score": result["overall_drift_score"],
+            "alerts": result["alert_count"],
+            "has_baseline": result["has_baseline"],
+            "report_path": drift_path,
+        })
+
+        return DriftResponse(
+            status="ok",
+            overall_drift_score=result["overall_drift_score"],
+            metric_drift=result.get("metric_drift"),
+            distribution_drift=result.get("distribution_drift"),
+            alerts=result.get("alerts", []),
+            has_baseline=result.get("has_baseline", False),
+        )
+    except Exception as exc:
+        logger.exception("eval_drift_error", {"error": str(exc)})
+        return DriftResponse(
+            status="error",
+            error=str(exc),
+        )
+
+
 # ── Prompt Management Endpoints ───────────────────────────────────────
 
 

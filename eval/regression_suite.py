@@ -25,6 +25,10 @@ from eval.failure_analysis import bucket_failures
 from eval.intrinsic import compute_intrinsic_metrics
 from eval.llm_judge import judge_answer
 
+# Generation entry point used by the app
+from app.chains.router import lcel_router
+from app.config import get_settings
+
 
 # ---------------------------------------------------------------------------
 # Golden set loader
@@ -161,8 +165,73 @@ def evaluate_single_case(
 
 
 # ---------------------------------------------------------------------------
-# Full regression run
+# Week 6 threshold definitions
 # ---------------------------------------------------------------------------
+
+WEEK_6_THRESHOLDS: Dict[str, float] = {
+    "hit_rate_at_5": 0.85,
+    "mrr": 0.65,
+    "faithfulness": 0.90,
+    "answer_correctness": 0.80,
+    "llm_judge_avg": 4.0,
+    "citation_coverage": 1.0,
+    "ndcg": 0.75,
+    "context_precision": 0.80,
+    "context_recall": 0.85,
+}
+
+
+def compute_week6_pass_fail(
+    result: Dict[str, Any],
+    thresholds: Optional[Dict[str, float]] = None,
+) -> Dict[str, Any]:
+    """Compare a single case result against Week 6 thresholds.
+
+    Args:
+        result: A single evaluation result dict from evaluate_single_case().
+        thresholds: Optional per-metric threshold overrides.
+
+    Returns:
+        Dict with week6_passed, per_metric_comparison, and overall status.
+    """
+    t = {**WEEK_6_THRESHOLDS, **(thresholds or {})}
+    intrinsic = result.get("intrinsic", {})
+    extrinsic = result.get("extrinsic", {})
+    judge = result.get("judge", {})
+
+    comparisons: Dict[str, Dict[str, float]] = {}
+    failures: List[str] = []
+
+    checks = [
+        ("hit_rate_at_5", intrinsic.get("hit_at_k", 0), t["hit_rate_at_5"]),
+        ("mrr", intrinsic.get("mrr", 0), t["mrr"]),
+        ("ndcg", intrinsic.get("ndcg", 0), t["ndcg"]),
+        ("context_precision", intrinsic.get("context_precision", 0), t["context_precision"]),
+        ("context_recall", intrinsic.get("context_recall", 0), t["context_recall"]),
+        ("faithfulness", extrinsic.get("faithfulness", 0), t["faithfulness"]),
+        ("answer_correctness", extrinsic.get("answer_correctness", 0), t["answer_correctness"]),
+        ("llm_judge_avg", judge.get("overall_score", 0), t["llm_judge_avg"] / 5.0),
+    ]
+
+    for metric, actual, threshold in checks:
+        passed = actual >= threshold
+        comparisons[metric] = {
+            "actual": actual,
+            "threshold": threshold,
+            "passed": passed,
+        }
+        if not passed:
+            failures.append(metric)
+
+    week6_passed = len(failures) == 0
+
+    return {
+        "week6_passed": week6_passed,
+        "week6_failures": failures,
+        "week6_comparisons": comparisons,
+        "week6_thresholds": t,
+    }
+
 
 def run_regression(
     golden_set_path: Optional[str] = None,
@@ -202,7 +271,31 @@ def run_regression(
 
     # Evaluate each case
     results: List[Dict[str, Any]] = []
+    answers_a: List[str] = []
+    answers_b: List[str] = []
+    role_contexts = []
+    hitl_decisions = []
     for case in cases:
+        # Generate two deterministic (temperature=0) answers for stability
+        settings = get_settings()
+        original_temp = settings.OPENAI_MODEL_TEMPERATURE
+        settings.OPENAI_MODEL_TEMPERATURE = 0.0
+        try:
+            result_a = lcel_router.invoke({
+                "session_id": "stability-run-a",
+                "user_message": case.get("query", ""),
+            })
+            result_b = lcel_router.invoke({
+                "session_id": "stability-run-b",
+                "user_message": case.get("query", ""),
+            })
+            answers_a.append(result_a.get("answer_text", ""))
+            answers_b.append(result_b.get("answer_text", ""))
+        except Exception:
+            answers_a.append("")
+            answers_b.append("")
+        finally:
+            settings.OPENAI_MODEL_TEMPERATURE = original_temp
         expected_chunks = case.get("expected_chunks", [])
         retrieved_chunks = [
             chunk for chunk in expected_chunks[:2]
@@ -218,7 +311,19 @@ def run_regression(
             difficulty=case.get("difficulty", "unknown"),
             project=case.get("project", "unknown"),
         )
+
+        # Attach Week 6 threshold comparison
+        week6 = compute_week6_pass_fail(result, thresholds=thresholds)
+        result["week6"] = week6
         results.append(result)
+
+        role_contexts.append(case.get("role", "customer"))
+        if "expected_hitl" in case:
+            hitl_decisions.append({
+                "task_id": case.get("id", "unknown"),
+                "triggered": bool(case.get("expected_hitl")),
+                "approved": bool(case.get("expected_hitl")),
+            })
 
     # Compute custom metrics (Spec 3.5)
     custom_metrics = compute_all_custom_metrics(

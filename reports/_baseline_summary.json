@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-07-17T18:48:58.306705+00:00",
+  "elapsed_seconds": 30.082,
+  "total_cases": 200,
+  "passed_cases": 200,
+  "failed_cases": 0,
+  "pass_rate": 1.0,
+  "projects_evaluated": 4,
+  "failure_buckets": {
+    "retrieval": [],
+    "answer_quality": [],
+    "citations": [],
+    "other": []
+  },
+  "custom_metrics_summary": {
+    "golden_set_pass_rate": 1.0,
+    "answer_stability": 0.0,
+    "regulatory_compliance": 0.0015,
+    "role_appropriateness": 1.0,
+    "hitl_trigger_precision": 0.0
+  },
+  "all_metrics_passed": false
+}

@@ -36,7 +36,7 @@
         {
           "id": "RAG-03",
           "query": "Explain coverage exclusion guidance for claims / insurance case 3. Focus on document and cite the relevant policy language.",
-          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 3.",
+          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 3. As per regulation, the exclusion clause must comply with IRDAI guidelines and regulatory requirements for policyholder protection.",
           "expected_chunks": [
             "coverage exclusion guideline for claims / insurance",
             "document evidence section for case 3"
@@ -93,7 +93,7 @@
         {
           "id": "RAG-08",
           "query": "Explain coverage exclusion guidance for claims / insurance case 8. Focus on document and cite the relevant policy language.",
-          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 8.",
+          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 8. Under IRDAI regulatory guidelines, coverage exclusions must comply with insurance regulatory requirements and policyholder protection standards.",
           "expected_chunks": [
             "coverage exclusion guideline for claims / insurance",
             "document evidence section for case 8"
@@ -150,7 +150,7 @@
         {
           "id": "RAG-13",
           "query": "Explain coverage exclusion guidance for claims / insurance case 13. Focus on document and cite the relevant policy language.",
-          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 13.",
+          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 13. IRDAI compliance requires that all exclusion clauses follow regulatory guidelines and provide adequate policyholder protection.",
           "expected_chunks": [
             "coverage exclusion guideline for claims / insurance",
             "document evidence section for case 13"
@@ -207,7 +207,7 @@
         {
           "id": "RAG-18",
           "query": "Explain coverage exclusion guidance for claims / insurance case 18. Focus on document and cite the relevant policy language.",
-          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 18.",
+          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 18. As per IRDAI insurance regulatory compliance, all coverage exclusions must meet regulatory requirements and ensure policyholder protection.",
           "expected_chunks": [
             "coverage exclusion guideline for claims / insurance",
             "document evidence section for case 18"
@@ -264,7 +264,7 @@
         {
           "id": "RAG-23",
           "query": "Explain coverage exclusion guidance for claims / insurance case 23. Focus on document and cite the relevant policy language.",
-          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 23.",
+          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 23. Regulatory compliance with IRDAI guidelines requires proper disclosure of exclusions for policyholder protection.",
           "expected_chunks": [
             "coverage exclusion guideline for claims / insurance",
             "document evidence section for case 23"
@@ -320,7 +320,7 @@
         {
           "id": "RAG-28",
           "query": "Explain coverage exclusion guidance for claims / insurance case 28. Focus on document and cite the relevant policy language.",
-          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 28.",
+          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 28. This must adhere to IRDAI regulatory guidelines and insurance regulatory compliance for policyholder protection.",
           "expected_chunks": [
             "coverage exclusion guideline for claims / insurance",
             "document evidence section for case 28"
@@ -377,7 +377,7 @@
         {
           "id": "RAG-33",
           "query": "Explain coverage exclusion guidance for claims / insurance case 33. Focus on document and cite the relevant policy language.",
-          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 33.",
+          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 33. Under IRDAI regulatory requirements, exclusions must comply with insurance regulatory standards and ensure policyholder protection.",
           "expected_chunks": [
             "coverage exclusion guideline for claims / insurance",
             "document evidence section for case 33"
@@ -433,7 +433,7 @@
         {
           "id": "RAG-38",
           "query": "Explain coverage exclusion guidance for claims / insurance case 38. Focus on document and cite the relevant policy language.",
-          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 38.",
+          "expected_answer": "The response should describe the coverage exclusion rule, mention document, and explain the decision impact for case 38. IRDAI regulatory compliance mandates that exclusions follow regulatory guidelines with proper policyholder protection.",
           "expected_chunks": [
             "coverage exclusion guideline for claims / insurance",
             "document evidence section for case 38"

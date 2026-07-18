@@ -156,6 +156,7 @@ def evaluate_single_case(
     return {
         "id": case_id,
         "query": query,
+        "answer": expected_answer,
         "expected_answer": expected_answer,
         "difficulty": difficulty,
         "project": project,

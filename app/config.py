@@ -46,6 +46,7 @@ class Settings(BaseSettings):
 
     # ── Week 8 Feature Flags ─────────────────────────────────────────────────
     ENABLE_LCEL: bool = Field(False, env="ENABLE_LCEL")
+    ENABLE_MULTI_AGENT: bool = Field(False, env="ENABLE_MULTI_AGENT")
     ENABLE_MCP: bool = Field(False, env="ENABLE_MCP")
     ENABLE_HITL: bool = Field(False, env="ENABLE_HITL")
     ENABLE_RBAC: bool = Field(False, env="ENABLE_RBAC")
@@ -71,3 +72,6 @@ class Settings(BaseSettings):
 @lru_cache()
 def get_settings() -> Settings:
     return Settings()
+
+
+settings = get_settings()

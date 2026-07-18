@@ -14,6 +14,7 @@ from pydantic import BaseModel
 
 from app.config import get_settings
 from app.logging.json_logger import get_logger
+from app.agents.orchestrator import orchestrate
 from app.chains.agent_chain import AgentChain
 from app.chains.router import lcel_router
 from app.langsmith_integration import get_langsmith_trace_id
@@ -474,6 +475,25 @@ def chat(request: Request, req: ChatRequest) -> ChatResponse:
     }
 
     settings = get_settings()
+
+    # ── Multi-agent pipeline (behind flag) ─────────────────────────────
+    if settings.ENABLE_MULTI_AGENT:
+        final = orchestrate(req.message)
+        return ChatResponse(
+            answer_text=final.text,
+            structured=FAQResponse(
+                intent=FAQIntent.OTHER,
+                category="multi_agent",
+                confidence=1.0,
+                answer_text=final.text,
+                reasoning="Orchestrated multi-agent response",
+                metadata={
+                    "agent_contributions": final.agent_contributions,
+                    "warnings": final.warnings,
+                },
+            ),
+            chain_metadata={"multi_agent": True},
+        )
 
     # ── LCEL path (behind flag) ────────────────────────────────────────
     if settings.ENABLE_LCEL:

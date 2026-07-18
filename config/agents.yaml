@@ -1,1 +1,41 @@
 # Week 8 scaffolding — Agent definitions
+
+agents:
+  - name: CoverageCheckAgent
+    description: "Determines whether a claim falls within the policy's coverage limits, exclusions, and deductibles."
+    tools:
+      - check_policy_coverage
+      - lookup_exclusions
+      - verify_deductible
+    prompt_key: agent_coverage_check
+    retrieval_scope: policy_documents
+    capabilities:
+      - coverage_verification
+      - exclusion_analysis
+      - deductible_validation
+
+  - name: FraudScreeningAgent
+    description: "Screens claims for potential fraud indicators using historical patterns and anomaly detection."
+    tools:
+      - fraud_score
+      - anomaly_detection
+      - link_analysis
+    prompt_key: agent_fraud_screening
+    retrieval_scope: fraud_patterns
+    capabilities:
+      - fraud_detection
+      - anomaly_scoring
+      - entity_linking
+
+  - name: SettlementAgent
+    description: "Calculates recommended settlement amounts based on policy terms, damage estimates, and negotiation rules."
+    tools:
+      - calculate_settlement
+      - estimate_damages
+      - apply_negotiation_rules
+    prompt_key: agent_settlement
+    retrieval_scope: settlement_guidelines
+    capabilities:
+      - settlement_calculation
+      - damage_estimation
+      - negotiation_support

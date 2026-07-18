@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*_SUMMARY.md
+plan*.md
+notebooks/
+Screenshots/
+reports/
+diagnostics/
+.git/
+data/faiss_index/
+data/claims.db

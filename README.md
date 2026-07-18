@@ -118,3 +118,8 @@ Additional validation helpers are available in the scripts/ folder for memory co
 - The default vector backend is FAISS, but the configuration supports Chroma or Pinecone.
 - SQLite is used for session memory and chat history.
 - Optional LangSmith tracing can be enabled through environment variables.
+
+
+## Deployment
+- **Docker (optional):** containerised API + UI via `docker compose`.
+  See docker/README.md for build/run instructions and W8-8 status.

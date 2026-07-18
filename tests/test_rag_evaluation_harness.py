@@ -603,21 +603,19 @@ def test_drift_report_does_not_flag_delta_within_threshold():
 
 
 def test_drift_endpoint_returns_ok_and_drift_keys():
-    """POST /eval/drift with explicit paths returns 200 with 'ok' and 'drift' keys."""
+    """POST /eval/drift with explicit paths returns 200 with enabled/breaches keys."""
     from fastapi.testclient import TestClient
     from app.api.server import app
 
     client = TestClient(app)
     body = {
         "baseline_path": "reports/regression_report.json",
-        "current_path": "reports/regression_report.json",
     }
     resp = client.post("/eval/drift", json=body)
     assert resp.status_code == 200
     data = resp.json()
-    assert "ok" in data
-    assert "drift" in data
-    assert data["ok"] is True
-    assert isinstance(data["drift"], dict)
-    # Should have at least pass_rate in the drift report
-    assert "pass_rate" in data["drift"]
+    assert "enabled" in data
+    assert "any_breach" in data
+    assert data["enabled"] is True
+    assert isinstance(data.get("scores"), dict)
+    assert isinstance(data.get("breaches"), list)

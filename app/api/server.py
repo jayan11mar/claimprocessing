@@ -1357,89 +1357,87 @@ def eval_regression(request: Request, req: RegressionRequest) -> RegressionRespo
 
 class DriftRequest(BaseModel):
     baseline_path: Optional[str] = None
-    current_path: Optional[str] = None
-    thresholds: Optional[Dict[str, float]] = None
+    thresholds_path: Optional[str] = None
 
 
 class DriftResponse(BaseModel):
-    ok: bool = True
-    summary: Dict[str, Any] = {}
-    drift: Dict[str, Any] = {}
-    error: Optional[str] = None
+    enabled: bool = True
+    message: str = ""
+    scores: Dict[str, Any] = {}
+    breaches: List[Dict[str, Any]] = []
+    any_breach: bool = False
 
 
 @app.post("/eval/drift", response_model=DriftResponse)
-def eval_drift(request: Request, req: DriftRequest) -> DriftResponse:
-    """Detect drift in evaluation metrics by comparing baseline vs. current.
+def eval_drift(request: Request, req: Optional[DriftRequest] = None) -> DriftResponse:
+    """Run drift detection (read-only monitoring).
 
-    Calls :func:`eval.drift.load_and_compare` to load two regression report
-    JSONs and produce a per-metric drift report.
+    If ``ENABLE_DRIFT`` is ``False``, returns ``{"enabled": false,
+    "message": "drift disabled"}`` with HTTP 200.
 
-    When a path is omitted sensible defaults are used:
+    Otherwise calls :func:`app.drift.detector.run_drift` on the evaluation
+    set and returns the scores, breaches, and a top-level ``any_breach``
+    flag.
 
-    * **baseline** — ``reports/_baseline_summary.json`` (the Week 8 baseline)
-    * **current**  — ``reports/regression_report.json`` (or a fresh
-      ``run_regression()`` run if that file doesn't exist)
+    The request body may optionally override:
 
-    Returns ``{"ok": true, "summary": {...}, "drift": {...}}`` on success.
-    On error the response carries ``{"ok": false, "error": "...", "drift": {}}``
-    with HTTP 200.
+    * **baseline_path** — path to the baseline JSON
+      (default: ``reports/drift_baseline.json``)
+    * **thresholds_path** — path to the thresholds YAML
+      (default: ``config/drift_thresholds.yaml``)
     """
+    settings = get_settings()
+    if not settings.ENABLE_DRIFT:
+        return DriftResponse(enabled=False, message="drift disabled")
+
     try:
-        from eval.drift import load_and_compare
+        from app.drift.detector import run_drift as _run_drift
 
+        # Load eval cases
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        eval_path = os.path.join(base_dir, "eval", "eval_set.json")
+        cases = []
+        if os.path.isfile(eval_path):
+            with open(eval_path, "r", encoding="utf-8") as fh:
+                raw = json.load(fh)
+            items = raw.get("items", [])
+            cases = [{"question": item["query"]} for item in items if item.get("query")]
 
-        # --- Resolve paths ---------------------------------------------------
-        if req.baseline_path:
-            baseline_path = req.baseline_path
-        else:
-            baseline_path = os.path.join(base_dir, "reports", "_baseline_summary.json")
-
-        if req.current_path:
-            current_path = req.current_path
-        else:
-            current_path = os.path.join(base_dir, "reports", "regression_report.json")
-            if not os.path.isfile(current_path):
-                # Fall back to a fresh regression run
-                from eval.regression_suite import run_regression
-
-                output_dir = os.path.join(base_dir, "reports")
-                report = run_regression(output_dir=output_dir)
-                current_path = os.path.join(output_dir, "regression_report.json")
-
-        # --- Delegate to load_and_compare ------------------------------------
-        result = load_and_compare(baseline_path, current_path, req.thresholds)
-
-        # If load_and_compare returned an error dict, honour the ok=false
-        # contract while still returning HTTP 200.
-        if isinstance(result, dict) and "error" in result:
-            logger.warning("eval_drift_failed", {"error": result["error"]})
+        if not cases:
             return DriftResponse(
-                ok=False,
-                error=result["error"],
+                enabled=True,
+                message="No evaluation cases available for drift detection.",
+                scores={},
+                breaches=[],
+                any_breach=False,
             )
 
-        drift = result  # plain drift report dict
+        baseline_path = (req.baseline_path if req else None) or "reports/drift_baseline.json"
+        thresholds_path = (req.thresholds_path if req else None) or "config/drift_thresholds.yaml"
 
-        # Build a summary
-        summary = {
-            "baseline_source": baseline_path,
-            "current_source": current_path,
-            "metrics_compared": list(drift.keys()),
-            "drifted_metrics": [m for m, v in drift.items() if v.get("drifted")],
-        }
+        result = _run_drift(
+            cases,
+            baseline_path=baseline_path,
+            thresholds_path=thresholds_path,
+        )
 
-        logger.info("eval_drift_completed", {
-            "drifted": summary["drifted_metrics"],
-            "metrics": summary["metrics_compared"],
-        })
-
-        return DriftResponse(summary=summary, drift=drift)
+        return DriftResponse(
+            enabled=True,
+            message="Drift detection completed.",
+            scores=result.get("scores", {}),
+            breaches=result.get("breaches", []),
+            any_breach=result.get("any_breach", False),
+        )
 
     except Exception as exc:
         logger.exception("eval_drift_error", {"error": str(exc)})
-        return DriftResponse(ok=False, error=str(exc))
+        return DriftResponse(
+            enabled=True,
+            message=f"Drift detection error: {exc}",
+            scores={},
+            breaches=[],
+            any_breach=False,
+        )
 
 
 # ── Prompt Management Endpoints ───────────────────────────────────────

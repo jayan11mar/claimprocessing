@@ -1,1 +1,8 @@
-# Week 8 scaffolding — Drift Thresholds
+# Drift detection thresholds
+# Each key defines the boundary for alerting on a specific drift metric.
+
+output_semantic_shift: 0.85   # min cosine similarity (alert if BELOW)
+kl_divergence: 0.10           # max KL (alert if ABOVE)
+spearman_rank_corr: 0.80      # min Spearman (alert if BELOW)
+nn_stability: 0.70            # min neighbor overlap (alert if BELOW)
+enabled: false

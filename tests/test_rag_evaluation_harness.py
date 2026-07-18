@@ -556,3 +556,68 @@ def test_compute_week6_pass_fail_missing_metrics():
     week6 = compute_week6_pass_fail(result)
     assert week6["week6_passed"] is False
     assert "hit_rate_at_5" in week6["week6_failures"]
+
+
+# =========================================================================
+# Drift detection tests (psi, drift_report, POST /eval/drift)
+# =========================================================================
+
+
+def test_psi_identical_distributions():
+    """psi of identical distributions should be 0.0."""
+    from eval.drift import psi
+
+    dist = [0.4, 0.3, 0.2, 0.1]
+    assert psi(dist, dist) == 0.0
+
+
+def test_psi_shifted_distribution():
+    """psi of a shifted distribution should exceed 0.2."""
+    from eval.drift import psi
+
+    expected = [0.4, 0.3, 0.2, 0.1]
+    actual = [0.1, 0.2, 0.3, 0.4]
+    assert psi(expected, actual) > 0.2
+
+
+def test_drift_report_flags_delta_exceeding_threshold():
+    """drift_report should flag a metric when abs(delta) > threshold."""
+    from eval.drift import drift_report
+
+    baseline = {"answer_stability": 0.95}
+    current = {"answer_stability": 0.80}
+    result = drift_report(baseline, current, thresholds={"answer_stability": 0.05})
+    assert result["answer_stability"]["drifted"] is True
+    assert result["answer_stability"]["delta"] == pytest.approx(-0.15, abs=1e-6)
+
+
+def test_drift_report_does_not_flag_delta_within_threshold():
+    """drift_report should NOT flag a metric when abs(delta) <= threshold."""
+    from eval.drift import drift_report
+
+    baseline = {"answer_stability": 0.95}
+    current = {"answer_stability": 0.93}
+    result = drift_report(baseline, current, thresholds={"answer_stability": 0.05})
+    assert result["answer_stability"]["drifted"] is False
+    assert result["answer_stability"]["delta"] == pytest.approx(-0.02, abs=1e-6)
+
+
+def test_drift_endpoint_returns_ok_and_drift_keys():
+    """POST /eval/drift with explicit paths returns 200 with 'ok' and 'drift' keys."""
+    from fastapi.testclient import TestClient
+    from app.api.server import app
+
+    client = TestClient(app)
+    body = {
+        "baseline_path": "reports/regression_report.json",
+        "current_path": "reports/regression_report.json",
+    }
+    resp = client.post("/eval/drift", json=body)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "ok" in data
+    assert "drift" in data
+    assert data["ok"] is True
+    assert isinstance(data["drift"], dict)
+    # Should have at least pass_rate in the drift report
+    assert "pass_rate" in data["drift"]

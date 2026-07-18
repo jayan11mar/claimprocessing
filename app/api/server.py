@@ -1312,91 +1312,90 @@ def eval_regression(request: Request, req: RegressionRequest) -> RegressionRespo
 
 
 class DriftRequest(BaseModel):
-    current_report_path: Optional[str] = None
-    baseline_report_path: Optional[str] = None
-    current_report: Optional[Dict[str, Any]] = None
-    baseline_report: Optional[Dict[str, Any]] = None
-    ks_threshold: float = 0.3
-    psi_threshold: float = 0.25
+    baseline_path: Optional[str] = None
+    current_path: Optional[str] = None
+    thresholds: Optional[Dict[str, float]] = None
 
 
 class DriftResponse(BaseModel):
-    status: str
-    overall_drift_score: float = 0.0
-    metric_drift: Optional[Dict[str, Any]] = None
-    distribution_drift: Optional[Dict[str, Any]] = None
-    alerts: List[Dict[str, Any]] = []
-    has_baseline: bool = False
+    ok: bool = True
+    summary: Dict[str, Any] = {}
+    drift: Dict[str, Any] = {}
     error: Optional[str] = None
 
 
 @app.post("/eval/drift", response_model=DriftResponse)
 def eval_drift(request: Request, req: DriftRequest) -> DriftResponse:
-    """Detect drift in evaluation metrics by comparing against a baseline.
+    """Detect drift in evaluation metrics by comparing baseline vs. current.
 
-    Accepts either file paths or inline report dicts for both current and
-    baseline data.  Uses KS test and PSI for distribution comparison and
-    per-metric relative-change thresholds for metric drift.
+    Calls :func:`eval.drift.load_and_compare` to load two regression report
+    JSONs and produce a per-metric drift report.
 
-    Returns:
-      - overall_drift_score: the maximum drift detected (0 = none, 1 = max)
-      - metric_drift: per-metric drift details
-      - distribution_drift: KS statistic and PSI
-      - alerts: actionable drift alerts
+    When a path is omitted sensible defaults are used:
+
+    * **baseline** — ``reports/_baseline_summary.json`` (the Week 8 baseline)
+    * **current**  — ``reports/regression_report.json`` (or a fresh
+      ``run_regression()`` run if that file doesn't exist)
+
+    Returns ``{"ok": true, "summary": {...}, "drift": {...}}`` on success.
+    On error the response carries ``{"ok": false, "error": "...", "drift": {}}``
+    with HTTP 200.
     """
     try:
-        from app.drift import run_drift_detection
+        from eval.drift import load_and_compare
 
-        # Load reports from paths if provided
-        current_report = req.current_report
-        if current_report is None and req.current_report_path:
-            with open(req.current_report_path, "r", encoding="utf-8") as f:
-                current_report = json.load(f)
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
-        baseline_report = req.baseline_report
-        if baseline_report is None and req.baseline_report_path:
-            with open(req.baseline_report_path, "r", encoding="utf-8") as f:
-                baseline_report = json.load(f)
+        # --- Resolve paths ---------------------------------------------------
+        if req.baseline_path:
+            baseline_path = req.baseline_path
+        else:
+            baseline_path = os.path.join(base_dir, "reports", "_baseline_summary.json")
 
-        if current_report is None:
+        if req.current_path:
+            current_path = req.current_path
+        else:
+            current_path = os.path.join(base_dir, "reports", "regression_report.json")
+            if not os.path.isfile(current_path):
+                # Fall back to a fresh regression run
+                from eval.regression_suite import run_regression
+
+                output_dir = os.path.join(base_dir, "reports")
+                report = run_regression(output_dir=output_dir)
+                current_path = os.path.join(output_dir, "regression_report.json")
+
+        # --- Delegate to load_and_compare ------------------------------------
+        result = load_and_compare(baseline_path, current_path, req.thresholds)
+
+        # If load_and_compare returned an error dict, honour the ok=false
+        # contract while still returning HTTP 200.
+        if isinstance(result, dict) and "error" in result:
+            logger.warning("eval_drift_failed", {"error": result["error"]})
             return DriftResponse(
-                status="error",
-                error="No current report provided. Supply either current_report or current_report_path.",
+                ok=False,
+                error=result["error"],
             )
 
-        from app.drift import save_drift_report
+        drift = result  # plain drift report dict
 
-        result = run_drift_detection(
-            current_report=current_report,
-            baseline_report=baseline_report,
-            ks_threshold=req.ks_threshold,
-            psi_threshold=req.psi_threshold,
-        )
+        # Build a summary
+        summary = {
+            "baseline_source": baseline_path,
+            "current_source": current_path,
+            "metrics_compared": list(drift.keys()),
+            "drifted_metrics": [m for m, v in drift.items() if v.get("drifted")],
+        }
 
-        # Save drift report to disk
-        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        drift_path = save_drift_report(result, output_dir=os.path.join(base_dir, "reports"))
         logger.info("eval_drift_completed", {
-            "drift_score": result["overall_drift_score"],
-            "alerts": result["alert_count"],
-            "has_baseline": result["has_baseline"],
-            "report_path": drift_path,
+            "drifted": summary["drifted_metrics"],
+            "metrics": summary["metrics_compared"],
         })
 
-        return DriftResponse(
-            status="ok",
-            overall_drift_score=result["overall_drift_score"],
-            metric_drift=result.get("metric_drift"),
-            distribution_drift=result.get("distribution_drift"),
-            alerts=result.get("alerts", []),
-            has_baseline=result.get("has_baseline", False),
-        )
+        return DriftResponse(summary=summary, drift=drift)
+
     except Exception as exc:
         logger.exception("eval_drift_error", {"error": str(exc)})
-        return DriftResponse(
-            status="error",
-            error=str(exc),
-        )
+        return DriftResponse(ok=False, error=str(exc))
 
 
 # ── Prompt Management Endpoints ───────────────────────────────────────

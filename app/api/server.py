@@ -994,6 +994,30 @@ def list_roles() -> Dict[str, Any]:
     }
 
 
+class AuthTokenRequest(BaseModel):
+    sub: str = "demo_user"
+    role: str = "claims_processor"
+
+
+@app.post("/auth/token")
+def auth_token(req: AuthTokenRequest) -> Dict[str, Any]:
+    """Issue a JWT access token for a given subject and role.
+    
+    This endpoint is used by the Streamlit frontend to obtain a JWT
+    for RBAC testing.  In production, this would be replaced by a
+    proper OAuth2/OpenID Connect flow.
+    """
+    from app.rbac.auth import create_access_token
+    token = create_access_token(subject=req.sub, role=req.role)
+    return {
+        "status": "ok",
+        "access_token": token,
+        "token_type": "bearer",
+        "sub": req.sub,
+        "role": req.role,
+    }
+
+
 @app.get("/auth/context")
 def auth_context(request: Request) -> Dict[str, Any]:
     """Return the current authentication context for the request.

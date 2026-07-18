@@ -104,6 +104,8 @@ class PromptRegistry:
                     "changelog": version.changelog,
                     "model_compatibility": version.model_compatibility,
                     "input_variables": version.input_variables,
+                    "template": version.template,
+                    "templates": version.templates,
                     "activated_at": doc.activated_at if doc.active_version == ver_id else None,
                 })
             return versions

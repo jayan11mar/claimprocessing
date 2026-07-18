@@ -1,5 +1,5 @@
 {
-  "stability_score": 0.9838,
+  "stability_score": 0.9565,
   "per_pair": [
     {
       "index": 0,
@@ -11,7 +11,7 @@
     },
     {
       "index": 2,
-      "similarity": 0.9794
+      "similarity": 1.0
     },
     {
       "index": 3,
@@ -23,15 +23,15 @@
     },
     {
       "index": 5,
-      "similarity": 0.9509
+      "similarity": 0.9898
     },
     {
       "index": 6,
-      "similarity": 1.0
+      "similarity": 0.2239
     },
     {
       "index": 7,
-      "similarity": 0.9663
+      "similarity": 0.9753
     },
     {
       "index": 8,
@@ -43,7 +43,7 @@
     },
     {
       "index": 10,
-      "similarity": 0.9572
+      "similarity": 0.9511
     },
     {
       "index": 11,
@@ -51,7 +51,7 @@
     },
     {
       "index": 12,
-      "similarity": 1.0
+      "similarity": 0.9974
     },
     {
       "index": 13,
@@ -63,7 +63,7 @@
     },
     {
       "index": 15,
-      "similarity": 0.9592
+      "similarity": 0.9519
     },
     {
       "index": 16,
@@ -71,7 +71,7 @@
     },
     {
       "index": 17,
-      "similarity": 0.967
+      "similarity": 0.9826
     },
     {
       "index": 18,
@@ -91,7 +91,7 @@
     },
     {
       "index": 22,
-      "similarity": 0.9734
+      "similarity": 0.998
     },
     {
       "index": 23,
@@ -102,7 +102,7 @@
       "similarity": 1.0
     }
   ],
-  "min_similarity": 0.8444,
+  "min_similarity": 0.2239,
   "max_similarity": 1.0,
-  "std_similarity": 0.0328
+  "std_similarity": 0.153
 }

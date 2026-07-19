@@ -16,15 +16,9 @@ def get_faq_examples() -> List[Dict[str, str]]:
             "category": "fraud",
         },
         {
-            "user": "What’s the status of my father’s claim?",
-            "assistant": "Claim #CLM-71123 for policy #HI-330098 is currently in ‘Document Verification’ stage. We’re awaiting the original discharge summary. Once received, estimated processing time is 3-5 business days.",
-            "intent": "CLAIM_STATUS",
-            "category": "claims",
-        },
-        {
-            "user": "What is the status of claim CLM-90210?",
-            "assistant": "Claim CLM-90210 is currently in 'Document Verification' stage. We are awaiting the original discharge summary. Once received, estimated processing time is 3-5 business days.",
-            "intent": "CLAIM_STATUS",
+            "user": "What's the status of my father's claim?",
+            "assistant": "Claim #CLM-71123 for policy #HI-330098 is currently in 'Document Verification' stage. We're awaiting the original discharge summary. Once received, estimated processing time is 3-5 business days.",
+            "intent": "POLICY_STATUS",
             "category": "claims",
         },
         {
@@ -32,6 +26,12 @@ def get_faq_examples() -> List[Dict[str, str]]:
             "assistant": "The fraud score indicates risk based on claim history and anomalies. I can check the claim if the ID is valid and the fraud monitoring system has a recorded score.",
             "intent": "FRAUD_CHECK",
             "category": "fraud",
+        },
+        {
+            "user": "Claim amount is $1000 with deductible of $100 - please register this new claim.",
+            "assistant": "Registering claim for $1000 with deductible $100 under your policy. Processing the claim intake now.",
+            "intent": "CLAIM_REGISTRATION",
+            "category": "claims",
         },
         {
             "user": "Calculate settlement for a claim of ₹5,60,000 with 10K deductible.",
@@ -48,7 +48,7 @@ def get_faq_examples() -> List[Dict[str, str]]:
         {
             "user": "Show me the claim history for policyholder ID P-3321.",
             "assistant": "Claim history summaries include filed claims, statuses, settled amounts, and pending actions. Provide your policyholder ID and I can look up the relevant history records.",
-            "intent": "CLAIM_STATUS",
+            "intent": "POLICY_STATUS",
             "category": "history",
         },
         {
@@ -77,14 +77,20 @@ def get_faq_examples() -> List[Dict[str, str]]:
         },
         {
             "user": "Draft a claim rejection letter with reasons.",
-            "assistant": "A claim rejection letter should clearly state the claim number, the reasons for rejection such as coverage exclusion or missing documents, and the next steps for appeal or additional submission. It should remain professional and reference the relevant policy terms.",
+            "assistant": "A rejection letter should clearly state the claim number, the policy provisions relied on, the specific reasons for rejection, and any next steps for appeal or additional documentation.",
             "intent": "OTHER",
             "category": "claims",
         },
         {
-            "user": "Escalate claim C2001 — it's been pending 20 days.",
-            "assistant": "I've escalated claim C2001 for priority review. The claim has been flagged as high priority due to the extended pending duration. A senior claims officer will review it within 24 hours.",
-            "intent": "ESCALATION",
-            "category": "escalation",
+            "user": "what is the status of claim C1001",
+            "assistant": "Claim C1001: Status = PENDING_REVIEW. Policy: P123456. Claim Amount: $1200.00. Approved Amount: Not yet calculated. Fraud Score: Not computed. Settlement Status: Not yet processed. Incident Date: 2024-03-10. Hospital: General Hospital.",
+            "intent": "CLAIM_STATUS",
+            "category": "claims",
+        },
+        {
+            "user": "Check the status of claim C2001",
+            "assistant": "Claim C2001: Status = PENDING_REVIEW. Policy: P789012. Claim Amount: $120000.00. Approved Amount: Not yet calculated. Fraud Score: Not computed. Settlement Status: Not yet processed. Incident Date: 2024-11-15. Hospital: City Care Hospital.",
+            "intent": "CLAIM_STATUS",
+            "category": "claims",
         },
     ]

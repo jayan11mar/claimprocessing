@@ -25,7 +25,7 @@ services:
       - "8501:8501"
     env_file:
       - .env
-    command: streamlit run frontend/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+    command: streamlit run app/frontend/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
     depends_on:
       - api
 

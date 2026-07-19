@@ -12,7 +12,7 @@ from app.prompt_manager.models import PromptDocument, PromptVersion
 
 logger = logging.getLogger(__name__)
 
-_DEFAULT_PROMPTS_DIR = Path(__file__).resolve().parent.parent.parent / "prompts"
+_DEFAULT_PROMPTS_DIR = Path(__file__).resolve().parent.parent.parent / "config" / "prompts"
 
 
 class PromptLoadError(Exception):

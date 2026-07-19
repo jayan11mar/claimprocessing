@@ -21,7 +21,7 @@ The project now includes:
 - Orchestration layer: app/chains/
 - RAG pipeline: app/rag/
 - Domain tools: app/tools/
-- Frontend UI: frontend/streamlit_app.py
+- Frontend UI: app/frontend/streamlit_app.py
 - Data and evaluation assets: data/, docs/, eval/, scripts/, tests/
 
 ## Prerequisites
@@ -65,7 +65,7 @@ The API will be available at http://127.0.0.1:8000.
 ### Start the Streamlit frontend
 
 ```bash
-streamlit run frontend/streamlit_app.py
+streamlit run app/frontend/streamlit_app.py
 ```
 
 ## API endpoints
@@ -106,7 +106,7 @@ Additional validation helpers are available in the scripts/ folder for memory co
 ## Project structure
 
 - app/: application modules and business logic
-- frontend/: Streamlit chat UI
+- app/frontend/: Streamlit chat UI
 - data/: knowledge base, fixtures, and local indexes
 - docs/: reference and evaluation documents
 - eval/: evaluation utilities and reporting

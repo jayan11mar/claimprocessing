@@ -7,8 +7,8 @@ __pycache__/
 .pytest_cache/
 *_SUMMARY.md
 plan*.md
-notebooks/
-Screenshots/
+docs/notebooks/
+docs/Screenshots/
 reports/
 diagnostics/
 .git/

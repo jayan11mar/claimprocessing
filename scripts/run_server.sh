@@ -7,7 +7,7 @@ VENV_ACTIVATE="$PROJECT_DIR/venv/bin/activate"
 APP_MODULE="app.main:app"
 HOST="0.0.0.0"
 PORT="8000"
-LOG_FILE="$PROJECT_DIR/server.log"
+LOG_FILE="$PROJECT_DIR/reports/server.log"
 STARTUP_TIMEOUT=40
 DRIFT=0
 STOP_ONLY=0
@@ -88,4 +88,4 @@ case "$CODE" in
 esac
 
 echo; echo ">>> Done. Tail logs:  tail -f $LOG_FILE"
-echo ">>> Stop server:      ./run_server.sh --stop"
+echo ">>> Stop server:      scripts/run_server.sh --stop"

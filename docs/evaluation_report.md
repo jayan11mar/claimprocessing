@@ -122,6 +122,6 @@ This report documents the evaluation run for Claims Processing & Settlement.
 
 - The evaluation harness is available at `scripts/evaluate.py`.
 - Results are saved to `scripts/results.json`.
- - The evaluation frontend (`frontend/streamlit_app.py`) surfaces `chain_metadata.langsmith_trace_id` when present.
+ - The evaluation frontend (`app/frontend/streamlit_app.py`) surfaces `chain_metadata.langsmith_trace_id` when present.
  - The evaluation harness is available at `scripts/evaluate.py` and sends the 20-query set listed in this report.
  - Results are saved to `scripts/results.json`.

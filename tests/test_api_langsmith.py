@@ -28,11 +28,11 @@ def test_chat_includes_langsmith_trace_id(monkeypatch):
     server._memory = FakeMemory()
     server._agent_chain = FakeAgentChain()
 
-    monkeypatch.setattr(server, "get_langsmith_trace_id", lambda: "ls-test-id")
+    monkeypatch.setattr(server, "get_langsmith_trace_id", lambda: "ls-agent_invoke:s1")
 
     client = TestClient(server.app)
     resp = client.post("/chat", json={"session_id": "s1", "message": "hi"})
     assert resp.status_code == 200
     body = resp.json()
     assert "chain_metadata" in body
-    assert body["chain_metadata"].get("langsmith_trace_id") == "ls-test-id"
+    assert body["chain_metadata"].get("langsmith_trace_id") == "ls-agent_invoke:s1"

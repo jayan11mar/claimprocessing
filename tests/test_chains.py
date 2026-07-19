@@ -178,8 +178,7 @@ class TestHitlChain:
     def test_hitl_placeholder_skipped(self):
         """When ENABLE_HITL is False, hitl chain returns pass-through with skipped status."""
         import os
-        if "ENABLE_HITL" in os.environ:
-            del os.environ["ENABLE_HITL"]
+        os.environ["ENABLE_HITL"] = "false"
         from app.config import get_settings
         get_settings.cache_clear()
         inputs = {
@@ -370,7 +369,7 @@ class TestCallbacks:
         # Simulate a chain start/end cycle
         handler.on_chain_start({}, {}, run_id="run-1")
         time.sleep(0.001)
-        handler.on_chain_end(run_id="run-1")
+        handler.on_chain_end({}, run_id="run-1")
 
         report = handler.report()
         assert "chain" in report

@@ -62,7 +62,14 @@ class MetricsCallbackHandler(BaseCallbackHandler):
         if run_id is not None:
             self._record_start(run_id, "chain")
 
-    def on_chain_end(self, *, run_id: Any = None, **kwargs: Any) -> None:
+    def on_chain_end(
+        self,
+        outputs: Any,
+        *,
+        run_id: Any = None,
+        parent_run_id: Any = None,
+        **kwargs: Any,
+    ) -> None:
         if run_id is not None:
             self._record_end(run_id, "chain")
 

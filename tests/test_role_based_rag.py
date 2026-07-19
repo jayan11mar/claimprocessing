@@ -600,15 +600,15 @@ class TestRBACEndpoints:
         assert "requires_explicit_consent" in cp
 
     def test_auth_context_no_token(self):
-        """GET /auth/context returns service role context when RBAC disabled."""
+        """GET /auth/context returns anonymous context when no token is provided."""
         response = self.client.get("/auth/context")
         assert response.status_code == 200
         data = response.json()
-        # When RBAC is disabled, the service role is used (full access)
-        assert data["user_id"] == "service"
-        assert data["role"] == "service"
-        assert data["is_authenticated"] is True
-        assert data["rbac_enabled"] is False
+        # With RBAC enabled and no token, the anonymous context is used
+        assert data["user_id"] == "anonymous"
+        assert data["role"] == "claims_processor"
+        assert data["is_authenticated"] is False
+        assert data["rbac_enabled"] is True
 
     def test_auth_context_with_valid_token(self):
         """GET /auth/context returns authenticated context with valid JWT."""
@@ -626,16 +626,16 @@ class TestRBACEndpoints:
         assert "investigation" in data["permissions"]["allowed_doc_types"]
 
     def test_auth_context_with_invalid_token(self):
-        """GET /auth/context returns service role context with invalid token when RBAC disabled."""
+        """GET /auth/context returns anonymous context with invalid token."""
         response = self.client.get(
             "/auth/context",
             headers={"Authorization": "Bearer invalid.token.here"},
         )
         assert response.status_code == 200
         data = response.json()
-        # When RBAC is disabled, the service role is used regardless of token
-        assert data["is_authenticated"] is True
-        assert data["role"] == "service"
+        # With RBAC enabled, an invalid token results in anonymous context
+        assert data["is_authenticated"] is False
+        assert data["role"] == "claims_processor"
 
     def test_retrieve_with_rbac_enabled_and_valid_token(self):
         """POST /retrieve with RBAC enabled and valid token applies filters."""

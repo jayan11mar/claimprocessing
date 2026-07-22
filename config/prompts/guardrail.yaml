@@ -14,3 +14,5 @@ templates:
     I noticed your message contains instructions that appear to be trying to change how I operate. I'm designed to follow consistent guidelines for insurance assistance. Please rephrase your question about insurance policies or claims, and I'll be happy to help.
   unsafe_content_response: |
     I'm not able to respond to that type of content. I'm here to help with insurance and claims questions. Please feel free to ask about policies, claims processing, coverage details, or settlement calculations.
+  default_refusal: |
+    I cannot assist with that request.

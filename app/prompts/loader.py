@@ -19,6 +19,14 @@ logger = logging.getLogger(__name__)
 _TEMPLATES_CACHE: Dict[str, Any] = {}
 _REGISTRY_INITIALIZED = False
 
+# Absolute last-resort safety net for guardrail fallback.
+# This is intentionally defined ONCE at module top so it is auditable
+# rather than scattered as an ad-hoc literal. The primary path loads
+# "default_refusal" from guardrail.yaml via the registry; this is only
+# reached if the registry itself raises an exception (e.g. YAML parse
+# error, missing file, or malformed document).
+_LAST_RESORT_REFUSAL = "I cannot assist with that request."
+
 
 def _ensure_registry():
     global _REGISTRY_INITIALIZED
@@ -112,7 +120,9 @@ def get_guardrail_response(rule_name: str) -> str:
         pass
 
     templates = load_templates()
-    return templates["guardrails"].get(rule_name, "I cannot assist with that request.")
+    # Prefer the YAML-sourced "default_refusal" template; fall back to the
+    # module-level safety net if the loaded guardrails dict lacks the key.
+    return templates["guardrails"].get(rule_name, templates["guardrails"].get("default_refusal", _LAST_RESORT_REFUSAL))
 
 
 def get_few_shot_examples() -> list:

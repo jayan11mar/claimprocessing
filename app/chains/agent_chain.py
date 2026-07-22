@@ -9,13 +9,33 @@ from app.memory.sqlite_memory import SQLiteMemory
 from app.models.faq import FAQIntent, FAQResponse
 from app.tools.claim_status_checker import check_claim_status
 from app.tools.claims_intake import register_and_validate_claim
+from app.models.domain import Claim, save_claim
 from app.tools.fraud_detector import compute_fraud_score
 from app.tools.policy_checker import check_policy_status
 from app.tools.settlement_calculator import calculate_settlement
 from app.tools.knowledge_retrieval import knowledge_retrieval
 from app.hitl.manager import get_hitl_manager
+from app.hitl.triggers import load_rules
 
 logger = logging.getLogger(__name__)
+
+# Module-level safety net for the fraud score threshold.
+# The primary source is the "score_threshold" field on the "fraud_flag" rule
+# in config/hitl_rules.yaml (loaded via load_rules()). This constant is used
+# only when the YAML key is absent — an auditable last-resort fallback.
+_DEFAULT_FRAUD_THRESHOLD = 0.7
+
+
+def _get_fraud_score_threshold() -> float:
+    """Read the fraud score threshold from HITL trigger config."""
+    try:
+        rules = load_rules()
+        for rule in rules:
+            if rule.get("rule_id") == "fraud_flag":
+                return float(rule.get("score_threshold", _DEFAULT_FRAUD_THRESHOLD))
+    except Exception:
+        pass
+    return _DEFAULT_FRAUD_THRESHOLD
 
 
 def _looks_like_rag_document_query(user_message: str) -> bool:
@@ -405,23 +425,49 @@ class AgentChain:
             policy_number=policy_number,
             claim_amount=claim_amount,
             extra_info=details,
+            persist=False,  # validate only; persist after HITL gating
         )
         self._record_tool_timing("claims_intake", start, timings, trace_id)
 
-        # ── Evaluate HITL triggers after claim registration ──────────────
+        # ── Evaluate HITL triggers BEFORE final persist ──────────────────
         hitl_required = False
         hitl_task_id = None
         hitl_rule = None
 
         if claim.is_eligible and claim.claim_id:
+            # ── Invoke tools on the validated (unpersisted) claim ──────────
+            # Build a minimal Claim object for tool functions that accept it
+            _claim_obj = Claim(
+                claim_id=claim.claim_id,
+                policy_number=claim.policy_number,
+                claim_amount=claim_amount,
+            )
+            # 1. Fraud detector — derive fraud_flag from score vs threshold
+            _fraud_result = compute_fraud_score(claim=_claim_obj)
+            _fraud_flag = _fraud_result.score >= _get_fraud_score_threshold()
+
+            # 2. Policy checker — derive policy_exclusion (true if policy not active)
+            _policy_result = check_policy_status(claim.policy_number)
+            _policy_exclusion = not _policy_result.is_active
+
+            # 3. Decision logic — derive from claim-validation outcome
+            if not claim.is_eligible:
+                _decision = "reject"
+            elif claim.approved_amount >= claim_amount:
+                _decision = "approve"
+            elif claim.approved_amount > 0:
+                _decision = "partial"
+            else:
+                _decision = "pending"
+
             pause_context = {
                 "session_id": session_id or "",
                 "user_message": message,
                 "agent_response": f"Claim {claim.claim_id} registered for {claim_amount}",
                 "claim_amount": claim_amount,
-                "decision": "pending",
-                "fraud_flag": False,
-                "policy_exclusion": False,
+                "decision": _decision,
+                "fraud_flag": _fraud_flag,
+                "policy_exclusion": _policy_exclusion,
                 "confidence": intent.confidence if hasattr(intent, "confidence") else 0.0,
                 "recommendation": {
                     "action": "manual_review",

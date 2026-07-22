@@ -28,6 +28,7 @@ trigger_rules:
     field: "fraud_flag"
     operator: "is_true"
     value: true
+    score_threshold: 0.7
     reason: "Fraud detection requires manual review"
 
   - rule_id: "policy_exclusion"

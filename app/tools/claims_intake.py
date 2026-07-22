@@ -50,6 +50,7 @@ def register_and_validate_claim(
     policy_number: str,
     claim_amount: Optional[float] = None,
     extra_info: Optional[Dict[str, Union[str, List[str]]]] = None,
+    persist: bool = True,
 ) -> ClaimValidationResult:
     extra_info = extra_info or {}
     policy = get_policy(policy_number)
@@ -181,7 +182,8 @@ def register_and_validate_claim(
     claim.approved_amount = round(max(0.0, approved_amount), 2)
     claim.fraud_score = fraud_evaluation.score
     claim.status = "CREATED"
-    save_claim(claim)
+    if persist:
+        save_claim(claim)
 
     metadata = {
         "policy_status": policy.status.value,

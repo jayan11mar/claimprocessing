@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 from uuid import uuid4
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -52,37 +52,48 @@ def inject_chat_style() -> None:
     st.markdown(
         """
         <style>
-        .chat-container { margin: 0; padding: 0; }
-        .chat-message { margin: 8px 0; display: flex; width: 100%; }
+        .chat-area { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .chat-container { width: 100%; }
+        .chat-message { display: flex; width: 100%; margin: 6px 0; }
         .chat-message--user { justify-content: flex-end; }
         .chat-message--assistant { justify-content: flex-start; }
         .chat-bubble {
-            max-width: 80%;
-            padding: 14px 18px;
-            border-radius: 18px;
-            line-height: 1.5;
+            max-width: 70%;
+            min-width: 28%;
+            padding: 16px 20px;
+            border-radius: 22px;
+            line-height: 1.6;
             white-space: pre-wrap;
-            word-wrap: break-word;
+            word-break: break-word;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
         }
         .chat-message--user .chat-bubble {
             background: #0d6efd;
             color: white;
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 22px;
+            border-top-right-radius: 22px;
+            border-top-left-radius: 22px;
         }
         .chat-message--assistant .chat-bubble {
-            background: #f2f3f5;
+            background: #ffffff;
             color: #111;
-            border-bottom-left-radius: 4px;
+            border: 1px solid #e9edf2;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 22px;
+            border-top-left-radius: 22px;
+            border-top-right-radius: 22px;
         }
-        .chat-details {
-            margin-top: 8px;
-            font-size: 0.9rem;
-            color: #555;
-        }
-        .chat-details summary {
-            cursor: pointer;
-            font-weight: 600;
-        }
+        .chat-bubble-title { display: block; margin-bottom: 8px; font-size: 0.95rem; font-weight: 700; opacity: 0.85; }
+        .chat-bubble-text { font-size: 1rem; }
+        .citation-block { margin-top: 8px; padding: 12px 14px; background: #f9fafc; border: 1px solid #e7ecf2; border-radius: 16px; max-width: 72%; }
+        .chat-message--user .citation-block { margin-left: auto; }
+        .citation-header { font-weight: 700; margin-bottom: 8px; }
+        .citation-item { margin-bottom: 8px; font-size: 0.95rem; }
+        .citation-item a { color: #0d6efd; text-decoration: none; }
+        .citation-item a:hover { text-decoration: underline; }
+        .chat-details { margin-top: 8px; font-size: 0.9rem; color: #555; }
+        .chat-details summary { cursor: pointer; font-weight: 600; }
         .chat-details p { margin: 4px 0; }
         </style>
         """,
@@ -98,7 +109,10 @@ def render_chat_bubble(role: str, text: str, metadata: Optional[Dict[str, Any]] 
         f"""
         <div class='chat-container'>
             <div class='chat-message chat-message--{role_class}'>
-                <div class='chat-bubble'><strong>{title}:</strong><br>{escaped_text}</div>
+                <div class='chat-bubble'>
+                    <span class='chat-bubble-title'>{title}</span>
+                    <span class='chat-bubble-text'>{escaped_text}</span>
+                </div>
             </div>
         </div>
         """,
@@ -118,10 +132,9 @@ def render_citations(citations: list, message_index: str = "0") -> None:
     """
     if not citations:
         return
-    
-    st.markdown("<div style='margin-left: 20px; margin-top: 8px;'>", unsafe_allow_html=True)
-    st.markdown("**📚 Sources:**")
-    
+
+    st.markdown("<div class='citation-block'><div class='citation-header'>📚 Sources & chunks</div>", unsafe_allow_html=True)
+
     for idx, citation in enumerate(citations, 1):
         source_id = citation.get("source_id", "unknown")
         source_path = citation.get("source_path", "")
@@ -129,37 +142,29 @@ def render_citations(citations: list, message_index: str = "0") -> None:
         score = citation.get("score", 0.0)
         chunk_id = citation.get("chunk_id", "N/A")
         chunk_text = citation.get("text", "")
-        
-        # Create a clickable citation link
-        with st.container():
-            col1, col2 = st.columns([1, 4])
-            with col1:
-                st.markdown(f"**[{idx}]**")
-            with col2:
-                # Make the source path clickable if it's a URL or file path
-                if source_path and (source_path.startswith("http://") or source_path.startswith("https://")):
-                    st.markdown(f"[{source_id}]({source_path}) - *{doc_type}* (score: {score:.2f})")
-                elif source_path:
-                    st.markdown(f"**{source_id}** - `{source_path}` - *{doc_type}* (score: {score:.2f})")
-                else:
-                    st.markdown(f"**{source_id}** - *{doc_type}* (score: {score:.2f})")
-            
-            # Add expandable panel for chunk details with unique key
-            with st.expander(f"📄 View Chunk Details [{idx}]", expanded=False):
-                st.markdown(f"**Chunk ID:** `{chunk_id}`")
-                st.markdown(f"**Source ID:** {source_id}")
-                st.markdown(f"**Relevance Score:** {score:.4f}")
-                
-                if chunk_text:
-                    st.markdown("**Chunk Text:**")
-                    st.text_area(
-                        "Chunk content",
-                        value=chunk_text,
-                        height=200,
-                        key=f"chunk_text_{message_index}_cit{idx}_{chunk_id}",
-                        label_visibility="collapsed"
-                    )
-    
+
+        if source_path and (source_path.startswith("http://") or source_path.startswith("https://")):
+            source_line = f"**[{idx}]** [{source_id}]({source_path}) - *{doc_type}* (score: {score:.2f})"
+        elif source_path:
+            source_line = f"**[{idx}]** **{source_id}** - `{source_path}` - *{doc_type}* (score: {score:.2f})"
+        else:
+            source_line = f"**[{idx}]** **{source_id}** - *{doc_type}* (score: {score:.2f})"
+
+        st.markdown(f"<div class='citation-item'>{source_line}</div>", unsafe_allow_html=True)
+
+        with st.expander(f"📄 View Chunk Details [{idx}]", expanded=False):
+            st.markdown(f"**Chunk ID:** `{chunk_id}`")
+            st.markdown(f"**Source ID:** {source_id}")
+            st.markdown(f"**Relevance Score:** {score:.4f}")
+            if chunk_text:
+                st.markdown("**Chunk Text:**")
+                st.text_area(
+                    "Chunk content",
+                    value=chunk_text,
+                    height=120,
+                    key=f"chunk_text_{message_index}_cit{idx}_{chunk_id}",
+                    label_visibility="collapsed",
+                )
     st.markdown("</div>", unsafe_allow_html=True)
 
 
@@ -226,7 +231,7 @@ def main() -> None:
         st.sidebar.write(f"**DB status:** {health.get('db_status', 'unknown')}")
         st.sidebar.write(f"**Uptime:** {health.get('uptime_seconds', '?')}s")
     else:
-        st.sidebar.warning("Backend health unavailable.")
+        st.sidebar.warning(f"Backend health unavailable for {api_url}.")
 
     st.sidebar.divider()
     st.sidebar.header("LangSmith Tracing")
@@ -355,10 +360,31 @@ def main() -> None:
     # TAB 1: Chat (existing behavior, unchanged)
     # ═══════════════════════════════════════════════════════════════════
     with tab_chat:
+        if st.session_state.history:
+            st.markdown("---")
+            st.subheader("Conversation History")
+            st.write(f"**Local turns:** {len(st.session_state.history)}")
+            for idx, item in enumerate(st.session_state.history):
+                user_msg = item["user"]
+                answer_text = item["answer_text"]
+                structured = item.get("structured", {})
+                chain_metadata = item.get("chain_metadata", {})
+                citations = item.get("citations", [])
+
+                render_chat_bubble("user", user_msg)
+                render_chat_bubble("assistant", answer_text, None, idx)
+                if citations:
+                    render_citations(citations, idx)
+                with st.expander("Response metadata", expanded=False):
+                    st.write("**Structured response**")
+                    st.json(structured)
+                    st.write("**Chain metadata**")
+                    st.json(chain_metadata)
+
         if hasattr(st, "chat_input"):
             query = st.chat_input("Ask a question about claims, coverage, or settlement")
         else:
-            query = st.text_input("Ask a question about claims, coverage, or settlement")
+            query = st.text_input("Ask a question about claims, coverage, or settlement", key="chat_query_input")
 
         if query:
             try:
@@ -378,50 +404,25 @@ def main() -> None:
                         "retrieval_trace": retrieval_trace,
                     }
                 )
-                
-                # Display the assistant's response immediately with citations
                 if resp.get("answer_text"):
                     render_chat_bubble("assistant", resp.get("answer_text"), None, len(st.session_state.history) - 1)
-                    # Render clickable citations if available (use 'live' prefix to distinguish from history)
                     if citations:
                         render_citations(citations, f"live_{len(st.session_state.history) - 1}")
             except requests.RequestException as exc:
-                st.warning(f"Unable to reach backend: {exc}")
+                st.warning(f"Unable to reach backend at {api_url}: {exc}")
                 st.session_state.history.append(
                     {
                         "user": query,
-                        "answer_text": "Sorry, the backend is not available. Please check the backend URL and try again.",
+                        "answer_text": (
+                            f"Sorry, the backend at {api_url} is unavailable. "
+                            "Please verify the backend URL and ensure the backend is running."
+                        ),
                         "structured": {},
                         "chain_metadata": {"error": str(exc)},
                         "citations": [],
                         "retrieval_trace": [],
                     }
                 )
-
-        if st.session_state.history:
-            st.markdown("---")
-            st.subheader("Conversation History")
-            st.write(f"**Local turns:** {len(st.session_state.history)}")
-
-            for idx, item in enumerate(st.session_state.history):
-                user_msg = item["user"]
-                answer_text = item["answer_text"]
-                structured = item.get("structured", {})
-                chain_metadata = item.get("chain_metadata", {})
-                citations = item.get("citations", [])
-
-                render_chat_bubble("user", user_msg)
-                render_chat_bubble("assistant", answer_text, None, idx)
-                
-                # Render clickable citations if available
-                if citations:
-                    render_citations(citations, idx)
-                
-                with st.expander("Response metadata", expanded=False):
-                    st.write("**Structured response**")
-                    st.json(structured)
-                    st.write("**Chain metadata**")
-                    st.json(chain_metadata)
 
         if st.button("Reset Conversation"):
             try:

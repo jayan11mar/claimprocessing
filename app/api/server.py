@@ -455,6 +455,7 @@ def _invoke_lcel(request: Request, session_id: str, user_message: str, correlati
     if trace_id:
         chain_metadata["langsmith_trace_id"] = trace_id
 
+    citations = _attach_source_links_to_citations(request, citations)
     return ChatResponse(
         answer_text=answer_text,
         structured=structured,
@@ -462,6 +463,28 @@ def _invoke_lcel(request: Request, session_id: str, user_message: str, correlati
         retrieval_trace=retrieval_trace,
         citations=citations,
     )
+
+
+def _attach_source_links_to_citations(request: Request, citations: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Enrich each citation with a link to the referenced source document."""
+    enriched_citations: List[Dict[str, Any]] = []
+    for citation in citations or []:
+        enriched = dict(citation)
+        source_link = enriched.get("source_link")
+        source_id = enriched.get("source_id")
+        source_path = enriched.get("source_path", "")
+        if not source_link:
+            if source_path and source_path.startswith(("http://", "https://")):
+                source_link = source_path
+            elif source_id:
+                try:
+                    source_link = request.url_for("download_source_file", doc_id=source_id)
+                except Exception:
+                    source_link = None
+        if source_link:
+            enriched["source_link"] = str(source_link)
+        enriched_citations.append(enriched)
+    return enriched_citations
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -584,6 +607,7 @@ def chat(request: Request, req: ChatRequest) -> ChatResponse:
             chain_metadata["langsmith_trace_id"] = trace_id
 
         retrieval_trace, citations = _extract_rag_metadata(faq_response.metadata)
+        citations = _attach_source_links_to_citations(request, citations)
 
         response = ChatResponse(
             answer_text=faq_response.answer_text,

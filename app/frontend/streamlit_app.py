@@ -98,6 +98,11 @@ def inject_chat_style() -> None:
         .chat-details { margin-top: 8px; font-size: 0.9rem; color: #555; }
         .chat-details summary { cursor: pointer; font-weight: 600; }
         .chat-details p { margin: 4px 0; }
+        .citation-link { color: #0d6efd; text-decoration: underline; font-weight: 500; cursor: pointer; }
+        .citation-link:hover { text-decoration: none; background: #e8f0fe; border-radius: 3px; }
+        .citation-chunk { scroll-margin-top: 80px; transition: background-color 0.5s ease; }
+        .citation-chunk:target { background-color: #fff3cd; border-left: 4px solid #ffc107; padding-left: 10px; border-radius: 4px; }
+        html { scroll-behavior: smooth; }
         </style>
         """,
         unsafe_allow_html=True,
@@ -116,7 +121,7 @@ def _build_chunk_id_to_source_map(citations: list) -> Dict[str, str]:
 
 
 def _make_chunk_id_links(text: str, chunk_to_source: Dict[str, str], api_url: str) -> str:
-    """Replace [chunk_id] references in text with clickable HTML links to the source download endpoint.
+    """Replace [chunk_id] references in text with clickable HTML links that scroll to the exact chunk details.
     
     Args:
         text: The answer text containing [chunk_id] references.
@@ -130,8 +135,8 @@ def _make_chunk_id_links(text: str, chunk_to_source: Dict[str, str], api_url: st
         chunk_id = match.group(1)
         source_id = chunk_to_source.get(chunk_id)
         if source_id and api_url:
-            download_url = f"{api_url}/sources/{source_id}/download"
-            return f'<a href="{download_url}" target="_blank" rel="noopener noreferrer" title="View source document: {chunk_id}">[{chunk_id}]</a>'
+            # Use anchor link to scroll to the chunk details in the citations block
+            return f'<a href="#chunk-{chunk_id}" class="citation-link" title="View source chunk: {chunk_id}">[{chunk_id}]</a>'
         # If no mapping found, keep the original text but style it
         return f'<span class="citation-ref">[{chunk_id}]</span>'
     
@@ -213,7 +218,7 @@ def render_citations(citations: list, message_index: str = "0", api_url: str = "
         else:
             source_line = f"**[{idx}]** **{source_id}** - *{doc_type}* (score: {score:.2f})"
 
-        st.markdown(f"<div class='citation-item'>{source_line}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='citation-item' id='chunk-{chunk_id}'>{source_line}</div>", unsafe_allow_html=True)
 
         with st.expander(f"📄 View Chunk Details [{idx}]", expanded=False):
             st.markdown(f"**Chunk ID:** `{chunk_id}`")

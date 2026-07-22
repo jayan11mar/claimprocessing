@@ -30,7 +30,8 @@ def test_chat_includes_retrieval_trace_and_citations_when_present(monkeypatch):
     assert resp.status_code == 200
     payload = resp.json()
     assert payload.get("retrieval_trace") == [{"tool": "knowledge_retrieval", "query": "coverage"}]
-    assert payload.get("citations") == [{"source_id": "doc-1", "source_path": "policy.md", "text": "Coverage details"}]
+    citations = payload.get("citations")
+    assert citations == [{"source_id": "doc-1", "source_path": "policy.md", "text": "Coverage details", "source_link": "http://testserver/sources/doc-1/download"}]
 
 
 def test_ingest_and_retrieve_round_trip():

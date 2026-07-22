@@ -33,7 +33,7 @@ def test_build_chunk_id_to_source_map_empty():
 
 
 def test_make_chunk_id_links_creates_anchor_tags():
-    """Verify [chunk_id] references are replaced with clickable links."""
+    """Verify [chunk_id] references are replaced with anchor links to chunk details."""
     citations = [
         {"chunk_id": "health_policy_hdfcergo_0", "source_id": "health_policy_hdfcergo"},
     ]
@@ -43,24 +43,29 @@ def test_make_chunk_id_links_creates_anchor_tags():
     text = "The waiting period is 4 years according to [health_policy_hdfcergo_0]."
     result = _make_chunk_id_links(text, chunk_to_source, api_url)
     
-    assert 'href="http://127.0.0.1:8000/sources/health_policy_hdfcergo/download"' in result
-    assert "target=\"_blank\"" in result
-    assert "rel=\"noopener noreferrer\"" in result
+    # Should generate an anchor link to #chunk-{chunk_id} for same-page navigation
+    assert 'href="#chunk-health_policy_hdfcergo_0"' in result
+    assert 'class="citation-link"' in result
+    assert 'title="View source chunk: health_policy_hdfcergo_0"' in result
     assert "[health_policy_hdfcergo_0]" in result  # The text inside the link is preserved
+    # Should NOT generate download links to backend
+    assert "/sources/" not in result
 
 
 def test_make_chunk_id_links_no_mapping():
-    """Verify unknown chunk IDs are preserved as text (no link)."""
+    """Verify unknown chunk IDs are preserved as styled text (no link)."""
     chunk_to_source = {"known_chunk": "known_doc"}
     api_url = "http://127.0.0.1:8000"
     
     text = "Some [unknown_chunk] and [known_chunk] references."
     result = _make_chunk_id_links(text, chunk_to_source, api_url)
     
-    # Unknown chunk should NOT become a link
-    assert 'href="http://127.0.0.1:8000/sources/known_doc/download"' in result
-    # No link for unknown chunk
-    assert 'href=' in result
+    # Known chunk should be a citation-link anchor pointing to its chunk ID
+    assert 'href="#chunk-known_chunk"' in result
+    assert 'class="citation-link"' in result
+    # Unknown chunk should be rendered as a styled span (no link)
+    assert 'class="citation-ref"' in result
+    assert 'href="#chunk-unknown_chunk"' not in result
 
 
 def test_make_chunk_id_links_no_api_url():
@@ -76,7 +81,7 @@ def test_make_chunk_id_links_no_api_url():
 
 
 def test_make_chunk_id_links_multiple_references():
-    """Verify multiple chunk references are all linked."""
+    """Verify multiple chunk references are all linked with anchor tags."""
     citations = [
         {"chunk_id": "doc_a_0", "source_id": "doc_a"},
         {"chunk_id": "doc_b_1", "source_id": "doc_b"},
@@ -87,8 +92,9 @@ def test_make_chunk_id_links_multiple_references():
     text = "According to [doc_a_0] and [doc_b_1], the answer is yes."
     result = _make_chunk_id_links(text, chunk_to_source, api_url)
     
-    assert 'href="http://localhost:8000/sources/doc_a/download"' in result
-    assert 'href="http://localhost:8000/sources/doc_b/download"' in result
+    # Should generate anchor links to #chunk-{chunk_id}
+    assert 'href="#chunk-doc_a_0"' in result
+    assert 'href="#chunk-doc_b_1"' in result
     assert "[doc_a_0]" in result
     assert "[doc_b_1]" in result
 

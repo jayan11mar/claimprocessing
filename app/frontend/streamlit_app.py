@@ -7,6 +7,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import html
+import re
 import streamlit as st
 from typing import Any, Dict, List, Optional
 
@@ -86,6 +87,8 @@ def inject_chat_style() -> None:
         }
         .chat-bubble-title { display: block; margin-bottom: 8px; font-size: 0.95rem; font-weight: 700; opacity: 0.85; }
         .chat-bubble-text { font-size: 1rem; }
+        .chat-bubble-text a { color: #0d6efd; text-decoration: underline; font-weight: 500; }
+        .chat-bubble-text a:hover { text-decoration: none; }
         .citation-block { margin-top: 8px; padding: 12px 14px; background: #f9fafc; border: 1px solid #e7ecf2; border-radius: 16px; max-width: 72%; }
         .chat-message--user .citation-block { margin-left: auto; }
         .citation-header { font-weight: 700; margin-bottom: 8px; }
@@ -101,17 +104,71 @@ def inject_chat_style() -> None:
     )
 
 
-def render_chat_bubble(role: str, text: str, metadata: Optional[Dict[str, Any]] = None, index: int = 0) -> None:
-    escaped_text = html.escape(text).replace("\n", "<br />")
+def _build_chunk_id_to_source_map(citations: list) -> Dict[str, str]:
+    """Build a mapping from chunk_id to source_id from the citations list."""
+    mapping: Dict[str, str] = {}
+    for citation in citations:
+        chunk_id = citation.get("chunk_id", "")
+        source_id = citation.get("source_id", "")
+        if chunk_id and source_id:
+            mapping[chunk_id] = source_id
+    return mapping
+
+
+def _make_chunk_id_links(text: str, chunk_to_source: Dict[str, str], api_url: str) -> str:
+    """Replace [chunk_id] references in text with clickable HTML links to the source download endpoint.
+    
+    Args:
+        text: The answer text containing [chunk_id] references.
+        chunk_to_source: Mapping from chunk_id to source_id.
+        api_url: Backend API URL for generating download links.
+    
+    Returns:
+        HTML string with [chunk_id] references replaced by anchor tags.
+    """
+    def _replace_match(match: re.Match) -> str:
+        chunk_id = match.group(1)
+        source_id = chunk_to_source.get(chunk_id)
+        if source_id and api_url:
+            download_url = f"{api_url}/sources/{source_id}/download"
+            return f'<a href="{download_url}" target="_blank" rel="noopener noreferrer" title="View source document: {chunk_id}">[{chunk_id}]</a>'
+        # If no mapping found, keep the original text but style it
+        return f'<span class="citation-ref">[{chunk_id}]</span>'
+    
+    # Pattern matches [chunk_id] where chunk_id is alphanumeric with underscores/hyphens
+    pattern = r'\[([a-zA-Z0-9_\-]+)\]'
+    return re.sub(pattern, _replace_match, text)
+
+
+def render_chat_bubble(role: str, text: str, metadata: Optional[Dict[str, Any]] = None, index: int = 0,
+                       citations: Optional[list] = None, api_url: str = "") -> None:
+    """Render a chat bubble with optional clickable [chunk_id] citation links.
+    
+    Args:
+        role: 'user' or 'assistant'
+        text: The message text.
+        metadata: Optional metadata dict (unused, kept for backward compatibility).
+        index: Message index for unique key generation.
+        citations: List of citation dicts for building chunk_id → source_id mapping.
+        api_url: Backend API URL for generating download links.
+    """
     role_class = "user" if role == "user" else "assistant"
     title = "You" if role == "user" else "Assistant"
+    
+    if role == "assistant" and citations:
+        # Build chunk_id → source_id mapping and convert [chunk_id] references to links
+        chunk_to_source = _build_chunk_id_to_source_map(citations)
+        display_text = _make_chunk_id_links(text, chunk_to_source, api_url)
+    else:
+        display_text = html.escape(text).replace("\n", "<br />")
+    
     st.markdown(
         f"""
         <div class='chat-container'>
             <div class='chat-message chat-message--{role_class}'>
                 <div class='chat-bubble'>
                     <span class='chat-bubble-title'>{title}</span>
-                    <span class='chat-bubble-text'>{escaped_text}</span>
+                    <span class='chat-bubble-text'>{display_text}</span>
                 </div>
             </div>
         </div>
@@ -378,7 +435,7 @@ def main() -> None:
                 citations = item.get("citations", [])
 
                 render_chat_bubble("user", user_msg)
-                render_chat_bubble("assistant", answer_text, None, idx)
+                render_chat_bubble("assistant", answer_text, None, idx, citations=citations, api_url=api_url)
                 if citations:
                     render_citations(citations, str(idx), api_url)
                 with st.expander("Response metadata", expanded=False):

@@ -652,20 +652,34 @@ class AgentChain:
 
         should_use_rag_fallback = _looks_like_rag_document_query(user_message) and response.intent in (
             FAQIntent.OTHER,
+            FAQIntent.KNOWLEDGE_RETRIEVAL,
         )
         if should_use_rag_fallback:
-            retrieval_result = knowledge_retrieval(query=user_message, top_k=3)
-            response = FAQResponse(
-                intent=FAQIntent.KNOWLEDGE_RETRIEVAL,
-                category="knowledge_retrieval",
-                confidence=float(retrieval_result.get("confidence", 0.85)),
-                answer_text=retrieval_result.get("answer_text", ""),
-                reasoning="Knowledge retrieval fallback for policy-document query",
-                metadata={
-                    "citations": retrieval_result.get("citations", []),
-                    "retrieval_trace": retrieval_result.get("retrieval_trace", []),
-                },
-            )
+            try:
+                retrieval_result = knowledge_retrieval(query=user_message, top_k=3)
+                if retrieval_result.get("answer_text") and retrieval_result.get("citations"):
+                    response = FAQResponse(
+                        intent=FAQIntent.KNOWLEDGE_RETRIEVAL,
+                        category="knowledge_retrieval",
+                        confidence=float(retrieval_result.get("confidence", 0.85)),
+                        answer_text=retrieval_result.get("answer_text", ""),
+                        reasoning="Knowledge retrieval fallback for policy-document query",
+                        metadata={
+                            "citations": retrieval_result.get("citations", []),
+                            "retrieval_trace": retrieval_result.get("retrieval_trace", []),
+                        },
+                    )
+                else:
+                    logger.warning(
+                        "RAG fallback returned empty response for query: %s",
+                        user_message,
+                    )
+            except Exception as exc:
+                logger.warning(
+                    "RAG fallback failed for query '%s': %s. Falling back to FAQChain response.",
+                    user_message,
+                    exc,
+                )
 
         # ----- Step 2: Merge session context into response metadata so tool handlers can reuse it -----
         # Only inject stable identifiers (policy_number, claim_id) from history.

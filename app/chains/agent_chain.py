@@ -13,6 +13,7 @@ from app.tools.fraud_detector import compute_fraud_score
 from app.tools.policy_checker import check_policy_status
 from app.tools.settlement_calculator import calculate_settlement
 from app.tools.knowledge_retrieval import knowledge_retrieval
+from app.hitl.manager import get_hitl_manager
 
 logger = logging.getLogger(__name__)
 
@@ -406,7 +407,63 @@ class AgentChain:
             extra_info=details,
         )
         self._record_tool_timing("claims_intake", start, timings, trace_id)
-        return self._format_claim_answer(intent, claim)
+
+        # ── Evaluate HITL triggers after claim registration ──────────────
+        hitl_required = False
+        hitl_task_id = None
+        hitl_rule = None
+
+        if claim.is_eligible and claim.claim_id:
+            pause_context = {
+                "session_id": session_id or "",
+                "user_message": message,
+                "agent_response": f"Claim {claim.claim_id} registered for {claim_amount}",
+                "claim_amount": claim_amount,
+                "decision": "pending",
+                "fraud_flag": False,
+                "policy_exclusion": False,
+                "confidence": intent.confidence if hasattr(intent, "confidence") else 0.0,
+                "recommendation": {
+                    "action": "manual_review",
+                    "claim_id": claim.claim_id,
+                    "claim_amount": claim_amount,
+                    "approved_amount": claim.approved_amount,
+                },
+                "retrieved_chunks": [],
+                "reasoning_trace": f"Claim {claim.claim_id} registered for ${claim_amount:.2f} with approved amount ${claim.approved_amount:.2f}",
+            }
+            try:
+                manager = get_hitl_manager()
+                hitl_result = manager.pause(pause_context)
+                task = hitl_result.task
+                if hitl_result.triggered and task is not None:
+                    hitl_required = True
+                    hitl_task_id = task.task_id
+                    hitl_rule = task.rule_id
+                    logger.info(
+                        "claim_registration_hitl_paused claim=%s task=%s rule=%s",
+                        claim.claim_id,
+                        hitl_task_id,
+                        hitl_rule,
+                    )
+            except Exception as exc:
+                logger.warning("claim_registration_hitl_error: %s", str(exc))
+                # Registration must never fail because HITL failed
+                hitl_required = False
+                hitl_task_id = None
+                hitl_rule = None
+
+        response = self._format_claim_answer(intent, claim)
+        response.metadata["hitl_required"] = hitl_required
+        response.metadata["hitl_task_id"] = hitl_task_id
+        response.metadata["hitl_rule"] = hitl_rule
+        if hitl_required and hitl_rule:
+            response.answer_text += (
+                f" This claim has been flagged for manual review "
+                f"(rule: {hitl_rule}). "
+                f"A human reviewer will need to approve it before final processing."
+            )
+        return response
 
     def _handle_fraud_check(
         self,

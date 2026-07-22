@@ -3,10 +3,10 @@
 
 trigger_rules:
   - rule_id: "high_amount"
-    description: "Claim amount exceeds Rs 5,00,000"
+    description: "Claim amount exceeds $6,000 (≈ Rs 5,00,000)"
     field: "claim_amount"
     operator: ">"
-    value: 500000
+    value: 6000
     reason: "High-value claim requires manual review"
 
   - rule_id: "claim_rejection"

@@ -69,6 +69,10 @@ def _run_tool_chain(inputs: Dict[str, Any]) -> Dict[str, Any]:
             "tool": faq_response.metadata.get("tool"),
             "tool_output": faq_response.metadata.get("tool_output"),
             "error": faq_response.metadata.get("error"),
+            "hitl_paused": faq_response.metadata.get("hitl_paused"),
+            "hitl_task_id": faq_response.metadata.get("hitl_task_id"),
+            "hitl_rule_id": faq_response.metadata.get("hitl_rule_id"),
+            "hitl_reason": faq_response.metadata.get("hitl_reason"),
         }
 
     # Flatten timings into chain_metadata-like structure

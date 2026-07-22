@@ -710,6 +710,72 @@ def main() -> None:
             with col4:
                 st.metric("Failed", summary.get("failed_cases", 0))
 
+            # ── Acceptance Thresholds block ─────────────────────────────
+            THRESHOLDS = {
+                "hit_rate_at_5": 0.85,
+                "mrr": 0.65,
+                "faithfulness": 0.90,
+            }
+
+            st.markdown("### Acceptance Thresholds")
+
+            # Read actual values (may be missing from response — treat as FAIL)
+            summary_data = data.get("summary", {})
+            custom = summary_data.get("custom_metrics_summary", {})
+
+            metric_keys = [
+                ("hit_rate_at_5", "Hit Rate @ 5"),
+                ("mrr", "MRR"),
+                ("faithfulness", "Faithfulness"),
+            ]
+
+            rows = []
+            all_pass = True
+            missing_metrics = []
+
+            for key, display_name in metric_keys:
+                actual_val = summary_data.get(key)
+                if actual_val is None:
+                    actual_val = custom.get(key)
+                if actual_val is None:
+                    actual_str = "n/a"
+                    passed = False
+                    missing_metrics.append(display_name)
+                else:
+                    actual_str = f"{actual_val:.1%}" if isinstance(actual_val, float) else str(actual_val)
+                    passed = actual_val >= THRESHOLDS[key]
+
+                indicator = "✅" if passed else "❌"
+                threshold_pct = f"{THRESHOLDS[key]:.0%}"
+                rows.append(
+                    f"| {display_name} | {actual_str} | {threshold_pct} | {indicator} |"
+                )
+                if not passed:
+                    all_pass = False
+
+            st.markdown(
+                "| Metric | Actual | Threshold | Pass |\n"
+                "| --- | --- | --- | --- |\n"
+                + "\n".join(rows)
+            )
+
+            # Overall outcome
+            if all_pass and not missing_metrics:
+                st.success("**Overall: PASS** — all three acceptance thresholds met.")
+            else:
+                failures = []
+                for key, display_name in metric_keys:
+                    actual_val = summary_data.get(key)
+                    if actual_val is None:
+                        actual_val = custom.get(key)
+                    if actual_val is None or actual_val < THRESHOLDS[key]:
+                        failures.append(display_name)
+                st.error(
+                    f"**Overall: FAIL** — missing or below threshold: {', '.join(failures)}."
+                )
+
+            st.divider()
+
             # Trend charts via prepare_trend_data
             trend_data = prepare_trend_data([data])
             metrics = trend_data.get("metrics", [])

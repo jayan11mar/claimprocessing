@@ -348,9 +348,14 @@ def run_regression(
     failed = total - passed
     pass_rate = round(passed / total, 4) if total > 0 else 0.0
 
+    # Aggregate per-case intrinsic/extrinsic metrics into summary-level keys
+    hit_rates = [r["intrinsic"]["hit_at_k"] for r in results if r.get("intrinsic", {}).get("hit_at_k") is not None]
+    mrrs = [r["intrinsic"]["mrr"] for r in results if r.get("intrinsic", {}).get("mrr") is not None]
+    faithfulnesses = [r["extrinsic"]["faithfulness"] for r in results if r.get("extrinsic", {}).get("faithfulness") is not None]
+
     elapsed = round(time.time() - start_time, 3)
 
-    summary = {
+    summary: Dict[str, Any] = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "elapsed_seconds": elapsed,
         "total_cases": total,
@@ -362,6 +367,13 @@ def run_regression(
         "custom_metrics_summary": custom_metrics["overall"],
         "all_metrics_passed": custom_metrics["all_metrics_passed"],
     }
+
+    if hit_rates:
+        summary["hit_rate_at_5"] = round(sum(hit_rates) / len(hit_rates), 4)
+    if mrrs:
+        summary["mrr"] = round(sum(mrrs) / len(mrrs), 4)
+    if faithfulnesses:
+        summary["faithfulness"] = round(sum(faithfulnesses) / len(faithfulnesses), 4)
 
     # Load baseline for comparison if available
     comparison = None

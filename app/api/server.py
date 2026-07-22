@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 
 from app.config import get_settings
@@ -881,6 +881,39 @@ def list_sources() -> Dict[str, Any]:
         "documents": documents,
         "count": len(documents),
     }
+
+
+
+@app.get("/sources/{doc_id}/download")
+def download_source_file(doc_id: str) -> Any:
+    """Download the original source document file.
+    
+    Returns the file as a downloadable attachment. If the document is not
+    a file path (e.g. it was uploaded as text content), returns a JSON
+    response with a message.
+    """
+    _ensure_rag_documents_loaded()
+    doc = _rag_documents.get(doc_id)
+    if doc is None:
+        raise HTTPException(status_code=404, detail=f"Document '{doc_id}' not found")
+    
+    source_path = doc.source_path
+    if not source_path or source_path.startswith("uploaded_"):
+        return JSONResponse(
+            content={"status": "not_available", "message": "This document was uploaded as text content and has no file to download."},
+            status_code=404,
+        )
+    
+    file_path = Path(source_path)
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"File not found on disk: {source_path}")
+    
+    return FileResponse(
+        path=str(file_path),
+        filename=file_path.name,
+        media_type="application/octet-stream",
+        headers={"Content-Disposition": f'attachment; filename="{file_path.name}"'},
+    )
 
 
 @app.delete("/sources/{doc_id}")

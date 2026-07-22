@@ -123,12 +123,13 @@ def render_chat_bubble(role: str, text: str, metadata: Optional[Dict[str, Any]] 
     return
 
 
-def render_citations(citations: list, message_index: str = "0") -> None:
+def render_citations(citations: list, message_index: str = "0", api_url: str = "") -> None:
     """Render clickable source citations below the chat bubble with expandable chunk details.
     
     Args:
         citations: List of citation dictionaries
         message_index: Index of the message in conversation history for unique key generation (can include prefix like 'live_')
+        api_url: Backend API URL for generating download links
     """
     if not citations:
         return
@@ -143,8 +144,13 @@ def render_citations(citations: list, message_index: str = "0") -> None:
         chunk_id = citation.get("chunk_id", "N/A")
         chunk_text = citation.get("text", "")
 
+        # Build a download link to the original document
+        download_url = f"{api_url}/sources/{source_id}/download" if api_url else ""
+
         if source_path and (source_path.startswith("http://") or source_path.startswith("https://")):
             source_line = f"**[{idx}]** [{source_id}]({source_path}) - *{doc_type}* (score: {score:.2f})"
+        elif download_url:
+            source_line = f"**[{idx}]** [{source_id}]({download_url}) - `{source_path}` - *{doc_type}* (score: {score:.2f})"
         elif source_path:
             source_line = f"**[{idx}]** **{source_id}** - `{source_path}` - *{doc_type}* (score: {score:.2f})"
         else:
@@ -374,7 +380,7 @@ def main() -> None:
                 render_chat_bubble("user", user_msg)
                 render_chat_bubble("assistant", answer_text, None, idx)
                 if citations:
-                    render_citations(citations, idx)
+                    render_citations(citations, str(idx), api_url)
                 with st.expander("Response metadata", expanded=False):
                     st.write("**Structured response**")
                     st.json(structured)
@@ -404,10 +410,7 @@ def main() -> None:
                         "retrieval_trace": retrieval_trace,
                     }
                 )
-                if resp.get("answer_text"):
-                    render_chat_bubble("assistant", resp.get("answer_text"), None, len(st.session_state.history) - 1)
-                    if citations:
-                        render_citations(citations, f"live_{len(st.session_state.history) - 1}")
+                st.rerun()
             except requests.RequestException as exc:
                 st.warning(f"Unable to reach backend at {api_url}: {exc}")
                 st.session_state.history.append(
@@ -423,6 +426,7 @@ def main() -> None:
                         "retrieval_trace": [],
                     }
                 )
+                st.rerun()
 
         if st.button("Reset Conversation"):
             try:

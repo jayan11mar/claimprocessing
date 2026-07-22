@@ -12,8 +12,44 @@ from app.tools.claims_intake import register_and_validate_claim
 from app.tools.fraud_detector import compute_fraud_score
 from app.tools.policy_checker import check_policy_status
 from app.tools.settlement_calculator import calculate_settlement
+from app.tools.knowledge_retrieval import knowledge_retrieval
 
 logger = logging.getLogger(__name__)
+
+
+def _looks_like_rag_document_query(user_message: str) -> bool:
+    """Heuristically detect policy-document questions that should use RAG."""
+    if not user_message:
+        return False
+
+    query = user_message.lower()
+    if any(term in query for term in ("policy status", "claim status", "claim number", "policy number", "check status", "status of")):
+        return False
+
+    rag_markers = (
+        "coverage",
+        "coverages",
+        "excluded",
+        "exclusion",
+        "exclusions",
+        "policy wording",
+        "policy document",
+        "policy terms",
+        "regulation",
+        "regulations",
+        "irdai",
+        "deductible",
+        "copay",
+        "sum insured",
+        "waiting period",
+        "pre-existing",
+        "benefit",
+        "benefits",
+    )
+    if any(marker in query for marker in rag_markers):
+        return True
+
+    return "policy" in query and any(term in query for term in ("health", "insurance", "wording", "document", "terms", "summary"))
 
 
 class AgentChain:
@@ -510,6 +546,23 @@ class AgentChain:
             if trace_id:
                 span_meta["trace_id"] = trace_id
             record_span("faq_chain", span_meta)
+
+        should_use_rag_fallback = _looks_like_rag_document_query(user_message) and response.intent in (
+            FAQIntent.OTHER,
+        )
+        if should_use_rag_fallback:
+            retrieval_result = knowledge_retrieval(query=user_message, top_k=3)
+            response = FAQResponse(
+                intent=FAQIntent.KNOWLEDGE_RETRIEVAL,
+                category="knowledge_retrieval",
+                confidence=float(retrieval_result.get("confidence", 0.85)),
+                answer_text=retrieval_result.get("answer_text", ""),
+                reasoning="Knowledge retrieval fallback for policy-document query",
+                metadata={
+                    "citations": retrieval_result.get("citations", []),
+                    "retrieval_trace": retrieval_result.get("retrieval_trace", []),
+                },
+            )
 
         # ----- Step 2: Merge session context into response metadata so tool handlers can reuse it -----
         # Only inject stable identifiers (policy_number, claim_id) from history.

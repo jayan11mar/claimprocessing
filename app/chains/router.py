@@ -32,6 +32,41 @@ logger = logging.getLogger(__name__)
 from app.chains.faq_chain import FAQChain
 
 
+def _looks_like_rag_document_query(user_message: str) -> bool:
+    """Heuristically detect policy-document questions that should use RAG."""
+    if not user_message:
+        return False
+
+    query = user_message.lower()
+    if any(term in query for term in ("policy status", "claim status", "claim number", "policy number", "check status", "status of")):
+        return False
+
+    rag_markers = (
+        "coverage",
+        "coverages",
+        "excluded",
+        "exclusion",
+        "exclusions",
+        "policy wording",
+        "policy document",
+        "policy terms",
+        "regulation",
+        "regulations",
+        "irdai",
+        "deductible",
+        "copay",
+        "sum insured",
+        "waiting period",
+        "pre-existing",
+        "benefit",
+        "benefits",
+    )
+    if any(marker in query for marker in rag_markers):
+        return True
+
+    return "policy" in query and any(term in query for term in ("health", "insurance", "wording", "document", "terms", "summary"))
+
+
 def _classify_intent(inputs: Dict[str, Any]) -> Dict[str, Any]:
     """Run FAQChain's intent detection (without tool dispatch) and attach the
     resolved intent to the input dict.
@@ -45,7 +80,11 @@ def _classify_intent(inputs: Dict[str, Any]) -> Dict[str, Any]:
     faq = FAQChain()
     response = faq.invoke(session_id, user_message, persist_history=False)
 
-    inputs["_resolved_intent"] = response.intent.value if hasattr(response.intent, "value") else str(response.intent)
+    resolved_intent = response.intent.value if hasattr(response.intent, "value") else str(response.intent)
+    if resolved_intent == FAQIntent.OTHER.value and _looks_like_rag_document_query(user_message):
+        resolved_intent = FAQIntent.KNOWLEDGE_RETRIEVAL.value
+
+    inputs["_resolved_intent"] = resolved_intent
     inputs["_faq_confidence"] = response.confidence
     return inputs
 

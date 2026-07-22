@@ -16,10 +16,28 @@
       "raw_metadata": {
         "source": "api_upload"
       }
+    },
+    {
+      "text": "Coverage for hospital claims is available after the deductible.",
+      "source_id": "policy-1",
+      "source_path": "policy.md",
+      "doc_type": "policy_wording",
+      "insurance_type": "health",
+      "insurer": null,
+      "product_code": null,
+      "product_name": null,
+      "claim_type": null,
+      "section": null,
+      "clause_id": null,
+      "chunk_index": 0,
+      "raw_metadata": {
+        "source": "api_upload"
+      }
     }
   ],
   "chunk_ids": [
-    "policy-week6_0"
+    "policy-week6_0",
+    "policy-1_0"
   ],
   "embedding_model_version": "text-embedding-3-small"
 }

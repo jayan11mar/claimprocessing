@@ -40,7 +40,7 @@ from app.prompt_manager.validator import (
 @pytest.fixture(scope="module")
 def prompts_dir() -> Path:
     """Path to the prompts YAML directory."""
-    return Path(__file__).resolve().parent.parent / "prompts"
+    return Path(__file__).resolve().parent.parent / "config" / "prompts"
 
 
 @pytest.fixture(scope="module")

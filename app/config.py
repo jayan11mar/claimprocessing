@@ -61,7 +61,7 @@ class Settings(BaseSettings):
     ROLES_PATH: str = Field("config/roles.yaml", env="ROLES_PATH")
     DRIFT_THRESHOLDS_PATH: str = Field("config/drift_thresholds.yaml", env="DRIFT_THRESHOLDS_PATH")
     AGENTS_CONFIG_PATH: str = Field("config/agents.yaml", env="AGENTS_CONFIG_PATH")
-    PROMPTS_DIR: str = Field("prompts", env="PROMPTS_DIR")
+    PROMPTS_DIR: str = Field("config/prompts", env="PROMPTS_DIR")
 
     class Config:
         env_file = ".env"

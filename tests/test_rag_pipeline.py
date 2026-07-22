@@ -1,9 +1,12 @@
 from pathlib import Path
 
+import pytest
+
 from app.rag.acceptance_validation import build_acceptance_artifacts
 from eval.run_eval import run_evaluation
 
 
+@pytest.mark.integration
 def test_build_week6_acceptance_artifacts_generates_mapping_and_signoff(tmp_path):
     evaluation_result = run_evaluation(output_dir=str(tmp_path / "reports"))
 
